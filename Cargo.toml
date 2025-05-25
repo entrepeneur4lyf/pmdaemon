@@ -1,0 +1,94 @@
+[package]
+name = "pmdaemon"
+version = "0.1.0"
+edition = "2021"
+description = "A feature-rich PM2 clone in Rust with advanced port management and monitoring capabilities"
+license = "MIT"
+authors = ["Shawn McAllister <founder@engineered4ai.com>"]
+repository = "https://github.com/entrepeneur4lyf/pmdaemon"
+homepage = "https://github.com/entrepeneur4lyf/pmdaemon"
+documentation = "https://docs.rs/pmdaemon"
+readme = "README.md"
+keywords = ["process-manager", "pm2", "server", "monitoring", "daemon"]
+categories = ["command-line-utilities", "development-tools", "web-programming"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[lib]
+name = "pmdaemon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "pmdaemon"
+path = "src/bin/pmdaemon.rs"
+
+[dependencies]
+# Core async runtime
+tokio = { version = "1.0", features = ["full"] }
+tokio-util = "0.7"
+
+# CLI and argument parsing
+clap = { version = "4.0", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+
+# Process management
+nix = { version = "0.27", features = ["process", "signal"] }
+libc = "0.2"
+
+# System monitoring
+sysinfo = "0.29"
+procfs = "0.16"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# File system operations
+notify = "6.0"
+tempfile = "3.0"
+
+# Web server for monitoring API
+axum = { version = "0.7", features = ["ws"] }
+tower = "0.4"
+tower-http = { version = "0.5", features = ["cors", "trace", "set-header"] }
+
+# WebSocket support
+axum-extra = { version = "0.9", features = ["typed-header"] }
+tokio-tungstenite = "0.20"
+futures-util = "0.3"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Configuration
+dirs = "5.0"
+
+# UUID generation
+uuid = { version = "1.0", features = ["serde", "v4"] }
+comfy-table = "7.1.4"
+
+[dev-dependencies]
+# Testing framework
+tempfile = "3.0"
+assert_cmd = "2.0"
+predicates = "3.0"
+tokio-test = "0.4"
+serial_test = "3.0"
+mockall = "0.12"
+
+# Benchmarking
+criterion = { version = "0.5", features = ["html_reports"] }
+
+# Test utilities
+pretty_assertions = "1.4"
+rstest = "0.18"
+
+
