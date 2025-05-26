@@ -1,6 +1,6 @@
 [package]
 name = "pmdaemon"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "A feature-rich PM2 clone in Rust with advanced port management and monitoring capabilities"
 license = "MIT"

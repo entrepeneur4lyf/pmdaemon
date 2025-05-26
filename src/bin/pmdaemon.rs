@@ -11,7 +11,7 @@ use chrono::{Local, Utc};
 
 #[derive(Parser)]
 #[command(name = "pmdaemon")]
-#[command(about = "A feature-limited PM2 clone in Rust with some extra features")]
+#[command(about = "A process manager built in Rust inspired by PM2")]
 #[command(version = pmdaemon::VERSION)]
 struct Cli {
     #[command(subcommand)]

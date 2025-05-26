@@ -3,6 +3,7 @@
 use crate::error::{Error, Result};
 use nix::sys::signal::{Signal, kill};
 use nix::unistd::Pid;
+use std::str::FromStr;
 use tokio::signal;
 use tracing::{debug, info, warn};
 
@@ -133,6 +134,22 @@ impl std::fmt::Display for ProcessSignal {
     }
 }
 
+impl FromStr for ProcessSignal {
+    type Err = String;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s.to_uppercase().as_str() {
+            "TERM" | "SIGTERM" => Ok(ProcessSignal::Term),
+            "KILL" | "SIGKILL" => Ok(ProcessSignal::Kill),
+            "INT" | "SIGINT" => Ok(ProcessSignal::Int),
+            "QUIT" | "SIGQUIT" => Ok(ProcessSignal::Quit),
+            "USR1" | "SIGUSR1" => Ok(ProcessSignal::Usr1),
+            "USR2" | "SIGUSR2" => Ok(ProcessSignal::Usr2),
+            _ => Err(format!("Invalid signal: {}", s)),
+        }
+    }
+}
+
 impl ProcessSignal {
     /// Get all available signals
     pub fn all() -> Vec<ProcessSignal> {
@@ -146,18 +163,7 @@ impl ProcessSignal {
         ]
     }
 
-    /// Parse signal from string
-    pub fn from_str(s: &str) -> Option<ProcessSignal> {
-        match s.to_uppercase().as_str() {
-            "TERM" | "SIGTERM" => Some(ProcessSignal::Term),
-            "KILL" | "SIGKILL" => Some(ProcessSignal::Kill),
-            "INT" | "SIGINT" => Some(ProcessSignal::Int),
-            "QUIT" | "SIGQUIT" => Some(ProcessSignal::Quit),
-            "USR1" | "SIGUSR1" => Some(ProcessSignal::Usr1),
-            "USR2" | "SIGUSR2" => Some(ProcessSignal::Usr2),
-            _ => None,
-        }
-    }
+
 
     /// Check if this is a termination signal
     pub fn is_termination_signal(&self) -> bool {
@@ -236,28 +242,28 @@ mod tests {
 
     #[test]
     fn test_process_signal_from_str() {
-        assert_eq!(ProcessSignal::from_str("TERM"), Some(ProcessSignal::Term));
-        assert_eq!(ProcessSignal::from_str("SIGTERM"), Some(ProcessSignal::Term));
-        assert_eq!(ProcessSignal::from_str("term"), Some(ProcessSignal::Term));
-        assert_eq!(ProcessSignal::from_str("sigterm"), Some(ProcessSignal::Term));
+        assert_eq!("TERM".parse::<ProcessSignal>(), Ok(ProcessSignal::Term));
+        assert_eq!("SIGTERM".parse::<ProcessSignal>(), Ok(ProcessSignal::Term));
+        assert_eq!("term".parse::<ProcessSignal>(), Ok(ProcessSignal::Term));
+        assert_eq!("sigterm".parse::<ProcessSignal>(), Ok(ProcessSignal::Term));
 
-        assert_eq!(ProcessSignal::from_str("KILL"), Some(ProcessSignal::Kill));
-        assert_eq!(ProcessSignal::from_str("SIGKILL"), Some(ProcessSignal::Kill));
+        assert_eq!("KILL".parse::<ProcessSignal>(), Ok(ProcessSignal::Kill));
+        assert_eq!("SIGKILL".parse::<ProcessSignal>(), Ok(ProcessSignal::Kill));
 
-        assert_eq!(ProcessSignal::from_str("INT"), Some(ProcessSignal::Int));
-        assert_eq!(ProcessSignal::from_str("SIGINT"), Some(ProcessSignal::Int));
+        assert_eq!("INT".parse::<ProcessSignal>(), Ok(ProcessSignal::Int));
+        assert_eq!("SIGINT".parse::<ProcessSignal>(), Ok(ProcessSignal::Int));
 
-        assert_eq!(ProcessSignal::from_str("QUIT"), Some(ProcessSignal::Quit));
-        assert_eq!(ProcessSignal::from_str("SIGQUIT"), Some(ProcessSignal::Quit));
+        assert_eq!("QUIT".parse::<ProcessSignal>(), Ok(ProcessSignal::Quit));
+        assert_eq!("SIGQUIT".parse::<ProcessSignal>(), Ok(ProcessSignal::Quit));
 
-        assert_eq!(ProcessSignal::from_str("USR1"), Some(ProcessSignal::Usr1));
-        assert_eq!(ProcessSignal::from_str("SIGUSR1"), Some(ProcessSignal::Usr1));
+        assert_eq!("USR1".parse::<ProcessSignal>(), Ok(ProcessSignal::Usr1));
+        assert_eq!("SIGUSR1".parse::<ProcessSignal>(), Ok(ProcessSignal::Usr1));
 
-        assert_eq!(ProcessSignal::from_str("USR2"), Some(ProcessSignal::Usr2));
-        assert_eq!(ProcessSignal::from_str("SIGUSR2"), Some(ProcessSignal::Usr2));
+        assert_eq!("USR2".parse::<ProcessSignal>(), Ok(ProcessSignal::Usr2));
+        assert_eq!("SIGUSR2".parse::<ProcessSignal>(), Ok(ProcessSignal::Usr2));
 
-        assert_eq!(ProcessSignal::from_str("INVALID"), None);
-        assert_eq!(ProcessSignal::from_str(""), None);
+        assert!("INVALID".parse::<ProcessSignal>().is_err());
+        assert!("".parse::<ProcessSignal>().is_err());
     }
 
     #[test]

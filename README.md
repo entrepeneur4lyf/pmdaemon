@@ -35,10 +35,12 @@ A high-performance process manager built in Rust, inspired by PM2 with innovativ
 - **Signal Handling** - Graceful shutdown with SIGTERM/SIGINT and custom signals
 - **Configuration Persistence** - Process configs saved and restored between sessions
 
-### Advanced Monitoring
+### Advanced Monitoring & Health Checks
 - **Real-time Monitoring** - CPU, memory, uptime tracking with system metrics
 - **Memory Limit Enforcement** - Automatic restart when processes exceed memory limits
-- **Process Health Checks** - Continuous monitoring with automatic failure detection
+- **HTTP Health Checks** - Monitor process health via HTTP endpoints with configurable timeouts
+- **Script-based Health Checks** - Custom health check scripts for complex validation
+- **Blocking Start Command** - Wait for processes to be healthy before returning from start command
 - **Log Management** - Separate stdout/stderr files with viewing and following
 
 ### 🌟 Innovative Port Management (Beyond PM2)
@@ -112,6 +114,18 @@ pmdaemon monit
 pmdaemon logs myapp
 ```
 
+### Health Checks and Blocking Start
+```bash
+# Start with HTTP health check and wait for ready
+pmdaemon start app.js --health-check-url http://localhost:3000/health --wait-ready
+
+# Start with script-based health check
+pmdaemon start worker.js --health-check-script ./health-check.sh --wait-ready
+
+# Custom health check timeout
+pmdaemon start api.js --health-check-url http://localhost:8080/status --wait-timeout 30s
+```
+
 ### Web API Server
 ```bash
 # Start web API server for remote monitoring
@@ -144,7 +158,9 @@ pmdaemon start app.js \
   --max-memory 512M \
   --env NODE_ENV=production \
   --cwd /path/to/app \
-  --log-file /var/log/app.log
+  --log-file /var/log/app.log \
+  --health-check-url http://localhost:3000/health \
+  --wait-ready
 ```
 
 ### Port Management Options
@@ -154,6 +170,18 @@ pmdaemon start app.js \
 | `--port 3000`               | Single port assignment                 | Assigns port 3000          |
 | `--port 3000-3005`          | Port range for clusters                | Distributes 3000-3005      |
 | `--port auto:4000-4100`     | Auto-find available port               | First available in range   |
+
+### Health Check Options
+
+| Option                           | Description                            | Example                         |
+|----------------------------------|----------------------------------------|---------------------------------|
+| `--health-check-url <url>`       | HTTP endpoint for health checks        | `http://localhost:3000/health`  |
+| `--health-check-script <path>`   | Script to run for health validation    | `./scripts/health-check.sh`     |
+| `--health-check-timeout <time>`  | Timeout for individual health checks   | `5s`, `30s`, `1m`               |
+| `--health-check-interval <time>` | Interval between health checks         | `10s`, `30s`, `1m`              |
+| `--health-check-retries <num>`   | Number of retries before failure       | `3`, `5`, `10`                  |
+| `--wait-ready`                   | Block start until health checks pass   | Boolean flag                    |
+| `--wait-timeout <time>`          | Timeout for blocking start             | `30s`, `1m`, `5m`               |
 
 ## 🌐 Web API
 
@@ -210,6 +238,9 @@ PMDaemon provides comprehensive monitoring capabilities:
 | Auto port assignment             |    ✅    |  ❌  |
 | Runtime port override            |    ✅    |  ❌  |
 | Built-in port conflict detection |    ✅    |  ❌  |
+| HTTP health checks               |    ✅    |  ❌  |
+| Script-based health checks       |    ✅    |  ❌  |
+| Blocking start command           |    ✅    |  ❌  |
 | Memory limit enforcement         |    ✅    |  ✅  |
 | WebSocket real-time updates      |    ✅    |  ❌  |
 | Rust performance                 |    ✅    |  ❌  |
@@ -277,12 +308,13 @@ cargo test --test e2e_tests
 - ✅ CLI interface with all PM2-compatible commands (Phase 5)
 - ✅ Advanced monitoring and logging (Phase 6)
 - ✅ Web API and WebSocket support (Phase 7)
-- ✅ Comprehensive test suite (Phase 9.1-9.3)
+- ✅ Health checks and blocking start (Phase 8)
+- ✅ Comprehensive test suite (Phase 10.1-10.3)
 
 ### In Progress 🚧
+- 📝 Integration examples and documentation (Phase 9)
 - 📝 API documentation beyond docs.rs
-- 📝 Changelog and versioning strategy
-- 📝 Release process documentation
+- 📝 Performance benchmarks vs PM2
 
 ### Future Enhancements 🔮
 - 🎨 **v2.0** - Enhanced CLI with [ratatui](https://github.com/ratatui-org/ratatui) for interactive terminal UI
