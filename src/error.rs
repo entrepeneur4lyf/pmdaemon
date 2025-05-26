@@ -127,6 +127,13 @@ pub enum Error {
         /// Internal error message
         message: String
     },
+
+    /// Health check error
+    #[error("Health check error: {message}")]
+    HealthCheck {
+        /// Health check error message
+        message: String
+    },
 }
 
 impl Error {
@@ -214,6 +221,13 @@ impl Error {
         }
     }
 
+    /// Create a new health check error
+    pub fn health_check<S: Into<String>>(message: S) -> Self {
+        Self::HealthCheck {
+            message: message.into(),
+        }
+    }
+
     /// Check if this error is a process-related error
     pub fn is_process_error(&self) -> bool {
         matches!(
@@ -259,6 +273,7 @@ impl Error {
             Error::InvalidArgument { .. } => "invalid_argument",
             Error::ResourceNotAvailable { .. } => "resource_not_available",
             Error::Internal { .. } => "internal",
+            Error::HealthCheck { .. } => "health_check",
         }
     }
 }
@@ -318,6 +333,10 @@ mod tests {
         let err = Error::internal("internal failure");
         assert!(matches!(err, Error::Internal { .. }));
         assert_eq!(err.to_string(), "Internal error: internal failure");
+
+        let err = Error::health_check("health check failed");
+        assert!(matches!(err, Error::HealthCheck { .. }));
+        assert_eq!(err.to_string(), "Health check error: health check failed");
     }
 
     #[test]
@@ -420,6 +439,7 @@ mod tests {
             "resource_not_available"
         );
         assert_eq!(Error::internal("test").category(), "internal");
+        assert_eq!(Error::health_check("test").category(), "health_check");
 
         let io_err = io::Error::new(io::ErrorKind::NotFound, "file not found");
         let err: Error = io_err.into();

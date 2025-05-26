@@ -830,10 +830,16 @@ mod tests {
 
     #[test]
     fn test_websocket_message_system_update() {
+        let memory_usage = 2048;
+        let memory_total = 8192;
+        let memory_percent = (memory_usage as f64 / memory_total as f64 * 100.0) as f32;
+
         let metrics = SystemMetrics {
             cpu_usage: 50.0,
-            memory_usage: 2048,
-            memory_total: 8192,
+            memory_usage,
+            memory_total,
+            memory_percent,
+            memory_used: memory_usage,
             load_average: [1.0, 1.5, 2.0],
             uptime: 3600,
             timestamp: Utc::now(),

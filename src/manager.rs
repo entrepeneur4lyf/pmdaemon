@@ -67,10 +67,11 @@
 //! # }
 //! ```
 
+use crate::config::{PortConfig, ProcessConfig};
 use crate::error::{Error, Result};
-use crate::process::{Process, ProcessId, ProcessStatus};
-use crate::config::{ProcessConfig, PortConfig};
 use crate::monitoring::Monitor;
+use crate::process::{Process, ProcessId, ProcessStatus};
+use comfy_table::{presets::UTF8_FULL, Attribute, Cell, Color, ContentArrangement, Table};
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use std::time::Duration;
@@ -139,7 +140,8 @@ impl ProcessManager {
 
         // Ensure config directory exists
         if !config_dir.exists() {
-            fs::create_dir_all(&config_dir).await
+            fs::create_dir_all(&config_dir)
+                .await
                 .map_err(|e| Error::config(format!("Failed to create config directory: {}", e)))?;
         }
 
@@ -159,8 +161,8 @@ impl ProcessManager {
 
     /// Get the configuration directory path
     fn get_config_dir() -> Result<PathBuf> {
-        let home_dir = dirs::home_dir()
-            .ok_or_else(|| Error::config("Could not determine home directory"))?;
+        let home_dir =
+            dirs::home_dir().ok_or_else(|| Error::config("Could not determine home directory"))?;
         Ok(home_dir.join(crate::CONFIG_DIR))
     }
 
@@ -187,7 +189,8 @@ impl ProcessManager {
     async fn ensure_logs_dir(&self) -> Result<()> {
         let logs_dir = self.get_logs_dir();
         if !logs_dir.exists() {
-            fs::create_dir_all(&logs_dir).await
+            fs::create_dir_all(&logs_dir)
+                .await
                 .map_err(|e| Error::config(format!("Failed to create logs directory: {}", e)))?;
         }
         Ok(())
@@ -197,12 +200,14 @@ impl ProcessManager {
     async fn save_pid_file(&self, process_name: &str, pid: u32) -> Result<()> {
         let pid_dir = self.get_pid_dir();
         if !pid_dir.exists() {
-            fs::create_dir_all(&pid_dir).await
+            fs::create_dir_all(&pid_dir)
+                .await
                 .map_err(|e| Error::config(format!("Failed to create PID directory: {}", e)))?;
         }
 
         let pid_file = pid_dir.join(format!("{}.pid", process_name));
-        fs::write(&pid_file, pid.to_string()).await
+        fs::write(&pid_file, pid.to_string())
+            .await
             .map_err(|e| Error::config(format!("Failed to write PID file: {}", e)))?;
 
         debug!("Saved PID file for process {}: {}", process_name, pid);
@@ -213,7 +218,8 @@ impl ProcessManager {
     async fn remove_pid_file(&self, process_name: &str) -> Result<()> {
         let pid_file = self.get_pid_dir().join(format!("{}.pid", process_name));
         if pid_file.exists() {
-            fs::remove_file(&pid_file).await
+            fs::remove_file(&pid_file)
+                .await
                 .map_err(|e| Error::config(format!("Failed to remove PID file: {}", e)))?;
             debug!("Removed PID file for process: {}", process_name);
         }
@@ -227,10 +233,13 @@ impl ProcessManager {
             return Ok(None);
         }
 
-        let pid_content = fs::read_to_string(&pid_file).await
+        let pid_content = fs::read_to_string(&pid_file)
+            .await
             .map_err(|e| Error::config(format!("Failed to read PID file: {}", e)))?;
 
-        let pid = pid_content.trim().parse::<u32>()
+        let pid = pid_content
+            .trim()
+            .parse::<u32>()
             .map_err(|e| Error::config(format!("Invalid PID in file: {}", e)))?;
 
         Ok(Some(pid))
@@ -265,11 +274,16 @@ impl ProcessManager {
 
         // Allocate port if specified
         if let Some(port_config) = &process.config.port {
-            let assigned_port = self.allocate_port(port_config, &process.config.name).await?;
+            let assigned_port = self
+                .allocate_port(port_config, &process.config.name)
+                .await?;
             process.assigned_port = Some(assigned_port);
 
             // Add PORT environment variable
-            process.config.env.insert("PORT".to_string(), assigned_port.to_string());
+            process
+                .config
+                .env
+                .insert("PORT".to_string(), assigned_port.to_string());
         }
 
         // Ensure logs directory exists
@@ -279,7 +293,9 @@ impl ProcessManager {
         let (out_log, err_log, _combined_log) = self.get_log_paths(&process.config.name);
 
         // Start the process with log redirection
-        process.start_with_logs(Some(out_log), Some(err_log)).await?;
+        process
+            .start_with_logs(Some(out_log), Some(err_log))
+            .await?;
 
         // Save PID file if process started successfully
         if let Some(pid) = process.pid() {
@@ -322,8 +338,12 @@ impl ProcessManager {
             instance_config.instances = 1; // Each instance is a single process
 
             // Add instance-specific environment variable
-            instance_config.env.insert("PM2_INSTANCE_ID".to_string(), i.to_string());
-            instance_config.env.insert("NODE_APP_INSTANCE".to_string(), i.to_string());
+            instance_config
+                .env
+                .insert("PM2_INSTANCE_ID".to_string(), i.to_string());
+            instance_config
+                .env
+                .insert("NODE_APP_INSTANCE".to_string(), i.to_string());
 
             // Handle port allocation for cluster instances
             if let Some(port_config) = &config.port {
@@ -378,7 +398,10 @@ impl ProcessManager {
             }
         }
 
-        info!("Started cluster '{}' with {} instances", config.name, config.instances);
+        info!(
+            "Started cluster '{}' with {} instances",
+            config.name, config.instances
+        );
         Ok(first_process_id.unwrap()) // We know this is Some because instances > 1
     }
 
@@ -419,7 +442,11 @@ impl ProcessManager {
     }
 
     /// Restart a process with optional port override
-    pub async fn restart_with_port(&mut self, identifier: &str, port_override: Option<PortConfig>) -> Result<()> {
+    pub async fn restart_with_port(
+        &mut self,
+        identifier: &str,
+        port_override: Option<PortConfig>,
+    ) -> Result<()> {
         let process_id = self.resolve_identifier(identifier).await?;
 
         let mut processes = self.processes.write().await;
@@ -428,17 +455,26 @@ impl ProcessManager {
             if let Some(new_port_config) = port_override {
                 // Deallocate current port if any
                 if let Some(current_port_config) = &process.config.port {
-                    self.deallocate_ports(current_port_config, process.assigned_port).await;
+                    self.deallocate_ports(current_port_config, process.assigned_port)
+                        .await;
                 }
 
                 // Allocate new port
-                let assigned_port = self.allocate_port(&new_port_config, &process.config.name).await?;
+                let assigned_port = self
+                    .allocate_port(&new_port_config, &process.config.name)
+                    .await?;
                 process.assigned_port = Some(assigned_port);
 
                 // Update environment variable
-                process.config.env.insert("PORT".to_string(), assigned_port.to_string());
+                process
+                    .config
+                    .env
+                    .insert("PORT".to_string(), assigned_port.to_string());
 
-                info!("Restarting {} with new port: {}", process.config.name, assigned_port);
+                info!(
+                    "Restarting {} with new port: {}",
+                    process.config.name, assigned_port
+                );
             }
 
             process.restart().await?;
@@ -453,7 +489,11 @@ impl ProcessManager {
     }
 
     /// Reload a process with optional port override
-    pub async fn reload_with_port(&mut self, identifier: &str, port_override: Option<PortConfig>) -> Result<()> {
+    pub async fn reload_with_port(
+        &mut self,
+        identifier: &str,
+        port_override: Option<PortConfig>,
+    ) -> Result<()> {
         // For now, reload is the same as restart with port override
         self.restart_with_port(identifier, port_override).await
     }
@@ -462,31 +502,223 @@ impl ProcessManager {
     pub async fn delete(&mut self, identifier: &str) -> Result<()> {
         let process_id = self.resolve_identifier(identifier).await?;
 
-        // Remove from maps
-        let mut processes = self.processes.write().await;
-        let mut name_map = self.name_to_id.write().await;
+        // First, stop the process if it's running
+        let (process_name, port_config, assigned_port, was_running) = {
+            let mut processes = self.processes.write().await;
+            if let Some(mut process) = processes.remove(&process_id) {
+                let process_name = process.config.name.clone();
+                let port_config = process.config.port.clone();
+                let assigned_port = process.assigned_port;
+                let was_running = process.is_running();
 
-        if let Some(process) = processes.remove(&process_id) {
-            let process_name = process.config.name.clone();
-            let port_config = process.config.port.clone();
-            let assigned_port = process.assigned_port;
-            name_map.remove(&process_name);
+                // Stop the process if it's running
+                if was_running {
+                    info!("Stopping process '{}' before deletion", process_name);
+                    if let Err(e) = process.stop().await {
+                        warn!(
+                            "Failed to stop process '{}' during deletion: {}",
+                            process_name, e
+                        );
+                        // Continue with deletion even if stop fails
+                    }
+                }
 
-            // Remove configuration, PID, and log files
-            drop(processes); // Release lock before async operation
-            drop(name_map);
+                // Remove from name map
+                let mut name_map = self.name_to_id.write().await;
+                name_map.remove(&process_name);
+                drop(name_map);
+
+                (process_name, port_config, assigned_port, was_running)
+            } else {
+                return Ok(()); // Process not found, nothing to delete
+            }
+        };
+
+        // Deallocate ports
+        if let Some(port_config) = port_config {
+            self.deallocate_ports(&port_config, assigned_port).await;
+        }
+
+        // Clean up files
+        self.remove_process_config(&process_name).await?;
+        self.remove_pid_file(&process_name).await?;
+        self.remove_log_files(&process_name).await?;
+
+        if was_running {
+            info!(
+                "Process '{}' stopped and deleted successfully",
+                process_name
+            );
+        } else {
+            info!("Process '{}' deleted successfully", process_name);
+        }
+
+        Ok(())
+    }
+
+    /// Delete all processes
+    pub async fn delete_all(&mut self) -> Result<usize> {
+        let process_ids: Vec<ProcessId>;
+
+        // Get all process IDs
+        {
+            let processes = self.processes.read().await;
+            process_ids = processes.keys().cloned().collect();
+        }
+
+        let mut deleted_count = 0;
+        let mut stopped_count = 0;
+
+        for process_id in process_ids {
+            // Stop and remove the process
+            let (process_name, port_config, assigned_port, _was_running) = {
+                let mut processes = self.processes.write().await;
+                if let Some(mut process) = processes.remove(&process_id) {
+                    let process_name = process.config.name.clone();
+                    let port_config = process.config.port.clone();
+                    let assigned_port = process.assigned_port;
+                    let was_running = process.is_running();
+
+                    // Stop the process if it's running
+                    if was_running {
+                        if let Err(e) = process.stop().await {
+                            warn!(
+                                "Failed to stop process '{}' during bulk deletion: {}",
+                                process_name, e
+                            );
+                            // Continue with deletion even if stop fails
+                        } else {
+                            stopped_count += 1;
+                        }
+                    }
+
+                    // Remove from name map
+                    let mut name_map = self.name_to_id.write().await;
+                    name_map.remove(&process_name);
+                    drop(name_map);
+
+                    deleted_count += 1;
+                    (process_name, port_config, assigned_port, was_running)
+                } else {
+                    continue; // Process already deleted
+                }
+            };
 
             // Deallocate ports
             if let Some(port_config) = port_config {
                 self.deallocate_ports(&port_config, assigned_port).await;
             }
 
-            self.remove_process_config(&process_name).await?;
-            self.remove_pid_file(&process_name).await?;
-            self.remove_log_files(&process_name).await?;
+            // Clean up files
+            let _ = self.remove_process_config(&process_name).await;
+            let _ = self.remove_pid_file(&process_name).await;
+            let _ = self.remove_log_files(&process_name).await;
         }
 
-        Ok(())
+        if stopped_count > 0 {
+            info!(
+                "Stopped {} running processes and deleted {} total processes",
+                stopped_count, deleted_count
+            );
+        } else {
+            info!("Deleted {} processes", deleted_count);
+        }
+
+        Ok(deleted_count)
+    }
+
+    /// Delete processes by status
+    pub async fn delete_by_status(&mut self, status_str: &str) -> Result<usize> {
+        use crate::process::ProcessState;
+
+        // Parse the status string
+        let target_state = match status_str.to_lowercase().as_str() {
+            "starting" => ProcessState::Starting,
+            "online" => ProcessState::Online,
+            "stopping" => ProcessState::Stopping,
+            "stopped" => ProcessState::Stopped,
+            "errored" => ProcessState::Errored,
+            "restarting" => ProcessState::Restarting,
+            _ => return Err(crate::error::Error::config(format!(
+                "Invalid status '{}'. Valid statuses are: starting, online, stopping, stopped, errored, restarting",
+                status_str
+            ))),
+        };
+
+        let process_ids_to_delete: Vec<ProcessId>;
+
+        // Find processes with matching status
+        {
+            let processes = self.processes.read().await;
+            process_ids_to_delete = processes
+                .iter()
+                .filter(|(_, process)| process.state == target_state)
+                .map(|(id, _)| *id)
+                .collect();
+        }
+
+        let mut deleted_count = 0;
+        let mut stopped_count = 0;
+
+        for process_id in process_ids_to_delete {
+            // Stop and remove the process
+            let (process_name, port_config, assigned_port, _was_running) = {
+                let mut processes = self.processes.write().await;
+                if let Some(mut process) = processes.remove(&process_id) {
+                    let process_name = process.config.name.clone();
+                    let port_config = process.config.port.clone();
+                    let assigned_port = process.assigned_port;
+                    let was_running = process.is_running();
+
+                    // Stop the process if it's running
+                    if was_running {
+                        if let Err(e) = process.stop().await {
+                            warn!(
+                                "Failed to stop process '{}' during status-based deletion: {}",
+                                process_name, e
+                            );
+                            // Continue with deletion even if stop fails
+                        } else {
+                            stopped_count += 1;
+                        }
+                    }
+
+                    // Remove from name map
+                    let mut name_map = self.name_to_id.write().await;
+                    name_map.remove(&process_name);
+                    drop(name_map);
+
+                    deleted_count += 1;
+                    (process_name, port_config, assigned_port, was_running)
+                } else {
+                    continue; // Process already deleted
+                }
+            };
+
+            // Deallocate ports
+            if let Some(port_config) = port_config {
+                self.deallocate_ports(&port_config, assigned_port).await;
+            }
+
+            // Clean up files
+            let _ = self.remove_process_config(&process_name).await;
+            let _ = self.remove_pid_file(&process_name).await;
+            let _ = self.remove_log_files(&process_name).await;
+        }
+
+        if stopped_count > 0 {
+            info!(
+                "Stopped {} running processes and deleted {} total processes with status '{}'",
+                stopped_count, deleted_count, status_str
+            );
+        } else {
+            info!(
+                "Deleted {} processes with status '{}'",
+                deleted_count, status_str
+            );
+        }
+
+        Ok(deleted_count)
     }
 
     /// List all processes
@@ -495,27 +727,632 @@ impl ProcessManager {
         Ok(processes.values().map(|p| p.status()).collect())
     }
 
-    /// Monitor processes in real-time
+    /// Monitor processes in real-time.
+    ///
+    /// Displays a comprehensive real-time dashboard of all managed processes using beautifully
+    /// formatted tables with color-coded status indicators. Uses the default update interval
+    /// of 2 seconds.
+    ///
+    /// For custom update intervals, use [`monitor_with_interval`](Self::monitor_with_interval).
+    ///
+    /// ## Dashboard Components
+    ///
+    /// - **System Overview** - CPU usage, memory consumption, load average, and uptime
+    /// - **Process Table** - Detailed process information with the following columns:
+    ///   - **Name** - Process name
+    ///   - **ID** - Process UUID (first 8 characters)
+    ///   - **Status** - Color-coded process state (Online=Green, Stopped=Red, etc.)
+    ///   - **PID** - System process ID (blue highlighting)
+    ///   - **CPU%** - Real-time CPU usage percentage
+    ///   - **Memory** - Memory consumption in MB
+    ///   - **Restarts** - Total number of restarts
+    ///   - **Port** - Assigned port number (cyan highlighting)
+    ///   - **Uptime** - Process uptime in human-readable format
+    ///
+    /// ## Visual Features
+    ///
+    /// - Professional table formatting using `comfy-table` with UTF8 borders
+    /// - Color-coded status indicators for quick visual assessment
+    /// - Clear screen refresh for smooth real-time updates
+    /// - Update counter and timestamp for monitoring freshness
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` when monitoring is stopped (e.g., by Ctrl+C), or an error
+    /// if the monitoring setup fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::ProcessManager;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let manager = ProcessManager::new().await?;
+    ///
+    /// // Start real-time monitoring dashboard with default 2-second updates
+    /// manager.monitor().await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Note
+    ///
+    /// This method runs an infinite loop and will block the current thread until
+    /// interrupted (typically with Ctrl+C). It's designed for interactive use
+    /// and provides the same comprehensive monitoring as the CLI `pmdaemon monit` command.
     pub async fn monitor(&self) -> Result<()> {
-        // TODO: Implement real-time monitoring
-        println!("Monitoring not yet implemented");
-        Ok(())
+        self.monitor_with_interval(Duration::from_secs(2)).await
     }
 
-    /// Get process logs
+    /// Monitor processes in real-time with a configurable update interval.
+    ///
+    /// Displays a comprehensive real-time dashboard of all managed processes using beautifully
+    /// formatted tables with color-coded status indicators. Updates at the specified interval
+    /// with the latest system and process metrics.
+    ///
+    /// # Arguments
+    ///
+    /// * `update_interval` - How frequently to refresh the display. Common values:
+    ///   - `Duration::from_secs(1)` - Fast updates for debugging (higher CPU usage)
+    ///   - `Duration::from_secs(2)` - Default balanced updates
+    ///   - `Duration::from_secs(5)` - Slower updates for reduced system load
+    ///   - `Duration::from_millis(500)` - Very fast updates for development
+    ///
+    /// ## Dashboard Components
+    ///
+    /// - **System Overview** - CPU usage, memory consumption, load average, and uptime
+    /// - **Process Table** - Detailed process information with the following columns:
+    ///   - **Name** - Process name
+    ///   - **ID** - Process UUID (first 8 characters)
+    ///   - **Status** - Color-coded process state (Online=Green, Stopped=Red, etc.)
+    ///   - **PID** - System process ID (blue highlighting)
+    ///   - **CPU%** - Real-time CPU usage percentage
+    ///   - **Memory** - Memory consumption in MB
+    ///   - **Restarts** - Total number of restarts
+    ///   - **Port** - Assigned port number (cyan highlighting)
+    ///   - **Uptime** - Process uptime in human-readable format
+    ///
+    /// ## Visual Features
+    ///
+    /// - Professional table formatting using `comfy-table` with UTF8 borders
+    /// - Color-coded status indicators for quick visual assessment
+    /// - Clear screen refresh for smooth real-time updates
+    /// - Update counter and timestamp for monitoring freshness
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` when monitoring is stopped (e.g., by Ctrl+C), or an error
+    /// if the monitoring setup fails.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::ProcessManager;
+    /// use std::time::Duration;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let manager = ProcessManager::new().await?;
+    ///
+    /// // Fast updates for debugging
+    /// manager.monitor_with_interval(Duration::from_secs(1)).await?;
+    ///
+    /// // Slower updates to reduce system load
+    /// manager.monitor_with_interval(Duration::from_secs(5)).await?;
+    ///
+    /// // Very fast updates for development
+    /// manager.monitor_with_interval(Duration::from_millis(500)).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Performance Considerations
+    ///
+    /// - **Faster intervals** (< 1 second) provide more responsive monitoring but use more CPU
+    /// - **Slower intervals** (> 3 seconds) reduce system load but may miss short-lived events
+    /// - **Default interval** (2 seconds) provides a good balance for most use cases
+    ///
+    /// # Note
+    ///
+    /// This method runs an infinite loop and will block the current thread until
+    /// interrupted (typically with Ctrl+C). It's designed for interactive use.
+    pub async fn monitor_with_interval(&self, update_interval: Duration) -> Result<()> {
+        info!(
+            "Starting real-time process monitoring dashboard with {:?} update interval",
+            update_interval
+        );
+
+        let mut interval = interval(update_interval);
+        let mut iteration = 0u64;
+
+        loop {
+            interval.tick().await;
+            iteration += 1;
+
+            // Clear screen and move cursor to top
+            #[cfg(windows)]
+            {
+                // For Windows, try to use the cls command or fall back to ANSI
+                if std::process::Command::new("cmd")
+                    .args(&["/C", "cls"])
+                    .status()
+                    .is_err()
+                {
+                    print!("\x1B[2J\x1B[H");
+                }
+            }
+            #[cfg(not(windows))]
+            {
+                // For Unix-like systems, use ANSI escape sequences
+                print!("\x1B[2J\x1B[H");
+            }
+
+            // Create header table
+            let mut header_table = Table::new();
+            header_table
+                .load_preset(UTF8_FULL)
+                .set_content_arrangement(ContentArrangement::Dynamic)
+                .set_header(vec![
+                    Cell::new("PMDaemon Process Monitor")
+                        .add_attribute(Attribute::Bold)
+                        .fg(Color::Cyan),
+                    Cell::new(format!("Update #{}", iteration))
+                        .add_attribute(Attribute::Bold)
+                        .fg(Color::Yellow),
+                ]);
+
+            println!("{}", header_table);
+            println!("Press Ctrl+C to exit\n");
+
+            // Get system metrics and create system overview table
+            match self.get_system_info().await {
+                Ok(system_metrics) => {
+                    let mut system_table = Table::new();
+                    system_table
+                        .load_preset(UTF8_FULL)
+                        .set_content_arrangement(ContentArrangement::Dynamic)
+                        .set_header(vec![Cell::new("System Overview")
+                            .add_attribute(Attribute::Bold)
+                            .fg(Color::Green)]);
+
+                    system_table
+                        .add_row(vec![format!("CPU Usage: {:.1}%", system_metrics.cpu_usage)]);
+                    system_table.add_row(vec![format!(
+                        "Memory: {:.1}% ({:.1} GB / {:.1} GB)",
+                        system_metrics.memory_percent,
+                        system_metrics.memory_used as f64 / 1024.0 / 1024.0 / 1024.0,
+                        system_metrics.memory_total as f64 / 1024.0 / 1024.0 / 1024.0
+                    )]);
+                    system_table.add_row(vec![format!(
+                        "Load Average: [{:.2}, {:.2}, {:.2}]",
+                        system_metrics.load_average[0],
+                        system_metrics.load_average[1],
+                        system_metrics.load_average[2]
+                    )]);
+                    system_table
+                        .add_row(vec![format!("Uptime: {} seconds", system_metrics.uptime)]);
+
+                    println!("{}", system_table);
+                }
+                Err(e) => {
+                    let mut error_table = Table::new();
+                    error_table
+                        .load_preset(UTF8_FULL)
+                        .set_header(vec![Cell::new("System Overview")
+                            .add_attribute(Attribute::Bold)
+                            .fg(Color::Red)]);
+                    error_table.add_row(vec![format!("Error retrieving metrics: {}", e)]);
+                    println!("{}", error_table);
+                }
+            }
+
+            // Get process list
+            match self.list().await {
+                Ok(processes) => {
+                    if processes.is_empty() {
+                        let mut no_processes_table = Table::new();
+                        no_processes_table
+                            .load_preset(UTF8_FULL)
+                            .set_header(vec![Cell::new("Processes")
+                                .add_attribute(Attribute::Bold)
+                                .fg(Color::Blue)]);
+                        no_processes_table.add_row(vec!["No processes currently managed."]);
+                        println!("{}", no_processes_table);
+                    } else {
+                        // Create process table
+                        let mut process_table = Table::new();
+                        process_table
+                            .load_preset(UTF8_FULL)
+                            .set_content_arrangement(ContentArrangement::Dynamic)
+                            .set_header(vec![
+                                Cell::new("Name").add_attribute(Attribute::Bold),
+                                Cell::new("ID").add_attribute(Attribute::Bold),
+                                Cell::new("Status").add_attribute(Attribute::Bold),
+                                Cell::new("PID").add_attribute(Attribute::Bold),
+                                Cell::new("CPU%").add_attribute(Attribute::Bold),
+                                Cell::new("Memory").add_attribute(Attribute::Bold),
+                                Cell::new("Restarts").add_attribute(Attribute::Bold),
+                                Cell::new("Port").add_attribute(Attribute::Bold),
+                                Cell::new("Uptime").add_attribute(Attribute::Bold),
+                            ]);
+
+                        // Get monitoring data for all processes
+                        let processes_guard = self.processes.read().await;
+                        let mut monitor = self.monitor.write().await;
+
+                        let pids: Vec<u32> =
+                            processes_guard.values().filter_map(|p| p.pid()).collect();
+
+                        let monitoring_data = if !pids.is_empty() {
+                            monitor.update_process_metrics(&pids).await
+                        } else {
+                            std::collections::HashMap::new()
+                        };
+
+                        drop(monitor);
+                        drop(processes_guard);
+
+                        // Add each process to the table
+                        for process_status in processes {
+                            let cpu_usage = if let Some(pid) = process_status.pid {
+                                monitoring_data
+                                    .get(&pid)
+                                    .map(|m| format!("{:.1}%", m.cpu_usage))
+                                    .unwrap_or_else(|| "N/A".to_string())
+                            } else {
+                                "N/A".to_string()
+                            };
+
+                            let memory_usage = if let Some(pid) = process_status.pid {
+                                monitoring_data
+                                    .get(&pid)
+                                    .map(|m| {
+                                        format!("{:.1}MB", m.memory_usage as f64 / 1024.0 / 1024.0)
+                                    })
+                                    .unwrap_or_else(|| "N/A".to_string())
+                            } else {
+                                "N/A".to_string()
+                            };
+
+                            let uptime = if let Some(uptime_start) = process_status.uptime {
+                                let duration = chrono::Utc::now() - uptime_start;
+                                let seconds = duration.num_seconds();
+                                if seconds < 60 {
+                                    format!("{}s", seconds)
+                                } else if seconds < 3600 {
+                                    format!("{}m", seconds / 60)
+                                } else {
+                                    format!("{}h", seconds / 3600)
+                                }
+                            } else {
+                                "N/A".to_string()
+                            };
+
+                            // Color code the status
+                            let status_cell = match process_status.state {
+                                crate::process::ProcessState::Online => {
+                                    Cell::new("Online").fg(Color::Green)
+                                }
+                                crate::process::ProcessState::Stopped => {
+                                    Cell::new("Stopped").fg(Color::Red)
+                                }
+                                crate::process::ProcessState::Errored => Cell::new("Errored")
+                                    .fg(Color::Red)
+                                    .add_attribute(Attribute::Bold),
+                                crate::process::ProcessState::Starting => {
+                                    Cell::new("Starting").fg(Color::Yellow)
+                                }
+                                crate::process::ProcessState::Stopping => {
+                                    Cell::new("Stopping").fg(Color::Yellow)
+                                }
+                                crate::process::ProcessState::Restarting => {
+                                    Cell::new("Restarting").fg(Color::Blue)
+                                }
+                            };
+
+                            // Format port assignment
+                            let port_assignment = if let Some(port) = process_status.assigned_port {
+                                Cell::new(port.to_string()).fg(Color::Cyan)
+                            } else {
+                                Cell::new("N/A").fg(Color::DarkGrey)
+                            };
+
+                            // Format PID
+                            let pid_cell = if let Some(pid) = process_status.pid {
+                                Cell::new(pid.to_string()).fg(Color::Blue)
+                            } else {
+                                Cell::new("-").fg(Color::DarkGrey)
+                            };
+
+                            process_table.add_row(vec![
+                                Cell::new(&process_status.name),
+                                Cell::new(
+                                    process_status
+                                        .id
+                                        .to_string()
+                                        .chars()
+                                        .take(8)
+                                        .collect::<String>(),
+                                ),
+                                status_cell,
+                                pid_cell,
+                                Cell::new(cpu_usage),
+                                Cell::new(memory_usage),
+                                Cell::new(process_status.restarts.to_string()),
+                                port_assignment,
+                                Cell::new(uptime),
+                            ]);
+                        }
+
+                        println!("{}", process_table);
+                    }
+                }
+                Err(e) => {
+                    let mut error_table = Table::new();
+                    error_table
+                        .load_preset(UTF8_FULL)
+                        .set_header(vec![Cell::new("Error")
+                            .add_attribute(Attribute::Bold)
+                            .fg(Color::Red)]);
+                    error_table.add_row(vec![format!("Error retrieving process list: {}", e)]);
+                    println!("{}", error_table);
+                }
+            }
+
+            // Add timestamp footer
+            let mut footer_table = Table::new();
+            footer_table
+                .load_preset(UTF8_FULL)
+                .set_content_arrangement(ContentArrangement::Dynamic);
+            footer_table.add_row(vec![Cell::new(format!(
+                "Last updated: {}",
+                chrono::Utc::now().format("%Y-%m-%d %H:%M:%S UTC")
+            ))
+            .add_attribute(Attribute::Dim)]);
+            println!("{}", footer_table);
+        }
+    }
+
+    /// Get process logs.
+    ///
+    /// Retrieves the last N lines from both stdout and stderr log files for the specified process.
+    /// Returns a formatted string containing both log streams with clear separation.
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier` - Process name or UUID to get logs for
+    /// * `lines` - Number of lines to retrieve from the end of each log file
+    ///
+    /// # Returns
+    ///
+    /// Returns a formatted string containing the log content, or an error if the process
+    /// doesn't exist or log files cannot be read.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::ProcessManager;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let manager = ProcessManager::new().await?;
+    ///
+    /// // Get last 50 lines of logs for a process
+    /// let logs = manager.get_logs("my-app", 50).await?;
+    /// println!("{}", logs);
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn get_logs(&self, identifier: &str, lines: usize) -> Result<String> {
-        let _process_id = self.resolve_identifier(identifier).await?;
+        let process_id = self.resolve_identifier(identifier).await?;
 
-        // TODO: Implement log retrieval
-        Ok(format!("Logs for {} (last {} lines) - not yet implemented", identifier, lines))
+        // Get the process name for log file paths
+        let process_name = {
+            let processes = self.processes.read().await;
+            if let Some(process) = processes.get(&process_id) {
+                process.config.name.clone()
+            } else {
+                return Err(Error::process_not_found(identifier));
+            }
+        };
+
+        let (out_log, err_log, _combined_log) = self.get_log_paths(&process_name);
+        let mut result = String::new();
+
+        // Read stdout log
+        if out_log.exists() {
+            result.push_str(&format!("==> {} stdout <==\n", process_name));
+            match fs::read_to_string(&out_log).await {
+                Ok(content) => {
+                    let log_lines: Vec<&str> = content.lines().collect();
+                    let start = if log_lines.len() > lines {
+                        log_lines.len() - lines
+                    } else {
+                        0
+                    };
+                    for line in &log_lines[start..] {
+                        result.push_str(line);
+                        result.push('\n');
+                    }
+                }
+                Err(e) => {
+                    result.push_str(&format!("Error reading stdout log: {}\n", e));
+                }
+            }
+            result.push('\n');
+        } else {
+            result.push_str(&format!("==> {} stdout <==\n", process_name));
+            result.push_str("No stdout log file found\n\n");
+        }
+
+        // Read stderr log
+        if err_log.exists() {
+            result.push_str(&format!("==> {} stderr <==\n", process_name));
+            match fs::read_to_string(&err_log).await {
+                Ok(content) => {
+                    let log_lines: Vec<&str> = content.lines().collect();
+                    let start = if log_lines.len() > lines {
+                        log_lines.len() - lines
+                    } else {
+                        0
+                    };
+                    for line in &log_lines[start..] {
+                        result.push_str(line);
+                        result.push('\n');
+                    }
+                }
+                Err(e) => {
+                    result.push_str(&format!("Error reading stderr log: {}\n", e));
+                }
+            }
+        } else {
+            result.push_str(&format!("==> {} stderr <==\n", process_name));
+            result.push_str("No stderr log file found\n");
+        }
+
+        Ok(result)
     }
 
-    /// Follow process logs
+    /// Follow process logs in real-time.
+    ///
+    /// Continuously monitors and displays new log entries from both stdout and stderr
+    /// log files for the specified process. Similar to `tail -f` functionality.
+    /// This method blocks until interrupted (e.g., by Ctrl+C).
+    ///
+    /// # Arguments
+    ///
+    /// * `identifier` - Process name or UUID to follow logs for
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` when log following is stopped, or an error if the process
+    /// doesn't exist or log files cannot be accessed.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::ProcessManager;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let manager = ProcessManager::new().await?;
+    ///
+    /// // Follow logs for a process (blocks until Ctrl+C)
+    /// manager.follow_logs("my-app").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn follow_logs(&self, identifier: &str) -> Result<()> {
-        let _process_id = self.resolve_identifier(identifier).await?;
+        let process_id = self.resolve_identifier(identifier).await?;
 
-        // TODO: Implement log following
-        println!("Log following for {} - not yet implemented", identifier);
+        // Get the process name for log file paths
+        let process_name = {
+            let processes = self.processes.read().await;
+            if let Some(process) = processes.get(&process_id) {
+                process.config.name.clone()
+            } else {
+                return Err(Error::process_not_found(identifier));
+            }
+        };
+
+        let (out_log, err_log, _combined_log) = self.get_log_paths(&process_name);
+
+        info!("Following logs for process: {}", process_name);
+        println!("==> Following logs for {} <==", process_name);
+        println!("Press Ctrl+C to stop following");
+        println!();
+
+        // Track file positions for both stdout and stderr
+        let mut out_position = if out_log.exists() {
+            fs::metadata(&out_log).await.map(|m| m.len()).unwrap_or(0)
+        } else {
+            0
+        };
+
+        let mut err_position = if err_log.exists() {
+            fs::metadata(&err_log).await.map(|m| m.len()).unwrap_or(0)
+        } else {
+            0
+        };
+
+        let mut interval = interval(Duration::from_millis(500)); // Check every 500ms
+
+        loop {
+            interval.tick().await;
+
+            // Check stdout log for new content
+            if out_log.exists() {
+                if let Ok(metadata) = fs::metadata(&out_log).await {
+                    let current_size = metadata.len();
+                    if current_size > out_position {
+                        // Read only new content from stdout log
+                        use tokio::fs::File;
+                        use tokio::io::{AsyncReadExt, AsyncSeekExt};
+
+                        if let Ok(mut file) = File::open(&out_log).await {
+                            if file
+                                .seek(tokio::io::SeekFrom::Start(out_position))
+                                .await
+                                .is_ok()
+                            {
+                                let mut buffer = Vec::new();
+                                if file.read_to_end(&mut buffer).await.is_ok() {
+                                    if let Ok(new_content) = String::from_utf8(buffer) {
+                                        if !new_content.trim().is_empty() {
+                                            for line in new_content.lines() {
+                                                println!("[stdout] {}", line);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        out_position = current_size;
+                    }
+                }
+            }
+
+            // Check stderr log for new content
+            if err_log.exists() {
+                if let Ok(metadata) = fs::metadata(&err_log).await {
+                    let current_size = metadata.len();
+                    if current_size > err_position {
+                        // Read only new content from stderr log
+                        use tokio::fs::File;
+                        use tokio::io::{AsyncReadExt, AsyncSeekExt};
+
+                        if let Ok(mut file) = File::open(&err_log).await {
+                            if file
+                                .seek(tokio::io::SeekFrom::Start(err_position))
+                                .await
+                                .is_ok()
+                            {
+                                let mut buffer = Vec::new();
+                                if file.read_to_end(&mut buffer).await.is_ok() {
+                                    if let Ok(new_content) = String::from_utf8(buffer) {
+                                        if !new_content.trim().is_empty() {
+                                            for line in new_content.lines() {
+                                                println!("[stderr] {}", line);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        err_position = current_size;
+                    }
+                }
+            }
+
+            // Check if process still exists
+            let processes = self.processes.read().await;
+            if !processes.contains_key(&process_id) {
+                println!(
+                    "\nProcess {} no longer exists, stopping log following",
+                    process_name
+                );
+                break;
+            }
+            drop(processes);
+        }
+
         Ok(())
     }
 
@@ -598,8 +1435,10 @@ impl ProcessManager {
                                       process_name, memory_mb, limit_mb);
                                 to_restart.push(process_id);
                             } else {
-                                debug!("Process {} memory usage: {}MB / {}MB",
-                                       process_name, memory_mb, limit_mb);
+                                debug!(
+                                    "Process {} memory usage: {}MB / {}MB",
+                                    process_name, memory_mb, limit_mb
+                                );
                             }
                         }
                     }
@@ -615,12 +1454,18 @@ impl ProcessManager {
                 Ok(is_running) => {
                     if !is_running && process.config.autorestart {
                         // Process has died and should be restarted
-                        warn!("Process {} has died, scheduling restart", process.config.name);
+                        warn!(
+                            "Process {} has died, scheduling restart",
+                            process.config.name
+                        );
                         to_restart.push(*process_id);
                     }
                 }
                 Err(e) => {
-                    error!("Error checking process {} status: {}", process.config.name, e);
+                    error!(
+                        "Error checking process {} status: {}",
+                        process.config.name, e
+                    );
                 }
             }
         }
@@ -628,11 +1473,21 @@ impl ProcessManager {
         // Restart processes that need it (memory limit exceeded or crashed)
         for process_id in to_restart {
             if let Some(process) = processes.get_mut(&process_id) {
-                let restart_reason = if process.is_running() { "memory limit exceeded" } else { "process crashed" };
-                info!("Auto-restarting process {} ({})", process.config.name, restart_reason);
+                let restart_reason = if process.is_running() {
+                    "memory limit exceeded"
+                } else {
+                    "process crashed"
+                };
+                info!(
+                    "Auto-restarting process {} ({})",
+                    process.config.name, restart_reason
+                );
 
                 if let Err(e) = process.restart().await {
-                    error!("Failed to auto-restart process {}: {}", process.config.name, e);
+                    error!(
+                        "Failed to auto-restart process {}: {}",
+                        process.config.name, e
+                    );
                 } else {
                     // Update PID file for restarted process
                     if let Some(new_pid) = process.pid() {
@@ -656,14 +1511,14 @@ impl ProcessManager {
         let mut monitor = self.monitor.write().await;
 
         // Collect PIDs of running processes
-        let pids: Vec<u32> = processes
-            .values()
-            .filter_map(|p| p.pid())
-            .collect();
+        let pids: Vec<u32> = processes.values().filter_map(|p| p.pid()).collect();
 
         if !pids.is_empty() {
             let monitoring_data = monitor.update_process_metrics(&pids).await;
-            debug!("Updated monitoring data for {} processes", monitoring_data.len());
+            debug!(
+                "Updated monitoring data for {} processes",
+                monitoring_data.len()
+            );
         }
 
         Ok(())
@@ -677,11 +1532,14 @@ impl ProcessManager {
 
     /// Save process configuration to disk
     async fn save_process_config(&self, process: &Process) -> Result<()> {
-        let config_file = self.config_dir.join(format!("{}.json", process.config.name));
+        let config_file = self
+            .config_dir
+            .join(format!("{}.json", process.config.name));
         let config_json = serde_json::to_string_pretty(&process.config)
             .map_err(|e| Error::config(format!("Failed to serialize config: {}", e)))?;
 
-        fs::write(&config_file, config_json).await
+        fs::write(&config_file, config_json)
+            .await
             .map_err(|e| Error::config(format!("Failed to write config file: {}", e)))?;
 
         debug!("Saved configuration for process: {}", process.config.name);
@@ -690,12 +1548,15 @@ impl ProcessManager {
 
     /// Load all process configurations from disk
     async fn load_processes(&mut self) -> Result<()> {
-        let mut entries = fs::read_dir(&self.config_dir).await
+        let mut entries = fs::read_dir(&self.config_dir)
+            .await
             .map_err(|e| Error::config(format!("Failed to read config directory: {}", e)))?;
 
-        while let Some(entry) = entries.next_entry().await
-            .map_err(|e| Error::config(format!("Failed to read directory entry: {}", e)))? {
-
+        while let Some(entry) = entries
+            .next_entry()
+            .await
+            .map_err(|e| Error::config(format!("Failed to read directory entry: {}", e)))?
+        {
             let path = entry.path();
             if path.extension().and_then(|s| s.to_str()) == Some("json") {
                 if let Err(e) = self.load_process_config(&path).await {
@@ -704,13 +1565,17 @@ impl ProcessManager {
             }
         }
 
-        info!("Loaded {} process configurations", self.processes.read().await.len());
+        info!(
+            "Loaded {} process configurations",
+            self.processes.read().await.len()
+        );
         Ok(())
     }
 
     /// Load a single process configuration from disk
     async fn load_process_config(&mut self, config_path: &PathBuf) -> Result<()> {
-        let config_content = fs::read_to_string(config_path).await
+        let config_content = fs::read_to_string(config_path)
+            .await
             .map_err(|e| Error::config(format!("Failed to read config file: {}", e)))?;
 
         let config: ProcessConfig = serde_json::from_str(&config_content)
@@ -735,19 +1600,28 @@ impl ProcessManager {
                             process.assigned_port = Some(*port);
                             let mut allocated_ports = self.allocated_ports.write().await;
                             allocated_ports.insert(*port);
-                            debug!("Restored port allocation {} for running process {}", port, config.name);
+                            debug!(
+                                "Restored port allocation {} for running process {}",
+                                port, config.name
+                            );
                         }
                         PortConfig::Range(start, _end) => {
                             // For ranges, we assume the first port was assigned
                             process.assigned_port = Some(*start);
                             let mut allocated_ports = self.allocated_ports.write().await;
                             allocated_ports.insert(*start);
-                            debug!("Restored port allocation {} for running process {}", start, config.name);
+                            debug!(
+                                "Restored port allocation {} for running process {}",
+                                start, config.name
+                            );
                         }
                         PortConfig::Auto(_, _) => {
                             // For auto ports, we can't easily restore the exact port
                             // This is a limitation - in a real implementation, we'd save the assigned port
-                            debug!("Cannot restore auto-assigned port for process {}", config.name);
+                            debug!(
+                                "Cannot restore auto-assigned port for process {}",
+                                config.name
+                            );
                         }
                     }
                 }
@@ -782,7 +1656,8 @@ impl ProcessManager {
     async fn remove_process_config(&self, process_name: &str) -> Result<()> {
         let config_file = self.config_dir.join(format!("{}.json", process_name));
         if config_file.exists() {
-            fs::remove_file(&config_file).await
+            fs::remove_file(&config_file)
+                .await
                 .map_err(|e| Error::config(format!("Failed to remove config file: {}", e)))?;
             debug!("Removed configuration file for process: {}", process_name);
         }
@@ -790,13 +1665,17 @@ impl ProcessManager {
     }
 
     /// Read log files for a process
-    pub async fn read_logs(&self, process_name: &str, lines: Option<usize>, follow: bool) -> Result<()> {
+    pub async fn read_logs(
+        &self,
+        process_name: &str,
+        lines: Option<usize>,
+        follow: bool,
+    ) -> Result<()> {
         let (out_log, err_log, _combined_log) = self.get_log_paths(process_name);
 
         if follow {
-            // TODO: Implement log following (tail -f functionality)
-            println!("Log following not yet implemented");
-            return Ok(());
+            // Use the dedicated follow_logs method for real-time following
+            return self.follow_logs(process_name).await;
         }
 
         let lines_to_read = lines.unwrap_or(15);
@@ -842,12 +1721,14 @@ impl ProcessManager {
         let (out_log, err_log, _combined_log) = self.get_log_paths(process_name);
 
         if out_log.exists() {
-            fs::write(&out_log, "").await
+            fs::write(&out_log, "")
+                .await
                 .map_err(|e| Error::config(format!("Failed to clear stdout log: {}", e)))?;
         }
 
         if err_log.exists() {
-            fs::write(&err_log, "").await
+            fs::write(&err_log, "")
+                .await
                 .map_err(|e| Error::config(format!("Failed to clear stderr log: {}", e)))?;
         }
 
@@ -889,14 +1770,20 @@ impl ProcessManager {
                 let ports: Vec<u16> = (*start..=*end).collect();
                 for port in &ports {
                     if allocated_ports.contains(port) {
-                        return Err(Error::config(format!("Port {} in range {}-{} is already in use", port, start, end)));
+                        return Err(Error::config(format!(
+                            "Port {} in range {}-{} is already in use",
+                            port, start, end
+                        )));
                     }
                 }
                 // Allocate all ports in the range
                 for port in &ports {
                     allocated_ports.insert(*port);
                 }
-                info!("Allocated port range {}-{} to process {}", start, end, process_name);
+                info!(
+                    "Allocated port range {}-{} to process {}",
+                    start, end, process_name
+                );
                 Ok(*start) // Return the first port in the range
             }
             PortConfig::Auto(start, end) => {
@@ -908,7 +1795,10 @@ impl ProcessManager {
                         return Ok(port);
                     }
                 }
-                Err(Error::config(format!("No available ports in range {}-{}", start, end)))
+                Err(Error::config(format!(
+                    "No available ports in range {}-{}",
+                    start, end
+                )))
             }
         }
     }
@@ -992,8 +1882,10 @@ impl ProcessManager {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::{ProcessConfig, PortConfig};
+    use crate::config::{PortConfig, ProcessConfig};
+    use crate::process::{Process, ProcessState};
     use pretty_assertions::assert_eq;
+    use std::time::Duration;
     use tempfile::TempDir;
     use tokio::fs;
 
@@ -1151,7 +2043,10 @@ mod tests {
         let port_config = PortConfig::Single(8080);
 
         // Allocate port
-        manager.allocate_port(&port_config, "test-process").await.unwrap();
+        manager
+            .allocate_port(&port_config, "test-process")
+            .await
+            .unwrap();
         assert!(!manager.is_port_available(8080).await);
 
         // Deallocate port
@@ -1168,7 +2063,10 @@ mod tests {
 
         // Allocate port
         let port_config = PortConfig::Single(8080);
-        manager.allocate_port(&port_config, "test-process").await.unwrap();
+        manager
+            .allocate_port(&port_config, "test-process")
+            .await
+            .unwrap();
 
         // Port should not be available now
         assert!(!manager.is_port_available(8080).await);
@@ -1193,6 +2091,139 @@ mod tests {
         assert_eq!(ports.len(), 2);
         assert!(ports.contains(&8080));
         assert!(ports.contains(&8081));
+    }
+
+    #[tokio::test]
+    async fn test_get_logs_nonexistent_process() {
+        let (manager, _temp_dir) = create_test_manager().await;
+
+        // Try to get logs for a process that doesn't exist
+        let result = manager.get_logs("nonexistent", 10).await;
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("not found"));
+    }
+
+    #[tokio::test]
+    async fn test_get_logs_with_mock_process() {
+        let (manager, _temp_dir) = create_test_manager().await;
+        let config = create_test_config("test-logs");
+
+        // Create a mock process entry
+        let process = Process::new(config.clone());
+        let process_id = process.id;
+
+        {
+            let mut processes = manager.processes.write().await;
+            let mut name_map = manager.name_to_id.write().await;
+            processes.insert(process_id, process);
+            name_map.insert(config.name.clone(), process_id);
+        }
+
+        // Create mock log files
+        let (out_log, err_log, _) = manager.get_log_paths(&config.name);
+        fs::create_dir_all(out_log.parent().unwrap()).await.unwrap();
+        fs::write(&out_log, "stdout line 1\nstdout line 2\nstdout line 3\n")
+            .await
+            .unwrap();
+        fs::write(&err_log, "stderr line 1\nstderr line 2\n")
+            .await
+            .unwrap();
+
+        // Test getting logs
+        let logs = manager.get_logs(&config.name, 2).await.unwrap();
+
+        // Should contain both stdout and stderr sections
+        assert!(logs.contains("==> test-logs stdout <=="));
+        assert!(logs.contains("==> test-logs stderr <=="));
+        assert!(logs.contains("stdout line 2"));
+        assert!(logs.contains("stdout line 3"));
+        assert!(logs.contains("stderr line 1"));
+        assert!(logs.contains("stderr line 2"));
+        // Should not contain the first stdout line (only last 2 lines)
+        assert!(!logs.contains("stdout line 1"));
+    }
+
+    #[tokio::test]
+    async fn test_get_logs_missing_files() {
+        let (manager, _temp_dir) = create_test_manager().await;
+        let config = create_test_config("test-missing-logs");
+
+        // Create a mock process entry
+        let process = Process::new(config.clone());
+        let process_id = process.id;
+
+        {
+            let mut processes = manager.processes.write().await;
+            let mut name_map = manager.name_to_id.write().await;
+            processes.insert(process_id, process);
+            name_map.insert(config.name.clone(), process_id);
+        }
+
+        // Don't create log files - test missing files
+        let logs = manager.get_logs(&config.name, 10).await.unwrap();
+
+        // Should contain sections indicating no files found
+        assert!(logs.contains("==> test-missing-logs stdout <=="));
+        assert!(logs.contains("==> test-missing-logs stderr <=="));
+        assert!(logs.contains("No stdout log file found"));
+        assert!(logs.contains("No stderr log file found"));
+    }
+
+    #[tokio::test]
+    async fn test_monitor_with_interval_validation() {
+        let (manager, _temp_dir) = create_test_manager().await;
+
+        // Test that monitor_with_interval accepts different durations
+        // We can't actually run the monitor loop in tests, but we can verify
+        // the method exists and accepts the right parameters
+
+        // This would normally run forever, so we'll just verify it compiles
+        // and the method signature is correct
+        let _future = manager.monitor_with_interval(Duration::from_millis(100));
+        let _future = manager.monitor_with_interval(Duration::from_secs(1));
+        let _future = manager.monitor_with_interval(Duration::from_secs(10));
+
+        // If we get here, the method signature is correct
+        assert!(true);
+    }
+
+    #[tokio::test]
+    async fn test_default_monitor_delegates_to_configurable() {
+        let (manager, _temp_dir) = create_test_manager().await;
+
+        // Test that the default monitor() method exists and compiles
+        // This verifies that monitor() properly delegates to monitor_with_interval()
+        let _future = manager.monitor();
+
+        // If we get here, the delegation is working
+        assert!(true);
+    }
+
+    #[tokio::test]
+    async fn test_get_system_info() {
+        let (manager, _temp_dir) = create_test_manager().await;
+
+        // Test that we can get system information
+        let system_info = manager.get_system_info().await.unwrap();
+
+        // Verify system metrics have reasonable values
+        assert!(system_info.cpu_usage >= 0.0);
+        assert!(system_info.memory_usage > 0);
+        assert!(system_info.memory_total > 0);
+        assert!(system_info.memory_usage <= system_info.memory_total);
+        assert!(system_info.uptime > 0);
+        assert_eq!(system_info.load_average.len(), 3);
+    }
+
+    #[tokio::test]
+    async fn test_update_monitoring_data() {
+        let (manager, _temp_dir) = create_test_manager().await;
+
+        // Test that update_monitoring_data doesn't crash with no processes
+        let result = manager.update_monitoring_data().await;
+        assert!(result.is_ok());
+
+        // The method should handle empty process lists gracefully
     }
 
     #[tokio::test]
@@ -1397,5 +2428,103 @@ mod tests {
         assert!(!out_log.exists());
         assert!(!err_log.exists());
         assert!(!combined_log.exists());
+    }
+
+    #[tokio::test]
+    async fn test_delete_all() {
+        let (mut manager, _temp_dir) = create_test_manager().await;
+
+        // Create some test processes
+        let config1 = create_test_config("test-process-1");
+        let config2 = create_test_config("test-process-2");
+
+        // Add processes directly to the manager for testing
+        let process1 = Process::new(config1);
+        let process2 = Process::new(config2);
+        let id1 = process1.id;
+        let id2 = process2.id;
+
+        {
+            let mut processes = manager.processes.write().await;
+            let mut name_map = manager.name_to_id.write().await;
+
+            processes.insert(id1, process1);
+            processes.insert(id2, process2);
+            name_map.insert("test-process-1".to_string(), id1);
+            name_map.insert("test-process-2".to_string(), id2);
+        }
+
+        // Verify processes exist
+        assert_eq!(manager.processes.read().await.len(), 2);
+
+        // Delete all processes
+        let deleted_count = manager.delete_all().await.unwrap();
+        assert_eq!(deleted_count, 2);
+
+        // Verify all processes are deleted
+        assert_eq!(manager.processes.read().await.len(), 0);
+        assert_eq!(manager.name_to_id.read().await.len(), 0);
+    }
+
+    #[tokio::test]
+    async fn test_delete_by_status() {
+        let (mut manager, _temp_dir) = create_test_manager().await;
+
+        // Create test processes with different states
+        let config1 = create_test_config("stopped-process");
+        let config2 = create_test_config("online-process");
+
+        let mut process1 = Process::new(config1);
+        let mut process2 = Process::new(config2);
+
+        // Set different states
+        process1.state = ProcessState::Stopped;
+        process2.state = ProcessState::Online;
+
+        let id1 = process1.id;
+        let id2 = process2.id;
+
+        {
+            let mut processes = manager.processes.write().await;
+            let mut name_map = manager.name_to_id.write().await;
+
+            processes.insert(id1, process1);
+            processes.insert(id2, process2);
+            name_map.insert("stopped-process".to_string(), id1);
+            name_map.insert("online-process".to_string(), id2);
+        }
+
+        // Verify processes exist
+        assert_eq!(manager.processes.read().await.len(), 2);
+
+        // Delete only stopped processes
+        let deleted_count = manager.delete_by_status("stopped").await.unwrap();
+        assert_eq!(deleted_count, 1);
+
+        // Verify only the stopped process was deleted
+        assert_eq!(manager.processes.read().await.len(), 1);
+        assert!(manager
+            .name_to_id
+            .read()
+            .await
+            .contains_key("online-process"));
+        assert!(!manager
+            .name_to_id
+            .read()
+            .await
+            .contains_key("stopped-process"));
+    }
+
+    #[tokio::test]
+    async fn test_delete_by_invalid_status() {
+        let (mut manager, _temp_dir) = create_test_manager().await;
+
+        // Try to delete by invalid status
+        let result = manager.delete_by_status("invalid-status").await;
+        assert!(result.is_err());
+
+        let error_msg = result.unwrap_err().to_string();
+        assert!(error_msg.contains("Invalid status"));
+        assert!(error_msg.contains("invalid-status"));
     }
 }

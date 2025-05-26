@@ -90,15 +90,27 @@ enum Commands {
 
     /// Delete a process
     Delete {
-        /// Process name or ID
+        /// Process name, ID, status, or "all"
         identifier: String,
+
+        /// Delete by status (e.g., "stopped", "errored")
+        #[arg(long)]
+        status: bool,
+
+        /// Force deletion without confirmation
+        #[arg(short, long)]
+        force: bool,
     },
 
     /// List all processes
     List,
 
     /// Monitor processes in real-time
-    Monit,
+    Monit {
+        /// Update interval in seconds
+        #[arg(short, long, default_value = "1")]
+        interval: u64,
+    },
 
     /// Show process logs
     Logs {
@@ -265,9 +277,40 @@ async fn main() -> Result<()> {
             println!("Reloaded process: {}", identifier);
         }
 
-        Commands::Delete { identifier } => {
-            manager.delete(&identifier).await?;
-            println!("Deleted process: {}", identifier);
+        Commands::Delete { identifier, status, force } => {
+            if identifier == "all" {
+                // Delete all processes
+                if !force {
+                    print!("Are you sure you want to delete ALL processes? (y/N): ");
+                    std::io::Write::flush(&mut std::io::stdout()).unwrap();
+                    let mut input = String::new();
+                    std::io::stdin().read_line(&mut input).unwrap();
+                    if !input.trim().to_lowercase().starts_with('y') {
+                        println!("Deletion cancelled.");
+                        return Ok(());
+                    }
+                }
+                let deleted_count = manager.delete_all().await?;
+                println!("Stopped and deleted {} processes", deleted_count);
+            } else if status {
+                // Delete by status
+                if !force {
+                    print!("Are you sure you want to delete all processes with status '{}'? (y/N): ", identifier);
+                    std::io::Write::flush(&mut std::io::stdout()).unwrap();
+                    let mut input = String::new();
+                    std::io::stdin().read_line(&mut input).unwrap();
+                    if !input.trim().to_lowercase().starts_with('y') {
+                        println!("Deletion cancelled.");
+                        return Ok(());
+                    }
+                }
+                let deleted_count = manager.delete_by_status(&identifier).await?;
+                println!("Stopped and deleted {} processes with status '{}'", deleted_count, identifier);
+            } else {
+                // Delete single process by name/ID
+                manager.delete(&identifier).await?;
+                println!("Stopped and deleted process: {}", identifier);
+            }
         }
 
         Commands::List => {
@@ -341,14 +384,14 @@ async fn main() -> Result<()> {
             println!("{}", table);
         }
 
-        Commands::Monit => {
+        Commands::Monit { interval: interval_secs } => {
             use std::io::{self, Write};
             use tokio::time::{interval, Duration};
             use comfy_table::presets::UTF8_FULL;
 
-            println!("Starting real-time monitoring... (Press Ctrl+C to exit)\n");
+            println!("Starting real-time monitoring with {}-second intervals... (Press Ctrl+C to exit)\n", interval_secs);
 
-            let mut ticker = interval(Duration::from_secs(1));
+            let mut ticker = interval(Duration::from_secs(interval_secs));
 
             loop {
                 // Clear screen

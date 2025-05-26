@@ -1,0 +1,33 @@
+graph TD
+
+    3924["User<br>External Actor"]
+    subgraph 3915["PMDaemon Process Manager<br>Rust"]
+        3916["CLI Entry Point<br>Rust Binary"]
+        3917["Process Management<br>Rust Module"]
+        3918["Configuration Handler<br>Rust Module"]
+        3919["Process Core<br>Rust Module"]
+        3920["Web Interface<br>Rust (Web Server)"]
+        3921["Monitoring Service<br>Rust Module"]
+        3922["Signal Handling<br>Rust Module"]
+        3923["Operating System<br>External Environment"]
+        %% Edges at this level (grouped by source)
+        3916["CLI Entry Point<br>Rust Binary"] -->|delegates to| 3917["Process Management<br>Rust Module"]
+        3916["CLI Entry Point<br>Rust Binary"] -->|parses config using| 3918["Configuration Handler<br>Rust Module"]
+        3920["Web Interface<br>Rust (Web Server)"] -->|triggers actions via| 3917["Process Management<br>Rust Module"]
+        3920["Web Interface<br>Rust (Web Server)"] -->|displays data from| 3921["Monitoring Service<br>Rust Module"]
+        3922["Signal Handling<br>Rust Module"] -->|notifies| 3917["Process Management<br>Rust Module"]
+        3922["Signal Handling<br>Rust Module"] -->|sends OS signals via| 3923["Operating System<br>External Environment"]
+        3917["Process Management<br>Rust Module"] -->|loads| 3918["Configuration Handler<br>Rust Module"]
+        3917["Process Management<br>Rust Module"] -->|manages| 3919["Process Core<br>Rust Module"]
+        3917["Process Management<br>Rust Module"] -->|starts/manages| 3920["Web Interface<br>Rust (Web Server)"]
+        3917["Process Management<br>Rust Module"] -->|uses| 3921["Monitoring Service<br>Rust Module"]
+        3917["Process Management<br>Rust Module"] -->|uses| 3922["Signal Handling<br>Rust Module"]
+        3917["Process Management<br>Rust Module"] -->|controls child processes via| 3923["Operating System<br>External Environment"]
+        3919["Process Core<br>Rust Module"] -->|uses config from| 3918["Configuration Handler<br>Rust Module"]
+        3919["Process Core<br>Rust Module"] -->|represents child process via| 3923["Operating System<br>External Environment"]
+        3921["Monitoring Service<br>Rust Module"] -->|monitors| 3919["Process Core<br>Rust Module"]
+        3921["Monitoring Service<br>Rust Module"] -->|queries system metrics from| 3923["Operating System<br>External Environment"]
+    end
+    %% Edges at this level (grouped by source)
+    3924["User<br>External Actor"] -->|uses CLI| 3916["CLI Entry Point<br>Rust Binary"]
+    3924["User<br>External Actor"] -->|uses Web UI| 3920["Web Interface<br>Rust (Web Server)"]

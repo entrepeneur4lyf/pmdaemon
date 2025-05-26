@@ -218,10 +218,16 @@ mod tests {
 
     #[test]
     fn test_system_metrics_serialization() {
+        let memory_usage = 1024 * 1024 * 1024; // 1GB
+        let memory_total = 8 * 1024 * 1024 * 1024; // 8GB
+        let memory_percent = (memory_usage as f64 / memory_total as f64 * 100.0) as f32;
+
         let metrics = SystemMetrics {
             cpu_usage: 25.5,
-            memory_usage: 1024 * 1024 * 1024, // 1GB
-            memory_total: 8 * 1024 * 1024 * 1024, // 8GB
+            memory_usage,
+            memory_total,
+            memory_percent,
+            memory_used: memory_usage,
             load_average: [1.0, 1.5, 2.0],
             uptime: 3600, // 1 hour
             timestamp: Utc::now(),
@@ -404,10 +410,16 @@ mod tests {
 
     #[test]
     fn test_system_metrics_clone() {
+        let memory_usage = 4 * 1024 * 1024 * 1024;
+        let memory_total = 16 * 1024 * 1024 * 1024;
+        let memory_percent = (memory_usage as f64 / memory_total as f64 * 100.0) as f32;
+
         let original = SystemMetrics {
             cpu_usage: 75.0,
-            memory_usage: 4 * 1024 * 1024 * 1024,
-            memory_total: 16 * 1024 * 1024 * 1024,
+            memory_usage,
+            memory_total,
+            memory_percent,
+            memory_used: memory_usage,
             load_average: [2.5, 2.0, 1.5],
             uptime: 86400,
             timestamp: Utc::now(),
@@ -440,10 +452,16 @@ mod tests {
 
     #[test]
     fn test_system_metrics_debug() {
+        let memory_usage = 2048;
+        let memory_total = 8192;
+        let memory_percent = (memory_usage as f64 / memory_total as f64 * 100.0) as f32;
+
         let metrics = SystemMetrics {
             cpu_usage: 45.6,
-            memory_usage: 2048,
-            memory_total: 8192,
+            memory_usage,
+            memory_total,
+            memory_percent,
+            memory_used: memory_usage,
             load_average: [1.1, 1.2, 1.3],
             uptime: 3600,
             timestamp: Utc::now(),

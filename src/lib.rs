@@ -116,6 +116,7 @@
 
 pub mod config;
 pub mod error;
+pub mod health;
 pub mod manager;
 pub mod monitoring;
 pub mod process;
@@ -125,9 +126,11 @@ pub mod web;
 // Re-export main types for convenience
 pub use config::{ProcessConfig, ProcessConfigBuilder};
 pub use error::{Error, Result};
+pub use health::{HealthCheck, HealthCheckConfig, HealthCheckType, HealthState, HealthStatus};
 pub use manager::ProcessManager;
 pub use monitoring::{MonitoringData, SystemMetrics};
 pub use process::{Process, ProcessId, ProcessState, ProcessStatus};
+pub use signals::{SignalHandler, ProcessSignal};
 
 /// Version of the PM2 Rust library
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

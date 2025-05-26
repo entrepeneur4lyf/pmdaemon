@@ -1,26 +1,171 @@
-//! Signal handling for graceful process management
+//! Signal handling for graceful process management.
+//!
+//! This module provides comprehensive signal handling capabilities for process management,
+//! including sending signals to processes, setting up signal handlers for graceful shutdown,
+//! and managing process termination with configurable timeouts.
+//!
+//! ## Features
+//!
+//! - **Signal Sending** - Send various signals (SIGTERM, SIGKILL, SIGINT, etc.) to processes
+//! - **Graceful Shutdown** - Attempt graceful termination before force killing
+//! - **Signal Handlers** - Setup handlers for daemon shutdown signals
+//! - **Cross-platform Support** - Works on Unix-like systems with proper error handling
+//! - **Timeout Management** - Configurable timeouts for graceful shutdown attempts
+//!
+//! ## Examples
+//!
+//! ### Basic Signal Handling
+//!
+//! ```rust
+//! use pmdaemon::signals::{SignalHandler, ProcessSignal};
+//!
+//! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+//! let handler = SignalHandler::new();
+//!
+//! // Send SIGTERM to a process
+//! handler.send_signal(1234, ProcessSignal::Term)?;
+//!
+//! // Graceful shutdown with timeout
+//! handler.graceful_shutdown(1234, 5000).await?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! ### Setting up Signal Handlers
+//!
+//! ```rust,no_run
+//! use pmdaemon::signals::SignalHandler;
+//!
+//! # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+//! let handler = SignalHandler::new();
+//!
+//! // Setup handlers for graceful daemon shutdown
+//! handler.setup_handlers().await?;
+//! # Ok(())
+//! # }
+//! ```
 
 use crate::error::{Error, Result};
 use nix::sys::signal::{Signal, kill};
 use nix::unistd::Pid;
 use std::str::FromStr;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use tokio::signal;
 use tracing::{debug, info, warn};
 
-/// Signal handler for process management
+/// Signal handler for process management.
+///
+/// Provides functionality for sending signals to processes, setting up signal handlers
+/// for graceful shutdown, and managing process termination with configurable timeouts.
+///
+/// # Examples
+///
+/// ```rust
+/// use pmdaemon::signals::{SignalHandler, ProcessSignal};
+///
+/// let handler = SignalHandler::new();
+/// ```
 pub struct SignalHandler {
-    // TODO: Add signal handling fields
+    /// Flag to indicate if shutdown has been requested
+    shutdown_requested: Arc<AtomicBool>,
 }
 
 impl SignalHandler {
-    /// Create a new signal handler
+    /// Create a new signal handler.
+    ///
+    /// Initializes a new signal handler instance with default settings.
+    /// The handler can be used to send signals to processes and manage
+    /// graceful shutdown procedures.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use pmdaemon::signals::SignalHandler;
+    ///
+    /// let handler = SignalHandler::new();
+    /// ```
     pub fn new() -> Self {
         Self {
-            // TODO: Initialize signal handling
+            shutdown_requested: Arc::new(AtomicBool::new(false)),
         }
     }
 
-    /// Send a signal to a process
+    /// Check if shutdown has been requested.
+    ///
+    /// Returns `true` if a shutdown signal (SIGTERM or SIGINT) has been received
+    /// and the signal handler has been triggered.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use pmdaemon::signals::SignalHandler;
+    ///
+    /// let handler = SignalHandler::new();
+    /// if handler.is_shutdown_requested() {
+    ///     println!("Shutdown requested, cleaning up...");
+    /// }
+    /// ```
+    pub fn is_shutdown_requested(&self) -> bool {
+        self.shutdown_requested.load(Ordering::Relaxed)
+    }
+
+    /// Reset the shutdown flag.
+    ///
+    /// Clears the shutdown requested flag, allowing the handler to be reused.
+    /// This is primarily useful for testing scenarios.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use pmdaemon::signals::SignalHandler;
+    ///
+    /// let handler = SignalHandler::new();
+    /// handler.reset_shutdown_flag();
+    /// assert!(!handler.is_shutdown_requested());
+    /// ```
+    pub fn reset_shutdown_flag(&self) {
+        self.shutdown_requested.store(false, Ordering::Relaxed);
+    }
+
+    /// Send a signal to a process.
+    ///
+    /// Sends the specified signal to the process with the given PID. This method
+    /// provides a safe wrapper around the underlying system signal functionality.
+    ///
+    /// # Arguments
+    ///
+    /// * `pid` - The process ID to send the signal to
+    /// * `signal` - The type of signal to send
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` if the signal was sent successfully, or an error if the
+    /// operation failed (e.g., process doesn't exist, permission denied).
+    ///
+    /// # Errors
+    ///
+    /// This method will return an error if:
+    /// - The process with the given PID doesn't exist
+    /// - Permission is denied to send the signal
+    /// - The signal type is invalid for the target process
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::signals::{SignalHandler, ProcessSignal};
+    ///
+    /// # fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let handler = SignalHandler::new();
+    ///
+    /// // Send SIGTERM to process 1234
+    /// handler.send_signal(1234, ProcessSignal::Term)?;
+    ///
+    /// // Send SIGUSR1 to process 5678
+    /// handler.send_signal(5678, ProcessSignal::Usr1)?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub fn send_signal(&self, pid: u32, signal: ProcessSignal) -> Result<()> {
         let pid = Pid::from_raw(pid as i32);
         let signal = match signal {
@@ -32,13 +177,56 @@ impl SignalHandler {
             ProcessSignal::Usr2 => Signal::SIGUSR2,
         };
 
-        kill(pid, signal).map_err(|e| Error::signal(format!("Failed to send signal: {}", e)))?;
+        debug!("Sending signal {} to PID {}", signal, pid);
+        kill(pid, signal).map_err(|e| Error::signal(format!("Failed to send signal {} to PID {}: {}", signal, pid, e)))?;
         Ok(())
     }
 
-    /// Setup signal handlers for graceful shutdown
+    /// Setup signal handlers for graceful shutdown.
+    ///
+    /// Configures signal handlers to catch SIGTERM and SIGINT signals, allowing
+    /// the daemon to perform graceful shutdown when these signals are received.
+    /// The handlers set an internal flag that can be checked with `is_shutdown_requested()`.
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` if signal handlers were set up successfully, or an error
+    /// if the setup failed.
+    ///
+    /// # Errors
+    ///
+    /// This method will return an error if:
+    /// - The system doesn't support the required signals
+    /// - Permission is denied to set up signal handlers
+    /// - The signal handling subsystem is unavailable
+    ///
+    /// # Platform Support
+    ///
+    /// This method is only available on Unix-like systems. On other platforms,
+    /// it will return an error.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::signals::SignalHandler;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let handler = SignalHandler::new();
+    ///
+    /// // Setup signal handlers
+    /// handler.setup_handlers().await?;
+    ///
+    /// // Later, check if shutdown was requested
+    /// if handler.is_shutdown_requested() {
+    ///     println!("Graceful shutdown requested");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn setup_handlers(&self) -> Result<()> {
         info!("Setting up signal handlers for graceful shutdown");
+
+        let shutdown_flag = Arc::clone(&self.shutdown_requested);
 
         // Setup SIGTERM handler
         let mut sigterm = signal::unix::signal(signal::unix::SignalKind::terminate())
@@ -48,25 +236,74 @@ impl SignalHandler {
         let mut sigint = signal::unix::signal(signal::unix::SignalKind::interrupt())
             .map_err(|e| Error::signal(format!("Failed to setup SIGINT handler: {}", e)))?;
 
+        let shutdown_flag_term = Arc::clone(&shutdown_flag);
+        let shutdown_flag_int = Arc::clone(&shutdown_flag);
+
         tokio::spawn(async move {
             tokio::select! {
                 _ = sigterm.recv() => {
                     info!("Received SIGTERM, initiating graceful shutdown");
-                    // TODO: Trigger graceful shutdown of all processes
+                    shutdown_flag_term.store(true, Ordering::Relaxed);
                 }
                 _ = sigint.recv() => {
                     info!("Received SIGINT, initiating graceful shutdown");
-                    // TODO: Trigger graceful shutdown of all processes
+                    shutdown_flag_int.store(true, Ordering::Relaxed);
                 }
             }
         });
 
+        debug!("Signal handlers setup completed");
         Ok(())
     }
 
-    /// Gracefully shutdown a process
+    /// Gracefully shutdown a process.
+    ///
+    /// Attempts to gracefully terminate a process by first sending SIGTERM and waiting
+    /// for the process to exit. If the process doesn't exit within the specified timeout,
+    /// it will be forcefully killed with SIGKILL.
+    ///
+    /// # Arguments
+    ///
+    /// * `pid` - The process ID to shutdown
+    /// * `timeout_ms` - Maximum time to wait for graceful shutdown in milliseconds
+    ///
+    /// # Returns
+    ///
+    /// Returns `Ok(())` if the process was successfully terminated (either gracefully
+    /// or forcefully), or an error if the operation failed.
+    ///
+    /// # Errors
+    ///
+    /// This method will return an error if:
+    /// - The process with the given PID doesn't exist
+    /// - Permission is denied to send signals to the process
+    /// - The signal sending operation fails
+    ///
+    /// # Behavior
+    ///
+    /// 1. Sends SIGTERM to the process
+    /// 2. Polls every 100ms to check if the process has exited
+    /// 3. If the process exits within the timeout, returns successfully
+    /// 4. If the timeout is reached, sends SIGKILL to force termination
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::signals::SignalHandler;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let handler = SignalHandler::new();
+    ///
+    /// // Try graceful shutdown with 5 second timeout
+    /// handler.graceful_shutdown(1234, 5000).await?;
+    ///
+    /// // Quick shutdown with 1 second timeout
+    /// handler.graceful_shutdown(5678, 1000).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn graceful_shutdown(&self, pid: u32, timeout_ms: u64) -> Result<()> {
-        debug!("Initiating graceful shutdown for PID {}", pid);
+        debug!("Initiating graceful shutdown for PID {} with timeout {}ms", pid, timeout_ms);
 
         // Send SIGTERM first
         self.send_signal(pid, ProcessSignal::Term)?;
@@ -74,27 +311,48 @@ impl SignalHandler {
         // Wait for process to exit or timeout
         let timeout = tokio::time::Duration::from_millis(timeout_ms);
         let start = tokio::time::Instant::now();
+        let poll_interval = tokio::time::Duration::from_millis(100);
 
         while start.elapsed() < timeout {
             // Check if process still exists
             match kill(Pid::from_raw(pid as i32), None) {
                 Ok(_) => {
                     // Process still exists, wait a bit more
-                    tokio::time::sleep(tokio::time::Duration::from_millis(100)).await;
+                    debug!("Process {} still running, waiting...", pid);
+                    tokio::time::sleep(poll_interval).await;
                 }
                 Err(_) => {
                     // Process no longer exists
-                    debug!("Process {} exited gracefully", pid);
+                    info!("Process {} exited gracefully", pid);
                     return Ok(());
                 }
             }
         }
 
         // Timeout reached, send SIGKILL
-        warn!("Process {} did not exit gracefully, sending SIGKILL", pid);
+        warn!("Process {} did not exit gracefully within {}ms, sending SIGKILL", pid, timeout_ms);
         self.send_signal(pid, ProcessSignal::Kill)?;
 
-        Ok(())
+        // Wait a bit longer for SIGKILL to take effect and verify
+        let kill_timeout = tokio::time::Duration::from_millis(500);
+        let kill_start = tokio::time::Instant::now();
+
+        while kill_start.elapsed() < kill_timeout {
+            match kill(Pid::from_raw(pid as i32), None) {
+                Ok(_) => {
+                    // Process still exists
+                    tokio::time::sleep(poll_interval).await;
+                }
+                Err(_) => {
+                    // Process terminated
+                    info!("Process {} forcefully terminated", pid);
+                    return Ok(());
+                }
+            }
+        }
+
+        // If we get here, even SIGKILL didn't work
+        Err(Error::signal(format!("Failed to kill process {} even with SIGKILL", pid)))
     }
 }
 
@@ -185,16 +443,30 @@ mod tests {
 
     #[test]
     fn test_signal_handler_new() {
-        let _handler = SignalHandler::new();
-        // Just verify it can be created without panicking
-        assert!(true);
+        let handler = SignalHandler::new();
+        assert!(!handler.is_shutdown_requested());
     }
 
     #[test]
     fn test_signal_handler_default() {
-        let _handler = SignalHandler::default();
-        // Just verify it can be created without panicking
-        assert!(true);
+        let handler = SignalHandler::default();
+        assert!(!handler.is_shutdown_requested());
+    }
+
+    #[test]
+    fn test_signal_handler_shutdown_flag() {
+        let handler = SignalHandler::new();
+
+        // Initially should not be shutdown requested
+        assert!(!handler.is_shutdown_requested());
+
+        // Simulate shutdown request
+        handler.shutdown_requested.store(true, Ordering::Relaxed);
+        assert!(handler.is_shutdown_requested());
+
+        // Reset flag
+        handler.reset_shutdown_flag();
+        assert!(!handler.is_shutdown_requested());
     }
 
     #[test]

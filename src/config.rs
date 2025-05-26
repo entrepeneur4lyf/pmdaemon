@@ -181,6 +181,12 @@ pub struct ProcessConfig {
     /// This is an innovative feature that provides advanced port management
     /// capabilities beyond standard PM2.
     pub port: Option<PortConfig>,
+
+    /// Health check configuration for the process
+    ///
+    /// Enables monitoring of process health through HTTP endpoints or custom scripts.
+    /// Health checks can trigger automatic restarts when processes become unhealthy.
+    pub health_check: Option<crate::health::HealthCheckConfig>,
 }
 
 /// Port configuration strategies for process management.
@@ -381,6 +387,7 @@ impl Default for ProcessConfig {
             group: None,
             namespace: "default".to_string(),
             port: None,
+            health_check: None,
         }
     }
 }
@@ -453,6 +460,12 @@ impl ProcessConfigBuilder {
     /// Set port configuration
     pub fn port(mut self, port_config: PortConfig) -> Self {
         self.config.port = Some(port_config);
+        self
+    }
+
+    /// Set health check configuration
+    pub fn health_check(mut self, health_check_config: crate::health::HealthCheckConfig) -> Self {
+        self.config.health_check = Some(health_check_config);
         self
     }
 

@@ -3,7 +3,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Test Coverage](https://img.shields.io/badge/tests-158%20passing-brightgreen.svg)]()
+[![Test Coverage](https://img.shields.io/badge/tests-223%20passing-brightgreen.svg)]()
 
 A high-performance process manager built in Rust, inspired by PM2 with innovative features that exceed the original. PMDaemon is designed for modern application deployment with advanced port management, real-time monitoring, and production-ready web APIs.
 
@@ -29,7 +29,8 @@ A high-performance process manager built in Rust, inspired by PM2 with innovativ
 ## 🚀 Key Features
 
 ### Core Process Management
-- **Process Lifecycle** - Start, stop, restart, reload, and delete operations
+- **Process Lifecycle** - Start, stop, restart, reload, and enhanced delete operations
+- **Enhanced Delete Operations** - Bulk deletion, status-based deletion, and safe process shutdown
 - **Clustering** - Run multiple instances with automatic load balancing
 - **Auto-restart** - Automatic restart on crashes with configurable limits
 - **Signal Handling** - Graceful shutdown with SIGTERM/SIGINT and custom signals
@@ -86,8 +87,14 @@ pmdaemon stop myapp
 # Restart a process
 pmdaemon restart myapp
 
-# Delete a process
+# Delete a process (stops if running)
 pmdaemon delete myapp
+
+# Delete all processes
+pmdaemon delete all --force
+
+# Delete processes by status
+pmdaemon delete stopped --status --force
 ```
 
 ### Clustering with Port Management
@@ -107,23 +114,26 @@ pmdaemon restart myapp --port 3001
 # Set memory limit with auto-restart
 pmdaemon start app.js --max-memory 100M
 
-# Real-time monitoring
-pmdaemon monit
+# Real-time monitoring with configurable intervals
+pmdaemon monit --interval 2
 
 # View logs
 pmdaemon logs myapp
+
+# Follow logs in real-time
+pmdaemon logs myapp --follow
 ```
 
 ### Health Checks and Blocking Start
 ```bash
 # Start with HTTP health check and wait for ready
-pmdaemon start app.js --health-check-url http://localhost:3000/health --wait-ready
+pmdaemon start app.js --health-check-url http://localhost:9615/health --wait-ready
 
 # Start with script-based health check
 pmdaemon start worker.js --health-check-script ./health-check.sh --wait-ready
 
 # Custom health check timeout
-pmdaemon start api.js --health-check-url http://localhost:8080/status --wait-timeout 30s
+pmdaemon start api.js --health-check-url http://localhost:9615/status --wait-timeout 30s
 ```
 
 ### Web API Server
@@ -140,10 +150,12 @@ pmdaemon web --port 9615 --host 127.0.0.1
 | `stop`      | Stop a process             | `pmdaemon stop myapp`                 |
 | `restart`   | Restart a process          | `pmdaemon restart myapp`              |
 | `reload`    | Graceful restart           | `pmdaemon reload myapp`               |
-| `delete`    | Delete a process           | `pmdaemon delete myapp`               |
+| `delete`    | Delete process(es)         | `pmdaemon delete myapp`               |
+|             | Delete all processes       | `pmdaemon delete all --force`         |
+|             | Delete by status           | `pmdaemon delete stopped --status`   |
 | `list`      | List all processes         | `pmdaemon list`                       |
-| `monit`     | Real-time monitoring       | `pmdaemon monit`                      |
-| `logs`      | View process logs          | `pmdaemon logs myapp`                 |
+| `monit`     | Real-time monitoring       | `pmdaemon monit --interval 2`         |
+| `logs`      | View/follow process logs   | `pmdaemon logs myapp --follow`        |
 | `info`      | Process details            | `pmdaemon info myapp`                 |
 | `web`       | Start web API server       | `pmdaemon web --port 9615`            |
 
@@ -159,7 +171,7 @@ pmdaemon start app.js \
   --env NODE_ENV=production \
   --cwd /path/to/app \
   --log-file /var/log/app.log \
-  --health-check-url http://localhost:3000/health \
+  --health-check-url http://localhost:9615/health \
   --wait-ready
 ```
 
@@ -175,13 +187,36 @@ pmdaemon start app.js \
 
 | Option                           | Description                            | Example                         |
 |----------------------------------|----------------------------------------|---------------------------------|
-| `--health-check-url <url>`       | HTTP endpoint for health checks        | `http://localhost:3000/health`  |
+| `--health-check-url <url>`       | HTTP endpoint for health checks        | `http://localhost:9615/health` |
 | `--health-check-script <path>`   | Script to run for health validation    | `./scripts/health-check.sh`     |
 | `--health-check-timeout <time>`  | Timeout for individual health checks   | `5s`, `30s`, `1m`               |
 | `--health-check-interval <time>` | Interval between health checks         | `10s`, `30s`, `1m`              |
 | `--health-check-retries <num>`   | Number of retries before failure       | `3`, `5`, `10`                  |
 | `--wait-ready`                   | Block start until health checks pass   | Boolean flag                    |
 | `--wait-timeout <time>`          | Timeout for blocking start             | `30s`, `1m`, `5m`               |
+
+### Delete Options
+
+| Option                      | Description                            | Example                         |
+|-----------------------------|----------------------------------------|---------------------------------|
+| `delete <name>`             | Delete single process by name/ID       | `pmdaemon delete myapp`         |
+| `delete all`                | Delete all processes                   | `pmdaemon delete all`           |
+| `delete <status> --status`  | Delete processes by status             | `pmdaemon delete stopped --status` |
+| `--force` / `-f`            | Skip confirmation prompts             | `pmdaemon delete all --force`   |
+
+**Valid statuses for `--status` flag:**
+- `starting` - Processes currently starting up
+- `online` - Running processes
+- `stopping` - Processes currently shutting down
+- `stopped` - Processes that have exited
+- `errored` - Processes that crashed or failed
+- `restarting` - Processes currently restarting
+
+**Safety Features:**
+- All delete operations automatically stop running processes before deletion
+- Interactive confirmation prompts for bulk operations (unless `--force` is used)
+- Graceful process shutdown with proper cleanup of files and ports
+- Clear feedback showing how many processes were stopped vs. deleted
 
 ## 🌐 Web API
 
@@ -223,11 +258,19 @@ PMDaemon provides comprehensive monitoring capabilities:
 - Restart count
 - Port assignments
 - Process state
+- Process ID (PID) for debugging
+
+### Configurable Monitoring
+- **Configurable update intervals** - Customize refresh rates (1s, 2s, 5s, etc.)
+- **Beautiful table formatting** - Professional display using comfy-table
+- **Color-coded status indicators** - Visual process state identification
+- **System overview** - CPU, memory, load average, and uptime
 
 ### Log Management
 - Separate stdout/stderr files
-- Automatic log rotation
-- Real-time log following
+- **Real-time log following** - `tail -f` functionality for live log monitoring
+- **Configurable log retrieval** - Get last N lines from log files
+- **Missing file handling** - Graceful handling of non-existent log files
 - HTTP log access via API
 
 ## 🆚 PMDaemon vs PM2
@@ -241,6 +284,14 @@ PMDaemon provides comprehensive monitoring capabilities:
 | HTTP health checks               |    ✅    |  ❌  |
 | Script-based health checks       |    ✅    |  ❌  |
 | Blocking start command           |    ✅    |  ❌  |
+| **Configurable monitor intervals** |    ✅    |  ❌  |
+| **Real-time log following**      |    ✅    |  ❌  |
+| **Professional table formatting** |    ✅    |  ❌  |
+| **PID display in monitoring**    |    ✅    |  ❌  |
+| **Enhanced delete operations**   |    ✅    |  ❌  |
+| **Bulk deletion (delete all)**   |    ✅    |  ❌  |
+| **Status-based deletion**        |    ✅    |  ❌  |
+| **Safe process shutdown**        |    ✅    |  ❌  |
 | Memory limit enforcement         |    ✅    |  ✅  |
 | WebSocket real-time updates      |    ✅    |  ❌  |
 | Rust performance                 |    ✅    |  ❌  |
@@ -295,11 +346,11 @@ cargo test --test e2e_tests
 ```
 
 ### Test Coverage
-- **158 Total Tests**
-  - 120 Unit tests
-  - 11 Integration tests
+- **223 Total Tests**
+  - 146 Unit tests (including comprehensive delete operation tests)
+  - 13 Integration tests (including delete functionality tests)
   - 8 End-to-end tests
-  - 19 Documentation tests
+  - 56 Documentation tests
 
 ## 🗺️ Roadmap
 
@@ -309,6 +360,8 @@ cargo test --test e2e_tests
 - ✅ Advanced monitoring and logging (Phase 6)
 - ✅ Web API and WebSocket support (Phase 7)
 - ✅ Health checks and blocking start (Phase 8)
+- ✅ Enhanced delete operations with bulk and status-based deletion
+- ✅ Safe process shutdown and lifecycle management
 - ✅ Comprehensive test suite (Phase 10.1-10.3)
 
 ### In Progress 🚧
