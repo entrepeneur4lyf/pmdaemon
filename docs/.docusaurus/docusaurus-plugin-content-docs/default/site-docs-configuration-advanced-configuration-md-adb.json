@@ -1,0 +1,24 @@
+{
+  "id": "configuration/advanced-configuration",
+  "title": "Advanced Configuration",
+  "description": "This guide covers advanced PMDaemon configuration patterns, complex scenarios, and sophisticated deployment strategies. Learn how to leverage PMDaemon's full potential for enterprise-grade process management.",
+  "source": "@site/docs/configuration/advanced-configuration.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/advanced-configuration",
+  "permalink": "/pmdaemon/docs/configuration/advanced-configuration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/advanced-configuration.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Process Configuration",
+    "permalink": "/pmdaemon/docs/configuration/process-configuration"
+  },
+  "next": {
+    "title": "Schema Validation",
+    "permalink": "/pmdaemon/docs/configuration/schema-validation"
+  }
+}

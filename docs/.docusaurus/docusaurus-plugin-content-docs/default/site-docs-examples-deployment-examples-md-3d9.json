@@ -1,0 +1,24 @@
+{
+  "id": "examples/deployment-examples",
+  "title": "Deployment Examples",
+  "description": "This guide provides real-world deployment examples for PMDaemon across different environments and use cases. From simple single-server deployments to complex multi-tier architectures, these examples will help you deploy your applications effectively.",
+  "source": "@site/docs/examples/deployment-examples.md",
+  "sourceDirName": "examples",
+  "slug": "/examples/deployment-examples",
+  "permalink": "/pmdaemon/docs/examples/deployment-examples",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/examples/deployment-examples.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Real-World Use Cases",
+    "permalink": "/pmdaemon/docs/examples/use-cases"
+  },
+  "next": {
+    "title": "Integration Examples",
+    "permalink": "/pmdaemon/docs/examples/integration-examples"
+  }
+}

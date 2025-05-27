@@ -1,0 +1,24 @@
+{
+  "id": "features/process-management",
+  "title": "Process Management",
+  "description": "PMDaemon provides comprehensive process lifecycle management with enhanced features that go beyond traditional process managers. This guide covers all aspects of managing processes with PMDaemon.",
+  "source": "@site/docs/features/process-management.md",
+  "sourceDirName": "features",
+  "slug": "/features/process-management",
+  "permalink": "/pmdaemon/docs/features/process-management",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/process-management.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Migration from PM2",
+    "permalink": "/pmdaemon/docs/getting-started/migration-from-pm2"
+  },
+  "next": {
+    "title": "Port Management",
+    "permalink": "/pmdaemon/docs/features/port-management"
+  }
+}

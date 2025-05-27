@@ -1,0 +1,24 @@
+{
+  "id": "configuration/process-configuration",
+  "title": "Process Configuration",
+  "description": "PMDaemon provides comprehensive process configuration options that allow you to define every aspect of how your applications run. This guide covers individual process configuration in detail, from basic settings to advanced clustering and health checks.",
+  "source": "@site/docs/configuration/process-configuration.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/process-configuration",
+  "permalink": "/pmdaemon/docs/configuration/process-configuration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/process-configuration.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Ecosystem Configuration Files",
+    "permalink": "/pmdaemon/docs/configuration/ecosystem-files"
+  },
+  "next": {
+    "title": "Advanced Configuration",
+    "permalink": "/pmdaemon/docs/configuration/advanced-configuration"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "advanced/troubleshooting",
+  "title": "Troubleshooting",
+  "description": "This comprehensive troubleshooting guide helps you diagnose and resolve common issues with PMDaemon. From process startup failures to performance problems, find solutions to keep your applications running smoothly.",
+  "source": "@site/docs/advanced/troubleshooting.md",
+  "sourceDirName": "advanced",
+  "slug": "/advanced/troubleshooting",
+  "permalink": "/pmdaemon/docs/advanced/troubleshooting",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/advanced/troubleshooting.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Logging",
+    "permalink": "/pmdaemon/docs/advanced/logging"
+  },
+  "next": {
+    "title": "PM2 vs PMDaemon Comparison",
+    "permalink": "/pmdaemon/docs/comparison/pm2-vs-pmdaemon"
+  }
+}

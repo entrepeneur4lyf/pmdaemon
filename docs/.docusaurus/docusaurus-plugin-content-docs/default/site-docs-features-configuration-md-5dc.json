@@ -1,0 +1,24 @@
+{
+  "id": "features/configuration",
+  "title": "Configuration",
+  "description": "PMDaemon provides flexible configuration options that allow you to customize every aspect of process management. From basic process settings to advanced clustering and health checks, PMDaemon's configuration system is designed for both simplicity and power.",
+  "source": "@site/docs/features/configuration.md",
+  "sourceDirName": "features",
+  "slug": "/features/configuration",
+  "permalink": "/pmdaemon/docs/features/configuration",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/configuration.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Web API",
+    "permalink": "/pmdaemon/docs/features/web-api"
+  },
+  "next": {
+    "title": "CLI Commands Reference",
+    "permalink": "/pmdaemon/docs/cli/commands"
+  }
+}

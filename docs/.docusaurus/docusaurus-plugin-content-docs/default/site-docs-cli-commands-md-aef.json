@@ -1,0 +1,24 @@
+{
+  "id": "cli/commands",
+  "title": "CLI Commands Reference",
+  "description": "PMDaemon provides a comprehensive command-line interface with PM2-compatible commands plus enhanced features. This reference covers all available commands with examples and options.",
+  "source": "@site/docs/cli/commands.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/commands",
+  "permalink": "/pmdaemon/docs/cli/commands",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/cli/commands.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Configuration",
+    "permalink": "/pmdaemon/docs/features/configuration"
+  },
+  "next": {
+    "title": "Configuration Options",
+    "permalink": "/pmdaemon/docs/cli/configuration-options"
+  }
+}

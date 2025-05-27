@@ -1,0 +1,24 @@
+{
+  "id": "configuration/ecosystem-files",
+  "title": "Ecosystem Configuration Files",
+  "description": "PMDaemon supports ecosystem configuration files in multiple formats (JSON, YAML, TOML), allowing you to define complex application setups in a declarative way. This is similar to PM2's ecosystem.config.js but with enhanced features and multiple format support.",
+  "source": "@site/docs/configuration/ecosystem-files.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/ecosystem-files",
+  "permalink": "/pmdaemon/docs/configuration/ecosystem-files",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/ecosystem-files.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Exit Codes",
+    "permalink": "/pmdaemon/docs/cli/exit-codes"
+  },
+  "next": {
+    "title": "Process Configuration",
+    "permalink": "/pmdaemon/docs/configuration/process-configuration"
+  }
+}

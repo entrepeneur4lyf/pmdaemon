@@ -1,0 +1,24 @@
+{
+  "id": "advanced/clustering",
+  "title": "Clustering",
+  "description": "PMDaemon's advanced clustering capabilities enable you to scale applications horizontally across multiple instances with intelligent load distribution, automatic failover, and sophisticated process management strategies.",
+  "source": "@site/docs/advanced/clustering.md",
+  "sourceDirName": "advanced",
+  "slug": "/advanced/clustering",
+  "permalink": "/pmdaemon/docs/advanced/clustering",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/advanced/clustering.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Security",
+    "permalink": "/pmdaemon/docs/advanced/security"
+  },
+  "next": {
+    "title": "Logging",
+    "permalink": "/pmdaemon/docs/advanced/logging"
+  }
+}

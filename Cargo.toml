@@ -1,6 +1,6 @@
 [package]
 name = "pmdaemon"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "A feature-rich PM2 clone in Rust with advanced port management and monitoring capabilities"
 license = "MIT"
@@ -37,6 +37,7 @@ thiserror = "1.0"
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_yaml = "0.9"
 toml = "0.8"
 
 # Process management

@@ -1,0 +1,24 @@
+{
+  "id": "features/web-api",
+  "title": "Web API",
+  "description": "PMDaemon provides a comprehensive REST API and real-time WebSocket interface for remote process management and monitoring. Built on the high-performance Axum web framework, it offers PM2-compatible endpoints with additional advanced features.",
+  "source": "@site/docs/features/web-api.md",
+  "sourceDirName": "features",
+  "slug": "/features/web-api",
+  "permalink": "/pmdaemon/docs/features/web-api",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/web-api.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Monitoring",
+    "permalink": "/pmdaemon/docs/features/monitoring"
+  },
+  "next": {
+    "title": "Configuration",
+    "permalink": "/pmdaemon/docs/features/configuration"
+  }
+}

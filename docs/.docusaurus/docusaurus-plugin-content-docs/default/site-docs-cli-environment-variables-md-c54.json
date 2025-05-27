@@ -1,0 +1,24 @@
+{
+  "id": "cli/environment-variables",
+  "title": "Environment Variables",
+  "description": "PMDaemon uses environment variables for system-level configuration and automatically injects process-specific variables into managed processes. This reference covers both PMDaemon's own environment variables and those it provides to your applications.",
+  "source": "@site/docs/cli/environment-variables.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/environment-variables",
+  "permalink": "/pmdaemon/docs/cli/environment-variables",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/cli/environment-variables.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Configuration Options",
+    "permalink": "/pmdaemon/docs/cli/configuration-options"
+  },
+  "next": {
+    "title": "Exit Codes",
+    "permalink": "/pmdaemon/docs/cli/exit-codes"
+  }
+}

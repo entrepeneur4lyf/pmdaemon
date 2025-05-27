@@ -1,0 +1,24 @@
+{
+  "id": "api/websocket-api",
+  "title": "WebSocket API",
+  "description": "PMDaemon's WebSocket API provides real-time communication for monitoring process status, receiving live updates, and managing processes interactively. Built for high performance and low latency, it's perfect for dashboards, monitoring tools, and real-time applications.",
+  "source": "@site/docs/api/websocket-api.md",
+  "sourceDirName": "api",
+  "slug": "/api/websocket-api",
+  "permalink": "/pmdaemon/docs/api/websocket-api",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/websocket-api.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "REST API Reference",
+    "permalink": "/pmdaemon/docs/api/rest-api"
+  },
+  "next": {
+    "title": "Library Usage",
+    "permalink": "/pmdaemon/docs/api/library-usage"
+  }
+}

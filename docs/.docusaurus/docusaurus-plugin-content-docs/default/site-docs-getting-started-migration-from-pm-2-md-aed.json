@@ -1,0 +1,24 @@
+{
+  "id": "getting-started/migration-from-pm2",
+  "title": "Migration from PM2",
+  "description": "Migrating from PM2 to PMDaemon is straightforward thanks to PMDaemon's PM2-compatible command interface. This guide helps you transition smoothly while taking advantage of PMDaemon's enhanced features.",
+  "source": "@site/docs/getting-started/migration-from-pm2.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/migration-from-pm2",
+  "permalink": "/pmdaemon/docs/getting-started/migration-from-pm2",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/getting-started/migration-from-pm2.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Quick Start",
+    "permalink": "/pmdaemon/docs/getting-started/quick-start"
+  },
+  "next": {
+    "title": "Process Management",
+    "permalink": "/pmdaemon/docs/features/process-management"
+  }
+}

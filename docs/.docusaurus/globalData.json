@@ -1,0 +1,183 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/pmdaemon/docs",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/pmdaemon/docs",
+          "mainDocId": "getting-started/introduction",
+          "docs": [
+            {
+              "id": "advanced/clustering",
+              "path": "/pmdaemon/docs/advanced/clustering",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "advanced/logging",
+              "path": "/pmdaemon/docs/advanced/logging",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "advanced/performance-tuning",
+              "path": "/pmdaemon/docs/advanced/performance-tuning",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "advanced/security",
+              "path": "/pmdaemon/docs/advanced/security",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "advanced/troubleshooting",
+              "path": "/pmdaemon/docs/advanced/troubleshooting",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/api-examples",
+              "path": "/pmdaemon/docs/api/api-examples",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/library-usage",
+              "path": "/pmdaemon/docs/api/library-usage",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/rest-api",
+              "path": "/pmdaemon/docs/api/rest-api",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "api/websocket-api",
+              "path": "/pmdaemon/docs/api/websocket-api",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/commands",
+              "path": "/pmdaemon/docs/cli/commands",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/configuration-options",
+              "path": "/pmdaemon/docs/cli/configuration-options",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/environment-variables",
+              "path": "/pmdaemon/docs/cli/environment-variables",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "cli/exit-codes",
+              "path": "/pmdaemon/docs/cli/exit-codes",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "comparison/pm2-vs-pmdaemon",
+              "path": "/pmdaemon/docs/comparison/pm2-vs-pmdaemon",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "configuration/advanced-configuration",
+              "path": "/pmdaemon/docs/configuration/advanced-configuration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "configuration/ecosystem-files",
+              "path": "/pmdaemon/docs/configuration/ecosystem-files",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "configuration/process-configuration",
+              "path": "/pmdaemon/docs/configuration/process-configuration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "configuration/schema-validation",
+              "path": "/pmdaemon/docs/configuration/schema-validation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "examples/deployment-examples",
+              "path": "/pmdaemon/docs/examples/deployment-examples",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "examples/integration-examples",
+              "path": "/pmdaemon/docs/examples/integration-examples",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "examples/use-cases",
+              "path": "/pmdaemon/docs/examples/use-cases",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/configuration",
+              "path": "/pmdaemon/docs/features/configuration",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/health-checks",
+              "path": "/pmdaemon/docs/features/health-checks",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/monitoring",
+              "path": "/pmdaemon/docs/features/monitoring",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/port-management",
+              "path": "/pmdaemon/docs/features/port-management",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/process-management",
+              "path": "/pmdaemon/docs/features/process-management",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/web-api",
+              "path": "/pmdaemon/docs/features/web-api",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "getting-started/installation",
+              "path": "/pmdaemon/docs/getting-started/installation",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "getting-started/introduction",
+              "path": "/pmdaemon/docs/getting-started/introduction",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "getting-started/migration-from-pm2",
+              "path": "/pmdaemon/docs/getting-started/migration-from-pm2",
+              "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "getting-started/quick-start",
+              "path": "/pmdaemon/docs/getting-started/quick-start",
+              "sidebar": "tutorialSidebar"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "tutorialSidebar": {
+              "link": {
+                "path": "/pmdaemon/docs/getting-started/introduction",
+                "label": "getting-started/introduction"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

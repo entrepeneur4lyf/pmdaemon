@@ -1,0 +1,20 @@
+{
+  "id": "getting-started/introduction",
+  "title": "Introduction",
+  "description": "PMDaemon is a high-performance process manager built in Rust, inspired by PM2 with innovative features that exceed the original. It's designed for modern application deployment with advanced port management, real-time monitoring, and production-ready web APIs.",
+  "source": "@site/docs/getting-started/introduction.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/introduction",
+  "permalink": "/pmdaemon/docs/getting-started/introduction",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/getting-started/introduction.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "next": {
+    "title": "Installation",
+    "permalink": "/pmdaemon/docs/getting-started/installation"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "features/monitoring",
+  "title": "Monitoring",
+  "description": "PMDaemon provides comprehensive real-time monitoring capabilities that give you deep insights into your processes and system performance. With configurable update intervals, beautiful table formatting, and detailed metrics collection, you can monitor everything from CPU usage to health check status.",
+  "source": "@site/docs/features/monitoring.md",
+  "sourceDirName": "features",
+  "slug": "/features/monitoring",
+  "permalink": "/pmdaemon/docs/features/monitoring",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/monitoring.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Health Checks",
+    "permalink": "/pmdaemon/docs/features/health-checks"
+  },
+  "next": {
+    "title": "Web API",
+    "permalink": "/pmdaemon/docs/features/web-api"
+  }
+}

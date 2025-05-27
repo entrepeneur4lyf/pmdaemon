@@ -1,0 +1,24 @@
+{
+  "id": "advanced/security",
+  "title": "Security",
+  "description": "This comprehensive security guide covers best practices for securing PMDaemon deployments, protecting sensitive data, and implementing defense-in-depth strategies for production environments.",
+  "source": "@site/docs/advanced/security.md",
+  "sourceDirName": "advanced",
+  "slug": "/advanced/security",
+  "permalink": "/pmdaemon/docs/advanced/security",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/advanced/security.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Performance Tuning",
+    "permalink": "/pmdaemon/docs/advanced/performance-tuning"
+  },
+  "next": {
+    "title": "Clustering",
+    "permalink": "/pmdaemon/docs/advanced/clustering"
+  }
+}

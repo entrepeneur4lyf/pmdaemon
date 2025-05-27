@@ -1,0 +1,24 @@
+{
+  "id": "configuration/schema-validation",
+  "title": "Schema Validation",
+  "description": "PMDaemon provides comprehensive configuration validation to ensure your process configurations are correct before deployment. This prevents runtime errors and helps catch configuration issues early in the development cycle.",
+  "source": "@site/docs/configuration/schema-validation.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/schema-validation",
+  "permalink": "/pmdaemon/docs/configuration/schema-validation",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/schema-validation.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Advanced Configuration",
+    "permalink": "/pmdaemon/docs/configuration/advanced-configuration"
+  },
+  "next": {
+    "title": "REST API Reference",
+    "permalink": "/pmdaemon/docs/api/rest-api"
+  }
+}

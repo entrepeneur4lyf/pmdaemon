@@ -1,0 +1,24 @@
+{
+  "id": "examples/use-cases",
+  "title": "Real-World Use Cases",
+  "description": "This guide showcases practical, real-world scenarios where PMDaemon excels, demonstrating how its advanced features solve common deployment and management challenges.",
+  "source": "@site/docs/examples/use-cases.md",
+  "sourceDirName": "examples",
+  "slug": "/examples/use-cases",
+  "permalink": "/pmdaemon/docs/examples/use-cases",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/examples/use-cases.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "API Examples",
+    "permalink": "/pmdaemon/docs/api/api-examples"
+  },
+  "next": {
+    "title": "Deployment Examples",
+    "permalink": "/pmdaemon/docs/examples/deployment-examples"
+  }
+}

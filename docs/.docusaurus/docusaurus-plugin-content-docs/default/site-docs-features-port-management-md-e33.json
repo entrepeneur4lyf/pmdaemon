@@ -1,0 +1,24 @@
+{
+  "id": "features/port-management",
+  "title": "Port Management",
+  "description": "PMDaemon's advanced port management is one of its most innovative features, going far beyond what traditional process managers offer. This system provides automatic port allocation, conflict detection, and runtime flexibility that makes deploying clustered applications effortless.",
+  "source": "@site/docs/features/port-management.md",
+  "sourceDirName": "features",
+  "slug": "/features/port-management",
+  "permalink": "/pmdaemon/docs/features/port-management",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/port-management.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Process Management",
+    "permalink": "/pmdaemon/docs/features/process-management"
+  },
+  "next": {
+    "title": "Health Checks",
+    "permalink": "/pmdaemon/docs/features/health-checks"
+  }
+}

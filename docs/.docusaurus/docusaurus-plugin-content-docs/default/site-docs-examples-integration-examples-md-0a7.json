@@ -1,0 +1,24 @@
+{
+  "id": "examples/integration-examples",
+  "title": "Integration Examples",
+  "description": "This guide provides practical examples of integrating PMDaemon with popular frameworks, platforms, and tools. Learn how to seamlessly incorporate PMDaemon into your existing development and deployment workflows.",
+  "source": "@site/docs/examples/integration-examples.md",
+  "sourceDirName": "examples",
+  "slug": "/examples/integration-examples",
+  "permalink": "/pmdaemon/docs/examples/integration-examples",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/examples/integration-examples.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Deployment Examples",
+    "permalink": "/pmdaemon/docs/examples/deployment-examples"
+  },
+  "next": {
+    "title": "Performance Tuning",
+    "permalink": "/pmdaemon/docs/advanced/performance-tuning"
+  }
+}

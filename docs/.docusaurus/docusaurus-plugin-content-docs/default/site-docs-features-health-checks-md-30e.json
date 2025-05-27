@@ -1,0 +1,24 @@
+{
+  "id": "features/health-checks",
+  "title": "Health Checks",
+  "description": "PMDaemon's health check system provides robust monitoring and validation of your processes, ensuring they're not just running but actually functioning correctly. This goes beyond basic process monitoring to verify that your applications are healthy and ready to serve traffic.",
+  "source": "@site/docs/features/health-checks.md",
+  "sourceDirName": "features",
+  "slug": "/features/health-checks",
+  "permalink": "/pmdaemon/docs/features/health-checks",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/health-checks.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Port Management",
+    "permalink": "/pmdaemon/docs/features/port-management"
+  },
+  "next": {
+    "title": "Monitoring",
+    "permalink": "/pmdaemon/docs/features/monitoring"
+  }
+}

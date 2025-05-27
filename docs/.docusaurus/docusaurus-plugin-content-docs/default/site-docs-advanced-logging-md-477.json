@@ -1,0 +1,24 @@
+{
+  "id": "advanced/logging",
+  "title": "Logging",
+  "description": "PMDaemon provides comprehensive logging capabilities for process output, system events, and operational monitoring. This guide covers advanced logging configuration, log management, and integration with external logging systems.",
+  "source": "@site/docs/advanced/logging.md",
+  "sourceDirName": "advanced",
+  "slug": "/advanced/logging",
+  "permalink": "/pmdaemon/docs/advanced/logging",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/advanced/logging.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Clustering",
+    "permalink": "/pmdaemon/docs/advanced/clustering"
+  },
+  "next": {
+    "title": "Troubleshooting",
+    "permalink": "/pmdaemon/docs/advanced/troubleshooting"
+  }
+}

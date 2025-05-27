@@ -1,0 +1,24 @@
+{
+  "id": "advanced/performance-tuning",
+  "title": "Performance Tuning",
+  "description": "This guide covers optimization strategies for PMDaemon to achieve maximum performance in production environments. Learn how to tune system resources, optimize process configurations, and scale effectively.",
+  "source": "@site/docs/advanced/performance-tuning.md",
+  "sourceDirName": "advanced",
+  "slug": "/advanced/performance-tuning",
+  "permalink": "/pmdaemon/docs/advanced/performance-tuning",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/advanced/performance-tuning.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Integration Examples",
+    "permalink": "/pmdaemon/docs/examples/integration-examples"
+  },
+  "next": {
+    "title": "Security",
+    "permalink": "/pmdaemon/docs/advanced/security"
+  }
+}

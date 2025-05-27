@@ -1,0 +1,24 @@
+{
+  "id": "cli/configuration-options",
+  "title": "Configuration Options",
+  "description": "This comprehensive reference covers all CLI configuration options available in PMDaemon. Each option includes its purpose, default value, accepted formats, and practical examples.",
+  "source": "@site/docs/cli/configuration-options.md",
+  "sourceDirName": "cli",
+  "slug": "/cli/configuration-options",
+  "permalink": "/pmdaemon/docs/cli/configuration-options",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/cli/configuration-options.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "CLI Commands Reference",
+    "permalink": "/pmdaemon/docs/cli/commands"
+  },
+  "next": {
+    "title": "Environment Variables",
+    "permalink": "/pmdaemon/docs/cli/environment-variables"
+  }
+}

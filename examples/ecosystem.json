@@ -1,0 +1,55 @@
+{
+  "$schema": "./ecosystem.schema.json",
+  "apps": [
+    {
+      "name": "web-server",
+      "script": "node",
+      "args": ["server.js"],
+      "instances": 4,
+      "port": "3000-3003",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3000"
+      },
+      "max_memory_restart": "512M",
+      "autorestart": true,
+      "max_restarts": 16,
+      "min_uptime": 1000,
+      "restart_delay": 0,
+      "kill_timeout": 1600
+    },
+    {
+      "name": "api-service",
+      "script": "python",
+      "args": ["-m", "uvicorn", "main:app", "--host", "0.0.0.0"],
+      "cwd": "/opt/api",
+      "instances": 2,
+      "port": "auto:8000-8100",
+      "env": {
+        "PYTHONPATH": "/opt/api",
+        "DATABASE_URL": "postgres://localhost/mydb"
+      },
+      "max_memory_restart": "1G",
+      "namespace": "api"
+    },
+    {
+      "name": "worker",
+      "script": "node",
+      "args": ["worker.js"],
+      "instances": 1,
+      "env": {
+        "NODE_ENV": "production",
+        "REDIS_URL": "redis://localhost:6379"
+      },
+      "max_memory_restart": "256M"
+    },
+    {
+      "name": "static-server",
+      "script": "python",
+      "args": ["-m", "http.server", "8080"],
+      "instances": 1,
+      "port": "8080",
+      "cwd": "/var/www/html"
+    }
+  ]
+}

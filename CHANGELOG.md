@@ -99,12 +99,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Compatibility**: Backward compatible - no breaking changes to existing API.
 
 ### 🧪 Testing
-- **Test count**: 223 total tests (up from 158 before health checks & blocking start)
-- **New coverage**: Delete operations (bulk, status-based, safe shutdown), Health Checks (HTTP, script, params), Blocking Start (`--wait-ready`, `--wait-timeout`), and process lifecycle management.
-- **Enhanced test suites**: Added comprehensive tests for all new delete, health check, and blocking start functionality.
-- **Quality**: 100% test success rate with comprehensive error path testing.
+- **Test count**: 267 total tests (up from 158 before health checks & blocking start)
+- **New coverage**: Delete operations (bulk, status-based, safe shutdown), Health Checks (HTTP, script, params), Blocking Start (`--wait-ready`, `--wait-timeout`), CLI argument parsing and utility functions, and process lifecycle management.
+- **Enhanced test suites**: Added comprehensive tests for all new delete, health check, blocking start functionality, and complete CLI binary test coverage.
+- **Quality**: 100% test success rate with comprehensive error path testing and 80%+ code coverage.
 
-## [0.1.0] - 2024-12-18
+## [0.1.0] - 2025-05-25
 
 ### Added
 - **Core Process Management**

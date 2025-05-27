@@ -48,6 +48,145 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 
+/// Parse memory string (e.g., "100M", "1G", "512K") to bytes
+pub fn parse_memory_string(memory_str: &str) -> Result<u64> {
+    let memory_str = memory_str.trim().to_uppercase();
+
+    if memory_str.is_empty() {
+        return Err(Error::config("Memory string cannot be empty"));
+    }
+
+    let (number_part, unit) = if memory_str.ends_with("K") || memory_str.ends_with("KB") {
+        let number_str = memory_str.trim_end_matches("KB").trim_end_matches("K");
+        (number_str, 1024u64)
+    } else if memory_str.ends_with("M") || memory_str.ends_with("MB") {
+        let number_str = memory_str.trim_end_matches("MB").trim_end_matches("M");
+        (number_str, 1024u64 * 1024)
+    } else if memory_str.ends_with("G") || memory_str.ends_with("GB") {
+        let number_str = memory_str.trim_end_matches("GB").trim_end_matches("G");
+        (number_str, 1024u64 * 1024 * 1024)
+    } else if memory_str.ends_with("B") {
+        let number_str = memory_str.trim_end_matches("B");
+        (number_str, 1u64)
+    } else {
+        // Assume bytes if no unit specified
+        (memory_str.as_str(), 1u64)
+    };
+
+let number: f64 = number_part.parse()
+         .map_err(|_| Error::config(format!("Invalid memory number: {}", number_part)))?;
+
+     if number < 0.0 {
+         return Err(Error::config("Memory size cannot be negative"));
+     }
+
+    let bytes_f64 = number * unit as f64;
+    if bytes_f64 > u64::MAX as f64 {
+        return Err(Error::config("Memory size is too large"));
+    }
+
+    Ok(bytes_f64.round() as u64)
+}
+
+/// Format memory in human-readable format
+pub fn format_memory(bytes: u64) -> String {
+    if bytes == 0 {
+        return "-".to_string();
+    }
+
+    let kb = bytes as f64 / 1024.0;
+    let mb = kb / 1024.0;
+    let gb = mb / 1024.0;
+
+    if gb >= 1.0 {
+        format!("{:.1}GB", gb)
+    } else if mb >= 1.0 {
+        format!("{:.1}MB", mb)
+    } else if kb >= 1.0 {
+        format!("{:.1}KB", kb)
+    } else {
+        format!("{}B", bytes)
+    }
+}
+
+/// Wrapper for memory values that can be deserialized from either string or number
+#[derive(Debug, Clone)]
+pub struct MemoryValue(pub Option<u64>);
+
+impl Serialize for MemoryValue {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        match self.0 {
+            Some(bytes) => serializer.serialize_str(&format_memory(bytes)),
+            None => serializer.serialize_none(),
+        }
+    }
+}
+
+impl<'de> Deserialize<'de> for MemoryValue {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum MemoryValueHelper {
+            String(String),
+            Number(u64),
+            Null,
+        }
+
+        match MemoryValueHelper::deserialize(deserializer)? {
+            MemoryValueHelper::String(s) => {
+                let bytes = parse_memory_string(&s).map_err(serde::de::Error::custom)?;
+                Ok(MemoryValue(Some(bytes)))
+            }
+            MemoryValueHelper::Number(n) => Ok(MemoryValue(Some(n))),
+            MemoryValueHelper::Null => Ok(MemoryValue(None)),
+        }
+    }
+}
+
+/// Serde module for memory value serialization/deserialization
+mod memory_value_serde {
+    use super::*;
+    use serde::{Deserialize, Deserializer, Serializer};
+
+    pub fn serialize<S>(value: &Option<u64>, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        match value {
+            Some(bytes) => serializer.serialize_str(&format_memory(*bytes)),
+            None => serializer.serialize_none(),
+        }
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> std::result::Result<Option<u64>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        #[serde(untagged)]
+        enum MemoryHelper {
+            String(String),
+            Number(u64),
+            Null,
+        }
+
+        match Option::<MemoryHelper>::deserialize(deserializer)? {
+            Some(MemoryHelper::String(s)) => {
+                let bytes = parse_memory_string(&s).map_err(serde::de::Error::custom)?;
+                Ok(Some(bytes))
+            }
+            Some(MemoryHelper::Number(n)) => Ok(Some(n)),
+            Some(MemoryHelper::Null) | None => Ok(None),
+        }
+    }
+}
+
 /// Process configuration defining how a process should be started and managed.
 ///
 /// This is the main configuration struct that defines all aspects of process execution,
@@ -85,6 +224,7 @@ use std::path::PathBuf;
 ///     .unwrap();
 /// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(default)]
 pub struct ProcessConfig {
     /// Process name (required) - must be unique within a namespace
     pub name: String,
@@ -144,6 +284,8 @@ pub struct ProcessConfig {
     ///
     /// When set, process is automatically restarted if memory usage exceeds this limit.
     /// This is a unique feature beyond standard PM2 capabilities.
+    /// Can be specified as a string (e.g., "512M", "1G") or as raw bytes.
+    #[serde(with = "memory_value_serde")]
     pub max_memory_restart: Option<u64>,
 
     /// Output log file path (auto-generated if not specified)
@@ -211,7 +353,7 @@ pub struct ProcessConfig {
 /// // Parse from string (useful for CLI)
 /// let parsed = PortConfig::parse("auto:6000-6010").unwrap();
 /// ```
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PortConfig {
     /// Single port assignment.
     ///
@@ -342,6 +484,25 @@ impl std::fmt::Display for PortConfig {
             PortConfig::Range(start, end) => write!(f, "{}-{}", start, end),
             PortConfig::Auto(start, end) => write!(f, "auto:{}-{}", start, end),
         }
+    }
+}
+
+impl Serialize for PortConfig {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de> Deserialize<'de> for PortConfig {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let s = String::deserialize(deserializer)?;
+        PortConfig::parse(&s).map_err(serde::de::Error::custom)
     }
 }
 
@@ -722,5 +883,187 @@ mod tests {
         config.instances = 1;
         config.exec_mode = ExecMode::Cluster;
         assert!(config.is_cluster_mode());
+    }
+}
+
+/// Ecosystem configuration for loading multiple apps from a config file.
+///
+/// This structure represents the top-level configuration file format that can contain
+/// multiple application definitions, similar to PM2's ecosystem.config.js.
+///
+/// # Examples
+///
+/// ```rust
+/// use pmdaemon::config::{EcosystemConfig, ProcessConfig};
+///
+/// let ecosystem = EcosystemConfig {
+///     apps: vec![
+///         ProcessConfig::builder()
+///             .name("web-app")
+///             .script("node")
+///             .args(vec!["server.js"])
+///             .build()
+///             .unwrap(),
+///         ProcessConfig::builder()
+///             .name("api-service")
+///             .script("python")
+///             .args(vec!["-m", "uvicorn", "main:app"])
+///             .build()
+///             .unwrap(),
+///     ],
+/// };
+/// ```
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EcosystemConfig {
+    /// List of application configurations
+    pub apps: Vec<ProcessConfig>,
+}
+
+impl EcosystemConfig {
+    /// Load ecosystem configuration from a file.
+    ///
+    /// Supports JSON, YAML, and TOML formats based on file extension.
+    /// Falls back to JSON parsing if extension is not recognized.
+    ///
+    /// # Examples
+    ///
+    /// ```rust,no_run
+    /// use pmdaemon::config::EcosystemConfig;
+    /// use std::path::Path;
+    ///
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// // Load from JSON
+    /// let config = EcosystemConfig::from_file(Path::new("ecosystem.json")).await?;
+    ///
+    /// // Load from YAML
+    /// let config = EcosystemConfig::from_file(Path::new("ecosystem.yaml")).await?;
+    ///
+    /// // Load from TOML
+    /// let config = EcosystemConfig::from_file(Path::new("ecosystem.toml")).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if:
+    /// - File cannot be read
+    /// - File content is not valid for the detected format
+    /// - Configuration validation fails
+    pub async fn from_file(path: &std::path::Path) -> Result<Self> {
+        let content = tokio::fs::read_to_string(path)
+            .await
+            .map_err(|e| Error::config(format!("Failed to read config file '{}': {}", path.display(), e)))?;
+
+        let extension = path.extension()
+            .and_then(|ext| ext.to_str())
+            .unwrap_or("json")
+            .to_lowercase();
+
+        let config: EcosystemConfig = match extension.as_str() {
+            "yaml" | "yml" => {
+                serde_yaml::from_str(&content)
+                    .map_err(|e| Error::config(format!("Failed to parse YAML config file '{}': {}", path.display(), e)))?
+            }
+            "toml" => {
+                toml::from_str(&content)
+                    .map_err(|e| Error::config(format!("Failed to parse TOML config file '{}': {}", path.display(), e)))?
+            }
+            "json" | _ => {
+                serde_json::from_str(&content)
+                    .map_err(|e| Error::config(format!("Failed to parse JSON config file '{}': {}", path.display(), e)))?
+            }
+        };
+
+        // Validate all app configurations
+        config.validate()?;
+
+        Ok(config)
+    }
+
+    /// Validate the ecosystem configuration.
+    ///
+    /// Checks that all app configurations are valid and that app names are unique.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if:
+    /// - Any app configuration is invalid
+    /// - App names are not unique
+    /// - No apps are defined
+    pub fn validate(&self) -> Result<()> {
+        if self.apps.is_empty() {
+            return Err(Error::config("Ecosystem configuration must contain at least one app"));
+        }
+
+        // Validate each app configuration
+        for (index, app) in self.apps.iter().enumerate() {
+            app.validate()
+                .map_err(|e| Error::config(format!("App {} validation failed: {}", index, e)))?;
+        }
+
+        // Check for duplicate app names
+        let mut names = std::collections::HashSet::new();
+        for app in &self.apps {
+            if !names.insert(&app.name) {
+                return Err(Error::config(format!("Duplicate app name: '{}'", app.name)));
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Get a specific app configuration by name.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use pmdaemon::config::{EcosystemConfig, ProcessConfig};
+    ///
+    /// let ecosystem = EcosystemConfig {
+    ///     apps: vec![
+    ///         ProcessConfig::builder()
+    ///             .name("web-app")
+    ///             .script("node")
+    ///             .build()
+    ///             .unwrap(),
+    ///     ],
+    /// };
+    ///
+    /// let app = ecosystem.get_app("web-app");
+    /// assert!(app.is_some());
+    /// assert_eq!(app.unwrap().name, "web-app");
+    /// ```
+    pub fn get_app(&self, name: &str) -> Option<&ProcessConfig> {
+        self.apps.iter().find(|app| app.name == name)
+    }
+
+    /// Get all app names in the ecosystem.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// use pmdaemon::config::{EcosystemConfig, ProcessConfig};
+    ///
+    /// let ecosystem = EcosystemConfig {
+    ///     apps: vec![
+    ///         ProcessConfig::builder()
+    ///             .name("web-app")
+    ///             .script("node")
+    ///             .build()
+    ///             .unwrap(),
+    ///         ProcessConfig::builder()
+    ///             .name("api-service")
+    ///             .script("python")
+    ///             .build()
+    ///             .unwrap(),
+    ///     ],
+    /// };
+    ///
+    /// let names = ecosystem.app_names();
+    /// assert_eq!(names, vec!["web-app", "api-service"]);
+    /// ```
+    pub fn app_names(&self) -> Vec<&str> {
+        self.apps.iter().map(|app| app.name.as_str()).collect()
     }
 }

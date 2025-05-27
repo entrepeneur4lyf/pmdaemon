@@ -124,7 +124,7 @@ pub mod signals;
 pub mod web;
 
 // Re-export main types for convenience
-pub use config::{ProcessConfig, ProcessConfigBuilder};
+pub use config::{EcosystemConfig, ProcessConfig, ProcessConfigBuilder};
 pub use error::{Error, Result};
 pub use health::{HealthCheck, HealthCheckConfig, HealthCheckType, HealthState, HealthStatus};
 pub use manager::ProcessManager;

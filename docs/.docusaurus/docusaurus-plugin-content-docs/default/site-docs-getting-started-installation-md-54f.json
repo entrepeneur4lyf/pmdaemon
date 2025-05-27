@@ -1,0 +1,24 @@
+{
+  "id": "getting-started/installation",
+  "title": "Installation",
+  "description": "PMDaemon can be installed through multiple methods. Choose the one that works best for your environment.",
+  "source": "@site/docs/getting-started/installation.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/installation",
+  "permalink": "/pmdaemon/docs/getting-started/installation",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/getting-started/installation.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Introduction",
+    "permalink": "/pmdaemon/docs/getting-started/introduction"
+  },
+  "next": {
+    "title": "Quick Start",
+    "permalink": "/pmdaemon/docs/getting-started/quick-start"
+  }
+}

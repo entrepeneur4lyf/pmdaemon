@@ -1,0 +1,41 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="prodGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6f42c1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8e44ad;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f8f9fa" rx="20"/>
+
+  <!-- Shield/Badge -->
+  <path d="M 100 40 L 130 55 L 130 100 Q 130 120 100 130 Q 70 120 70 100 L 70 55 Z"
+        fill="url(#prodGradient)" stroke="#6f42c1" stroke-width="2"/>
+
+  <!-- Checkmark in shield -->
+  <path d="M 85 85 L 95 95 L 115 75" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+  <!-- Test indicators -->
+  <rect x="40" y="140" width="30" height="15" fill="#28a745" rx="3"/>
+  <text x="55" y="150" text-anchor="middle" fill="white" font-size="8" font-weight="bold">267</text>
+  <text x="55" y="165" text-anchor="middle" fill="#28a745" font-size="8">TESTS</text>
+
+  <!-- Error handling -->
+  <rect x="85" y="140" width="30" height="15" fill="#007bff" rx="3"/>
+  <text x="100" y="150" text-anchor="middle" fill="white" font-size="8" font-weight="bold">ERR</text>
+  <text x="100" y="165" text-anchor="middle" fill="#007bff" font-size="8">HANDLE</text>
+
+  <!-- Security -->
+  <rect x="130" y="140" width="30" height="15" fill="#dc3545" rx="3"/>
+  <text x="145" y="150" text-anchor="middle" fill="white" font-size="8" font-weight="bold">SEC</text>
+  <text x="145" y="165" text-anchor="middle" fill="#dc3545" font-size="8">SAFE</text>
+
+
+
+  <!-- Title -->
+  <text x="100" y="25" text-anchor="middle" fill="#6f42c1" font-size="16" font-weight="bold">Production Ready</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="180" text-anchor="middle" fill="#666" font-size="12">Robust • Tested • Secure</text>
+</svg>

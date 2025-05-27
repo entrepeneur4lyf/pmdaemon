@@ -1,0 +1,247 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://pmdaemon.dev/ecosystem.schema.json",
+  "title": "PMDaemon Ecosystem Configuration",
+  "description": "Schema for PMDaemon ecosystem configuration files",
+  "type": "object",
+  "required": ["apps"],
+  "properties": {
+    "apps": {
+      "type": "array",
+      "description": "Array of application configurations",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/app"
+      }
+    }
+  },
+  "definitions": {
+    "app": {
+      "type": "object",
+      "required": ["name", "script"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Unique process name",
+          "minLength": 1
+        },
+        "script": {
+          "type": "string",
+          "description": "Command or script to execute",
+          "minLength": 1
+        },
+        "args": {
+          "type": "array",
+          "description": "Command line arguments",
+          "items": {
+            "type": "string"
+          }
+        },
+        "instances": {
+          "type": "integer",
+          "description": "Number of instances (enables cluster mode when > 1)",
+          "minimum": 1,
+          "default": 1
+        },
+        "port": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d+$",
+              "description": "Single port number as string"
+            },
+            {
+              "type": "string",
+              "pattern": "^\\d+-\\d+$",
+              "description": "Port range (e.g., '3000-3003')"
+            },
+            {
+              "type": "string",
+              "pattern": "^auto:\\d+-\\d+$",
+              "description": "Auto port assignment (e.g., 'auto:4000-4100')"
+            }
+          ],
+          "description": "Port configuration: single port, range, or auto-assignment"
+        },
+        "max_memory_restart": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^\\d+[KMG]B?$",
+              "description": "Memory limit with unit (e.g., '512M', '1G')"
+            },
+            {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Memory limit in bytes"
+            }
+          ],
+          "description": "Maximum memory before restart"
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Working directory"
+        },
+        "env": {
+          "type": "object",
+          "description": "Environment variables",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "autorestart": {
+          "type": "boolean",
+          "description": "Automatically restart on crash",
+          "default": true
+        },
+        "max_restarts": {
+          "type": "integer",
+          "description": "Maximum restart attempts",
+          "minimum": 0,
+          "default": 16
+        },
+        "min_uptime": {
+          "type": "integer",
+          "description": "Minimum uptime before considering stable (milliseconds)",
+          "minimum": 0,
+          "default": 1000
+        },
+        "restart_delay": {
+          "type": "integer",
+          "description": "Delay between exit and restart (milliseconds)",
+          "minimum": 0,
+          "default": 0
+        },
+        "kill_timeout": {
+          "type": "integer",
+          "description": "Time to wait for graceful shutdown (milliseconds)",
+          "minimum": 0,
+          "default": 1600
+        },
+        "namespace": {
+          "type": "string",
+          "description": "Process namespace for grouping",
+          "default": "default"
+        },
+        "out_file": {
+          "type": "string",
+          "description": "Output log file path"
+        },
+        "error_file": {
+          "type": "string",
+          "description": "Error log file path"
+        },
+        "log_file": {
+          "type": "string",
+          "description": "Combined log file path"
+        },
+        "pid_file": {
+          "type": "string",
+          "description": "PID file path"
+        },
+        "watch": {
+          "type": "boolean",
+          "description": "Watch for file changes and restart (not yet implemented)",
+          "default": false
+        },
+        "ignore_watch": {
+          "type": "array",
+          "description": "Files/directories to ignore when watching",
+          "items": {
+            "type": "string"
+          }
+        },
+        "health_check": {
+          "type": "object",
+          "description": "Health check configuration",
+          "properties": {
+            "check_type": {
+              "type": "string",
+              "enum": ["http", "script"],
+              "description": "Type of health check"
+            },
+            "url": {
+              "type": "string",
+              "description": "URL for HTTP health checks"
+            },
+            "script": {
+              "type": "string",
+              "description": "Script path for script-based health checks"
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Health check timeout (seconds)",
+              "minimum": 1
+            },
+            "interval": {
+              "type": "integer",
+              "description": "Health check interval (seconds)",
+              "minimum": 1
+            },
+            "retries": {
+              "type": "integer",
+              "description": "Number of retries before marking unhealthy",
+              "minimum": 1
+            },
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether health check is enabled"
+            }
+          },
+          "required": ["check_type", "enabled"],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "check_type": {
+                    "const": "http"
+                  }
+                }
+              },
+              "then": {
+                "required": ["url"]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "check_type": {
+                    "const": "script"
+                  }
+                }
+              },
+              "then": {
+                "required": ["script"]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "apps": [
+        {
+          "name": "web-server",
+          "script": "node",
+          "args": ["server.js"],
+          "instances": 4,
+          "port": "3000-3003",
+          "max_memory_restart": "512M",
+          "env": {
+            "NODE_ENV": "production"
+          }
+        },
+        {
+          "name": "api-service",
+          "script": "python",
+          "args": ["-m", "uvicorn", "main:app"],
+          "instances": 2,
+          "port": "auto:8000-8100",
+          "max_memory_restart": "1G"
+        }
+      ]
+    }
+  ]
+}

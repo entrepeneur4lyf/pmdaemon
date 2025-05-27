@@ -1,0 +1,24 @@
+{
+  "id": "getting-started/quick-start",
+  "title": "Quick Start",
+  "description": "Get up and running with PMDaemon in just 5 minutes! This guide covers the essential commands and features you need to start managing processes.",
+  "source": "@site/docs/getting-started/quick-start.md",
+  "sourceDirName": "getting-started",
+  "slug": "/getting-started/quick-start",
+  "permalink": "/pmdaemon/docs/getting-started/quick-start",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/getting-started/quick-start.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Installation",
+    "permalink": "/pmdaemon/docs/getting-started/installation"
+  },
+  "next": {
+    "title": "Migration from PM2",
+    "permalink": "/pmdaemon/docs/getting-started/migration-from-pm2"
+  }
+}

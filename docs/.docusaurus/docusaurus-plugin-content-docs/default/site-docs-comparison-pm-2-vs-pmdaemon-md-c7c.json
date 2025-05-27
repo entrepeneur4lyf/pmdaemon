@@ -1,0 +1,20 @@
+{
+  "id": "comparison/pm2-vs-pmdaemon",
+  "title": "PM2 vs PMDaemon Comparison",
+  "description": "This comprehensive comparison shows how PMDaemon builds upon PM2's foundation while adding innovative features that address real-world production needs.",
+  "source": "@site/docs/comparison/pm2-vs-pmdaemon.md",
+  "sourceDirName": "comparison",
+  "slug": "/comparison/pm2-vs-pmdaemon",
+  "permalink": "/pmdaemon/docs/comparison/pm2-vs-pmdaemon",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/comparison/pm2-vs-pmdaemon.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Troubleshooting",
+    "permalink": "/pmdaemon/docs/advanced/troubleshooting"
+  }
+}

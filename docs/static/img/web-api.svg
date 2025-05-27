@@ -1,0 +1,57 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="apiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#007bff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0056b3;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f8f9fa" rx="20"/>
+  
+  <!-- Server/API box -->
+  <rect x="70" y="60" width="60" height="40" fill="url(#apiGradient)" rx="8"/>
+  <text x="100" y="83" text-anchor="middle" fill="white" font-size="12" font-weight="bold">API</text>
+  
+  <!-- REST endpoints -->
+  <rect x="40" y="120" width="35" height="15" fill="#28a745" rx="3"/>
+  <text x="57.5" y="130" text-anchor="middle" fill="white" font-size="8" font-weight="bold">GET</text>
+  
+  <rect x="82.5" y="120" width="35" height="15" fill="#007bff" rx="3"/>
+  <text x="100" y="130" text-anchor="middle" fill="white" font-size="8" font-weight="bold">POST</text>
+  
+  <rect x="125" y="120" width="35" height="15" fill="#dc3545" rx="3"/>
+  <text x="142.5" y="130" text-anchor="middle" fill="white" font-size="8" font-weight="bold">DEL</text>
+  
+  <!-- WebSocket connection -->
+  <circle cx="50" cy="50" r="12" fill="#6f42c1"/>
+  <text x="50" y="55" text-anchor="middle" fill="white" font-size="8" font-weight="bold">WS</text>
+  
+  <!-- Connection lines -->
+  <path d="M 62 50 Q 75 45 85 65" stroke="#6f42c1" stroke-width="2" fill="none" stroke-dasharray="3,3"/>
+  
+  <!-- Client devices -->
+  <rect x="20" y="150" width="25" height="20" fill="#6c757d" rx="3"/>
+  <text x="32.5" y="163" text-anchor="middle" fill="white" font-size="8">WEB</text>
+  
+  <rect x="87.5" y="150" width="25" height="20" fill="#6c757d" rx="3"/>
+  <text x="100" y="163" text-anchor="middle" fill="white" font-size="8">CLI</text>
+  
+  <rect x="155" y="150" width="25" height="20" fill="#6c757d" rx="3"/>
+  <text x="167.5" y="163" text-anchor="middle" fill="white" font-size="8">APP</text>
+  
+  <!-- Connection lines to API -->
+  <line x1="32.5" y1="150" x2="85" y2="100" stroke="#007bff" stroke-width="2"/>
+  <line x1="100" y1="150" x2="100" y2="100" stroke="#007bff" stroke-width="2"/>
+  <line x1="167.5" y1="150" x2="115" y2="100" stroke="#007bff" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="100" y="25" text-anchor="middle" fill="#007bff" font-size="16" font-weight="bold">Web API</text>
+  
+  <!-- Real-time indicator -->
+  <circle cx="150" cy="50" r="8" fill="#28a745"/>
+  <circle cx="150" cy="50" r="12" fill="none" stroke="#28a745" stroke-width="2" opacity="0.5">
+    <animate attributeName="r" values="8;16;8" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0;0.5" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

@@ -1,0 +1,54 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rustGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ce422b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f74c00;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f8f9fa" rx="20"/>
+  
+  <!-- Rust logo inspired gear -->
+  <circle cx="100" cy="100" r="40" fill="url(#rustGradient)"/>
+  
+  <!-- Gear teeth -->
+  <g fill="url(#rustGradient)">
+    <rect x="95" y="50" width="10" height="15" rx="2"/>
+    <rect x="95" y="135" width="10" height="15" rx="2"/>
+    <rect x="50" y="95" width="15" height="10" rx="2"/>
+    <rect x="135" y="95" width="15" height="10" rx="2"/>
+    
+    <!-- Diagonal teeth -->
+    <rect x="125" y="65" width="12" height="8" rx="2" transform="rotate(45 131 69)"/>
+    <rect x="63" y="65" width="12" height="8" rx="2" transform="rotate(-45 69 69)"/>
+    <rect x="125" y="127" width="12" height="8" rx="2" transform="rotate(-45 131 131)"/>
+    <rect x="63" y="127" width="12" height="8" rx="2" transform="rotate(45 69 131)"/>
+  </g>
+  
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="20" fill="white"/>
+  
+  <!-- Performance indicators -->
+  <g fill="#ce422b">
+    <polygon points="100,85 105,95 95,95" />
+    <text x="100" y="110" text-anchor="middle" font-size="12" font-weight="bold">FAST</text>
+  </g>
+  
+  <!-- Speed lines -->
+  <g stroke="#f74c00" stroke-width="3" opacity="0.7">
+    <line x1="20" y1="40" x2="40" y2="40"/>
+    <line x1="25" y1="50" x2="45" y2="50"/>
+    <line x1="30" y1="60" x2="50" y2="60"/>
+    
+    <line x1="160" y1="140" x2="180" y2="140"/>
+    <line x1="155" y1="150" x2="175" y2="150"/>
+    <line x1="150" y1="160" x2="170" y2="160"/>
+  </g>
+  
+  <!-- Title -->
+  <text x="100" y="25" text-anchor="middle" fill="#ce422b" font-size="16" font-weight="bold">Rust Performance</text>
+  
+  <!-- Performance metrics -->
+  <text x="100" y="180" text-anchor="middle" fill="#666" font-size="12">Memory Safe • Zero Cost</text>
+</svg>

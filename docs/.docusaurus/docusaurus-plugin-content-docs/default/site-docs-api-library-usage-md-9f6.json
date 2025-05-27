@@ -1,0 +1,24 @@
+{
+  "id": "api/library-usage",
+  "title": "Library Usage",
+  "description": "PMDaemon can be used as a Rust library, allowing you to embed process management capabilities directly into your applications. This guide shows how to integrate PMDaemon's powerful process management features into your Rust projects.",
+  "source": "@site/docs/api/library-usage.md",
+  "sourceDirName": "api",
+  "slug": "/api/library-usage",
+  "permalink": "/pmdaemon/docs/api/library-usage",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/library-usage.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "WebSocket API",
+    "permalink": "/pmdaemon/docs/api/websocket-api"
+  },
+  "next": {
+    "title": "API Examples",
+    "permalink": "/pmdaemon/docs/api/api-examples"
+  }
+}

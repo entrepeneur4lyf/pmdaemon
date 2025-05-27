@@ -1,0 +1,24 @@
+{
+  "id": "api/rest-api",
+  "title": "REST API Reference",
+  "description": "PMDaemon provides a comprehensive REST API for remote process management and monitoring. The API is PM2-compatible and includes additional features unique to PMDaemon.",
+  "source": "@site/docs/api/rest-api.md",
+  "sourceDirName": "api",
+  "slug": "/api/rest-api",
+  "permalink": "/pmdaemon/docs/api/rest-api",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/rest-api.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Schema Validation",
+    "permalink": "/pmdaemon/docs/configuration/schema-validation"
+  },
+  "next": {
+    "title": "WebSocket API",
+    "permalink": "/pmdaemon/docs/api/websocket-api"
+  }
+}

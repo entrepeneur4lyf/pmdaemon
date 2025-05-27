@@ -1,0 +1,24 @@
+{
+  "id": "api/api-examples",
+  "title": "API Examples",
+  "description": "This guide provides practical examples of using PMDaemon's REST and WebSocket APIs in various programming languages and scenarios. From simple process management to complex monitoring dashboards, these examples will help you integrate PMDaemon into your applications.",
+  "source": "@site/docs/api/api-examples.md",
+  "sourceDirName": "api",
+  "slug": "/api/api-examples",
+  "permalink": "/pmdaemon/docs/api/api-examples",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/api-examples.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Library Usage",
+    "permalink": "/pmdaemon/docs/api/library-usage"
+  },
+  "next": {
+    "title": "Real-World Use Cases",
+    "permalink": "/pmdaemon/docs/examples/use-cases"
+  }
+}

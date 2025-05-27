@@ -380,11 +380,13 @@ cargo test --test e2e_tests
 ```
 
 ### Test Coverage
-- **223 Total Tests**
-  - 146 Unit tests (including comprehensive delete operation tests)
+- **267 Total Tests**
+  - 146 Unit tests (library)
+  - 32 Unit tests (binary CLI)
   - 13 Integration tests (including delete functionality tests)
   - 8 End-to-end tests
-  - 56 Documentation tests
+  - 8 Configuration format tests
+  - 60 Documentation tests
 
 ## 🗺️ Roadmap
 
