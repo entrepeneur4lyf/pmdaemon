@@ -41,6 +41,14 @@
               "sidebar": "tutorialSidebar"
             },
             {
+              "id": "api/authentication",
+              "path": "/pmdaemon/docs/api/authentication"
+            },
+            {
+              "id": "api/error-handling",
+              "path": "/pmdaemon/docs/api/error-handling"
+            },
+            {
               "id": "api/library-usage",
               "path": "/pmdaemon/docs/api/library-usage",
               "sidebar": "tutorialSidebar"
@@ -86,9 +94,17 @@
               "sidebar": "tutorialSidebar"
             },
             {
+              "id": "configuration/best-practices",
+              "path": "/pmdaemon/docs/configuration/best-practices"
+            },
+            {
               "id": "configuration/ecosystem-files",
               "path": "/pmdaemon/docs/configuration/ecosystem-files",
               "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "configuration/environment-specific",
+              "path": "/pmdaemon/docs/configuration/environment-specific"
             },
             {
               "id": "configuration/process-configuration",
@@ -99,6 +115,10 @@
               "id": "configuration/schema-validation",
               "path": "/pmdaemon/docs/configuration/schema-validation",
               "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "examples/clustering",
+              "path": "/pmdaemon/docs/examples/clustering"
             },
             {
               "id": "examples/deployment-examples",
@@ -124,6 +144,10 @@
               "id": "features/health-checks",
               "path": "/pmdaemon/docs/features/health-checks",
               "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/load-balancing",
+              "path": "/pmdaemon/docs/features/load-balancing"
             },
             {
               "id": "features/monitoring",
@@ -164,6 +188,18 @@
               "id": "getting-started/quick-start",
               "path": "/pmdaemon/docs/getting-started/quick-start",
               "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "monitoring/overview",
+              "path": "/pmdaemon/docs/monitoring/overview"
+            },
+            {
+              "id": "performance/optimization",
+              "path": "/pmdaemon/docs/performance/optimization"
+            },
+            {
+              "id": "security/overview",
+              "path": "/pmdaemon/docs/security/overview"
             }
           ],
           "draftIds": [],

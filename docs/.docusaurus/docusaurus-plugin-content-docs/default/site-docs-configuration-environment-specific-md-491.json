@@ -1,0 +1,15 @@
+{
+  "id": "configuration/environment-specific",
+  "title": "Environment-Specific Configuration",
+  "description": "PMDaemon supports environment-specific configurations to manage different deployment stages (development, staging, production) with tailored settings for each environment.",
+  "source": "@site/docs/configuration/environment-specific.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/environment-specific",
+  "permalink": "/pmdaemon/docs/configuration/environment-specific",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/environment-specific.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

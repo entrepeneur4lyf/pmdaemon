@@ -1,0 +1,15 @@
+{
+  "id": "configuration/best-practices",
+  "title": "Configuration Best Practices",
+  "description": "This guide covers best practices for configuring PMDaemon ecosystem files, ensuring optimal performance, reliability, and maintainability across different environments.",
+  "source": "@site/docs/configuration/best-practices.md",
+  "sourceDirName": "configuration",
+  "slug": "/configuration/best-practices",
+  "permalink": "/pmdaemon/docs/configuration/best-practices",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/configuration/best-practices.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

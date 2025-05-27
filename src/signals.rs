@@ -46,7 +46,9 @@
 //! ```
 
 use crate::error::{Error, Result};
+#[cfg(unix)]
 use nix::sys::signal::{Signal, kill};
+#[cfg(unix)]
 use nix::unistd::Pid;
 use std::str::FromStr;
 use std::sync::Arc;
@@ -166,6 +168,7 @@ impl SignalHandler {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(unix)]
     pub fn send_signal(&self, pid: u32, signal: ProcessSignal) -> Result<()> {
         let pid = Pid::from_raw(pid as i32);
         let signal = match signal {
@@ -180,6 +183,37 @@ impl SignalHandler {
         debug!("Sending signal {} to PID {}", signal, pid);
         kill(pid, signal).map_err(|e| Error::signal(format!("Failed to send signal {} to PID {}: {}", signal, pid, e)))?;
         Ok(())
+    }
+
+    /// Send a signal to a process (Windows implementation).
+    ///
+    /// On Windows, this provides limited signal functionality using process termination.
+    /// Only Term and Kill signals are supported and both result in process termination.
+    #[cfg(windows)]
+    pub fn send_signal(&self, pid: u32, signal: ProcessSignal) -> Result<()> {
+        use std::process::Command;
+
+        debug!("Sending signal {} to PID {} (Windows)", signal, pid);
+
+        match signal {
+            ProcessSignal::Term | ProcessSignal::Kill => {
+                // Use taskkill for process termination on Windows
+                let output = Command::new("taskkill")
+                    .args(&["/PID", &pid.to_string(), "/F"])
+                    .output()
+                    .map_err(|e| Error::signal(format!("Failed to execute taskkill: {}", e)))?;
+
+                if !output.status.success() {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    return Err(Error::signal(format!("Failed to kill process {}: {}", pid, stderr)));
+                }
+                Ok(())
+            }
+            _ => {
+                // Other signals are not supported on Windows
+                Err(Error::signal(format!("Signal {} is not supported on Windows", signal)))
+            }
+        }
     }
 
     /// Setup signal handlers for graceful shutdown.
@@ -202,8 +236,7 @@ impl SignalHandler {
     ///
     /// # Platform Support
     ///
-    /// This method is only available on Unix-like systems. On other platforms,
-    /// it will return an error.
+    /// This method is available on Unix-like systems and Windows with different implementations.
     ///
     /// # Examples
     ///
@@ -223,8 +256,9 @@ impl SignalHandler {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(unix)]
     pub async fn setup_handlers(&self) -> Result<()> {
-        info!("Setting up signal handlers for graceful shutdown");
+        info!("Setting up signal handlers for graceful shutdown (Unix)");
 
         let shutdown_flag = Arc::clone(&self.shutdown_requested);
 
@@ -250,6 +284,28 @@ impl SignalHandler {
                     shutdown_flag_int.store(true, Ordering::Relaxed);
                 }
             }
+        });
+
+        debug!("Signal handlers setup completed");
+        Ok(())
+    }
+
+    /// Setup signal handlers for graceful shutdown (Windows implementation).
+    ///
+    /// On Windows, this sets up handlers for Ctrl+C (SIGINT equivalent).
+    #[cfg(windows)]
+    pub async fn setup_handlers(&self) -> Result<()> {
+        info!("Setting up signal handlers for graceful shutdown (Windows)");
+
+        let shutdown_flag = Arc::clone(&self.shutdown_requested);
+
+        // Setup Ctrl+C handler
+        let ctrl_c = signal::ctrl_c();
+
+        tokio::spawn(async move {
+            ctrl_c.await.ok();
+            info!("Received Ctrl+C, initiating graceful shutdown");
+            shutdown_flag.store(true, Ordering::Relaxed);
         });
 
         debug!("Signal handlers setup completed");
@@ -302,8 +358,9 @@ impl SignalHandler {
     /// # Ok(())
     /// # }
     /// ```
+    #[cfg(unix)]
     pub async fn graceful_shutdown(&self, pid: u32, timeout_ms: u64) -> Result<()> {
-        debug!("Initiating graceful shutdown for PID {} with timeout {}ms", pid, timeout_ms);
+        debug!("Initiating graceful shutdown for PID {} with timeout {}ms (Unix)", pid, timeout_ms);
 
         // Send SIGTERM first
         self.send_signal(pid, ProcessSignal::Term)?;
@@ -353,6 +410,47 @@ impl SignalHandler {
 
         // If we get here, even SIGKILL didn't work
         Err(Error::signal(format!("Failed to kill process {} even with SIGKILL", pid)))
+    }
+
+    /// Gracefully shutdown a process (Windows implementation).
+    ///
+    /// On Windows, this uses taskkill to terminate the process.
+    #[cfg(windows)]
+    pub async fn graceful_shutdown(&self, pid: u32, timeout_ms: u64) -> Result<()> {
+        debug!("Initiating graceful shutdown for PID {} with timeout {}ms (Windows)", pid, timeout_ms);
+
+        // On Windows, we'll try a graceful termination first, then force kill
+        // First attempt: try normal termination
+        if let Ok(_) = self.send_signal(pid, ProcessSignal::Term) {
+            // Wait for process to exit
+            let timeout = tokio::time::Duration::from_millis(timeout_ms);
+            let start = tokio::time::Instant::now();
+            let poll_interval = tokio::time::Duration::from_millis(100);
+
+            while start.elapsed() < timeout {
+                // Check if process still exists using tasklist
+                let output = std::process::Command::new("tasklist")
+                    .args(&["/FI", &format!("PID eq {}", pid)])
+                    .output();
+
+                if let Ok(output) = output {
+                    let stdout = String::from_utf8_lossy(&output.stdout);
+                    if !stdout.contains(&pid.to_string()) {
+                        info!("Process {} exited gracefully", pid);
+                        return Ok(());
+                    }
+                }
+
+                tokio::time::sleep(poll_interval).await;
+            }
+        }
+
+        // Force kill if graceful didn't work
+        warn!("Process {} did not exit gracefully within {}ms, force killing", pid, timeout_ms);
+        self.send_signal(pid, ProcessSignal::Kill)?;
+
+        info!("Process {} forcefully terminated", pid);
+        Ok(())
     }
 }
 

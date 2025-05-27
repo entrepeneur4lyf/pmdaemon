@@ -1,0 +1,69 @@
+{
+  "permalink": "/pmdaemon/changelog/v0.1.1",
+  "source": "@site/changelog/2025-05-26-v0.1.1.md",
+  "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
+  "description": "We're excited to announce PMDaemon v0.1.1, a significant update that brings powerful new features for production environments, enhanced safety mechanisms, and comprehensive health monitoring capabilities.",
+  "date": "2025-05-26T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "release",
+      "permalink": "/pmdaemon/changelog/tags/release"
+    },
+    {
+      "inline": true,
+      "label": "health-checks",
+      "permalink": "/pmdaemon/changelog/tags/health-checks"
+    },
+    {
+      "inline": true,
+      "label": "monitoring",
+      "permalink": "/pmdaemon/changelog/tags/monitoring"
+    },
+    {
+      "inline": true,
+      "label": "delete-operations",
+      "permalink": "/pmdaemon/changelog/tags/delete-operations"
+    },
+    {
+      "inline": true,
+      "label": "testing",
+      "permalink": "/pmdaemon/changelog/tags/testing"
+    }
+  ],
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "PMDaemon Team",
+      "title": "PMDaemon Maintainers",
+      "url": "https://github.com/entrepeneur4lyf/pmdaemon",
+      "imageURL": "https://github.com/entrepeneur4lyf.png",
+      "key": "pmdaemon",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "slug": "v0.1.1",
+    "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
+    "authors": [
+      "pmdaemon"
+    ],
+    "tags": [
+      "release",
+      "health-checks",
+      "monitoring",
+      "delete-operations",
+      "testing"
+    ],
+    "date": "2025-05-26T00:00:00.000Z"
+  },
+  "unlisted": false,
+  "prevItem": {
+    "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
+    "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-files"
+  },
+  "nextItem": {
+    "title": "PMDaemon v0.1.0 - Initial Release",
+    "permalink": "/pmdaemon/changelog/v0.1.0"
+  }
+}

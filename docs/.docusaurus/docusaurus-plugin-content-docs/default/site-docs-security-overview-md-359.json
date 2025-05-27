@@ -1,0 +1,15 @@
+{
+  "id": "security/overview",
+  "title": "Security Overview",
+  "description": "PMDaemon provides multiple layers of security to protect your applications and the daemon itself. This guide covers security features, best practices, and configuration options.",
+  "source": "@site/docs/security/overview.md",
+  "sourceDirName": "security",
+  "slug": "/security/overview",
+  "permalink": "/pmdaemon/docs/security/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/security/overview.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

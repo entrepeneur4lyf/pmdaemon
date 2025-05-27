@@ -70,6 +70,7 @@ pub enum Error {
 
     /// System error (nix)
     #[error("System error: {0}")]
+    #[cfg(unix)]
     System(#[from] nix::Error),
 
     /// Signal handling error
@@ -248,7 +249,12 @@ impl Error {
 
     /// Check if this error is a system error
     pub fn is_system_error(&self) -> bool {
-        matches!(self, Error::System(_) | Error::Io(_))
+        match self {
+            Error::Io(_) => true,
+            #[cfg(unix)]
+            Error::System(_) => true,
+            _ => false,
+        }
     }
 
     /// Get the error category as a string
@@ -264,6 +270,7 @@ impl Error {
             Error::Config { .. } => "config",
             Error::Serialization(_) => "serialization",
             Error::Toml(_) => "toml",
+            #[cfg(unix)]
             Error::System(_) => "system",
             Error::Signal { .. } => "signal",
             Error::Monitoring { .. } => "monitoring",

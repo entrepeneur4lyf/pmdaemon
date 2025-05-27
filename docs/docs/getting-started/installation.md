@@ -1,12 +1,12 @@
 # Installation
 
-PMDaemon can be installed through multiple methods. Choose the one that works best for your environment.
+PMDaemon is **fully cross-platform** and can be installed on Linux, Windows, and macOS through multiple methods. Choose the one that works best for your environment.
 
 ## Prerequisites
 
 - **Rust 1.70+** (for building from source)
-- **Operating System**: Linux, macOS, or Windows
-- **Architecture**: x86_64 or ARM64
+- **Operating System**: Linux, macOS, or Windows (full native support)
+- **Architecture**: x86_64 or ARM64 (Apple Silicon supported)
 
 ## Method 1: Install from Crates.io (Recommended)
 
@@ -30,18 +30,45 @@ pmdaemon --version
 
 ## Method 2: Build from Source
 
-For the latest development version or custom builds:
+For the latest development version or custom builds (works on all platforms):
 
 ```bash
 # Clone the repository
 git clone https://github.com/entrepeneur4lyf/pmdaemon.git
 cd pmdaemon
 
-# Build in release mode
+# Build in release mode (native platform)
 cargo build --release
+```
 
-# Install to system (optional)
+**Platform-specific installation:**
+
+**Linux/macOS:**
+```bash
 sudo cp target/release/pmdaemon /usr/local/bin/
+```
+
+**Windows:**
+```cmd
+copy target\release\pmdaemon.exe C:\Windows\System32\
+```
+
+### Cross-Platform Building
+
+You can also build for other platforms:
+
+```bash
+# Add cross-compilation targets
+rustup target add x86_64-pc-windows-gnu
+rustup target add x86_64-apple-darwin
+rustup target add aarch64-apple-darwin
+
+# Build for Windows (from Linux)
+cargo build --release --target x86_64-pc-windows-gnu
+
+# Build for macOS (requires macOS machine)
+cargo build --release --target x86_64-apple-darwin
+cargo build --release --target aarch64-apple-darwin
 ```
 
 ### Development Build
@@ -58,24 +85,35 @@ cargo build
 
 ## Method 3: Pre-built Binaries
 
-Download pre-built binaries from the [GitHub Releases](https://github.com/entrepeneur4lyf/pmdaemon/releases) page:
+Download platform-specific pre-built binaries from the [GitHub Releases](https://github.com/entrepeneur4lyf/pmdaemon/releases) page:
 
 ### Linux (x86_64)
 ```bash
-wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-linux-x86_64.tar.gz
-tar -xzf pmdaemon-linux-x86_64.tar.gz
-sudo mv pmdaemon /usr/local/bin/
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-linux-x86_64
+chmod +x pmdaemon-linux-x86_64
+sudo mv pmdaemon-linux-x86_64 /usr/local/bin/pmdaemon
 ```
 
-### macOS (x86_64)
+### Windows (x86_64)
+```cmd
+# Download pmdaemon-windows-x86_64.exe
+# Place in a directory in your PATH, or:
+copy pmdaemon-windows-x86_64.exe C:\Windows\System32\pmdaemon.exe
+```
+
+### macOS Intel (x86_64)
 ```bash
-wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-macos-x86_64.tar.gz
-tar -xzf pmdaemon-macos-x86_64.tar.gz
-sudo mv pmdaemon /usr/local/bin/
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-macos-x86_64
+chmod +x pmdaemon-macos-x86_64
+sudo mv pmdaemon-macos-x86_64 /usr/local/bin/pmdaemon
 ```
 
-### Windows
-Download `pmdaemon-windows-x86_64.zip` and extract to a directory in your PATH.
+### macOS Apple Silicon (aarch64)
+```bash
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-macos-aarch64
+chmod +x pmdaemon-macos-aarch64
+sudo mv pmdaemon-macos-aarch64 /usr/local/bin/pmdaemon
+```
 
 ## Method 4: Package Managers
 

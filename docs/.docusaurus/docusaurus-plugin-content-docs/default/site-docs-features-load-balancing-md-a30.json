@@ -1,0 +1,15 @@
+{
+  "id": "features/load-balancing",
+  "title": "Load Balancing",
+  "description": "PMDaemon provides built-in load balancing capabilities for distributing traffic across multiple application instances, ensuring high availability and optimal resource utilization.",
+  "source": "@site/docs/features/load-balancing.md",
+  "sourceDirName": "features",
+  "slug": "/features/load-balancing",
+  "permalink": "/pmdaemon/docs/features/load-balancing",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/load-balancing.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

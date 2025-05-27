@@ -1,0 +1,15 @@
+{
+  "id": "api/authentication",
+  "title": "API Authentication",
+  "description": "PMDaemon provides robust authentication mechanisms to secure API access. This guide covers all available authentication methods and their configuration.",
+  "source": "@site/docs/api/authentication.md",
+  "sourceDirName": "api",
+  "slug": "/api/authentication",
+  "permalink": "/pmdaemon/docs/api/authentication",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/authentication.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

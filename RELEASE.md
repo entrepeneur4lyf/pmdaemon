@@ -1,12 +1,47 @@
-# PMDaemon v0.1.1 - Enhanced Deletion, Health Checks & Blocking Start 🚀🗑️🏥
+# PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management 🚀📁
 
-**Release Date:** January 26, 2025
+**Release Date:** May 27, 2025
 
-We are excited to announce PMDaemon v0.1.1 - a major feature update that adds powerful **Enhanced Delete Operations**, comprehensive **Health Check functionality**, and **Blocking Start capabilities**, making PMDaemon even more robust and user-friendly for production deployments.
+We are excited to announce PMDaemon v0.1.2 - a major productivity update that introduces **Ecosystem Configuration File Support**, enabling seamless management of multiple applications through JSON, YAML, and TOML configuration files. This release brings PMDaemon closer to PM2's ecosystem functionality while maintaining its superior port management and monitoring capabilities.
 
-## 🎉 What's New in v0.1.1
+## 🎉 What's New in v0.1.2
 
-This release introduces advanced health check capabilities, blocking start functionality, and significantly enhanced delete operations, addressing key user requests for production process management. PMDaemon now provides comprehensive monitoring and control that goes far beyond what's available in PM2.
+This release focuses on developer productivity and deployment automation by introducing comprehensive ecosystem configuration support. PMDaemon now allows you to define and manage complex multi-application setups through simple configuration files, making it ideal for microservices, development environments, and production deployments.
+
+## ✨ New Features in v0.1.2
+
+### 📁 Ecosystem Configuration Files
+- **Multi-Format Support** - JSON, YAML, and TOML configuration files
+  ```bash
+  pmdaemon --config ecosystem.json start
+  pmdaemon --config ecosystem.yaml start
+  pmdaemon --config ecosystem.toml start
+  ```
+- **Full Feature Parity** - All CLI options available in config files
+- **App-Specific Targeting** - Start specific applications from config files
+  ```bash
+  pmdaemon --config ecosystem.json start --name web-server
+  ```
+
+### 🎯 Advanced Configuration Management
+- **Comprehensive Field Support** - All process options configurable via files
+- **Environment-Specific Configs** - Separate config files for different environments
+- **Validation & Error Handling** - Detailed error messages for configuration issues
+- **Schema Validation** - Comprehensive validation of all configuration fields
+
+## Previous Releases
+
+### v0.1.1 - Enhanced Deletion, Health Checks & Blocking Start
+For details about v0.1.1 features, see [RELEASE_v0.1.1.md](RELEASE_v0.1.1.md)
+
+- Enhanced Delete Operations (bulk deletion, status-based deletion)
+- Health Checks & Monitoring (HTTP & script-based health checks)
+- Blocking Start Command (wait for ready processes)
+
+### v0.1.0 - Initial Release
+- Core Process Management with advanced port management
+- Real-time monitoring and web API
+- Clustering and auto-restart capabilities
 
 ## ✨ New Features in v0.1.1
 
@@ -137,19 +172,14 @@ pmdaemon delete online --status
 
 ## 📊 Project Stats & Quality
 
-- **223 total tests** (up from 158 prior to v0.1.1 delete/health check enhancements)
-  - Comprehensive health check coverage
-  - New test suites for delete operations:
-    - Bulk deletion functionality
-    - Status-based deletion
-    - Process lifecycle management (for deletion)
-    - Error handling and edge cases in deletion
-- **End-to-end tests** verify complete delete workflows and health check integrations.
-- **Safety testing** ensures confirmations work correctly.
-- **Error path testing** validates graceful failure handling.
-- **8 completed development phases** (including health checks and enhanced delete)
-- **100% core feature coverage** plus advanced health monitoring and deletion
-- **Production-ready** stability with enhanced reliability features
+- **267 total tests** (comprehensive ecosystem config coverage)
+  - Configuration parsing and validation tests
+  - Multi-format file support testing
+  - Error handling and edge case coverage
+  - End-to-end ecosystem workflow tests
+- **9 completed development phases** (including ecosystem configuration)
+- **100% feature coverage** with advanced multi-app management
+- **Production-ready** stability with comprehensive configuration support
 
 ## 🆚 Comparison with PM2
 

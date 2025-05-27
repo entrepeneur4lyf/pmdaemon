@@ -1,0 +1,58 @@
+{
+  "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-files",
+  "source": "@site/changelog/2025-05-27-v0.1.2.md",
+  "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
+  "description": "We're excited to announce PMDaemon v0.1.2, a major productivity update that introduces Ecosystem Configuration File Support, enabling seamless management of multiple applications through JSON, YAML, and TOML configuration files.",
+  "date": "2025-05-27T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "release",
+      "permalink": "/pmdaemon/changelog/tags/release"
+    },
+    {
+      "inline": true,
+      "label": "ecosystem",
+      "permalink": "/pmdaemon/changelog/tags/ecosystem"
+    },
+    {
+      "inline": true,
+      "label": "config-files",
+      "permalink": "/pmdaemon/changelog/tags/config-files"
+    },
+    {
+      "inline": true,
+      "label": "multi-app",
+      "permalink": "/pmdaemon/changelog/tags/multi-app"
+    }
+  ],
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "Shawn McAllister",
+      "title": "PMDaemon Developer",
+      "url": "https://github.com/entrepeneur4lyf",
+      "imageURL": "https://github.com/entrepeneur4lyf.png",
+      "key": "shawn",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "slug": "v0.1.2-ecosystem-config-files",
+    "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
+    "authors": [
+      "shawn"
+    ],
+    "tags": [
+      "release",
+      "ecosystem",
+      "config-files",
+      "multi-app"
+    ]
+  },
+  "unlisted": false,
+  "nextItem": {
+    "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
+    "permalink": "/pmdaemon/changelog/v0.1.1"
+  }
+}

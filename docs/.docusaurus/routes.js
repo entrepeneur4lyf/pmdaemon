@@ -38,21 +38,116 @@ export default [
     exact: true
   },
   {
+    path: '/pmdaemon/changelog',
+    component: ComponentCreator('/pmdaemon/changelog', '04e'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/archive',
+    component: ComponentCreator('/pmdaemon/changelog/archive', '8cd'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/authors',
+    component: ComponentCreator('/pmdaemon/changelog/authors', 'e68'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags',
+    component: ComponentCreator('/pmdaemon/changelog/tags', 'f14'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/config-files',
+    component: ComponentCreator('/pmdaemon/changelog/tags/config-files', 'e14'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/delete-operations',
+    component: ComponentCreator('/pmdaemon/changelog/tags/delete-operations', 'f2c'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/ecosystem',
+    component: ComponentCreator('/pmdaemon/changelog/tags/ecosystem', 'ced'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/health-checks',
+    component: ComponentCreator('/pmdaemon/changelog/tags/health-checks', '36a'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/initial',
+    component: ComponentCreator('/pmdaemon/changelog/tags/initial', '59f'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/monitoring',
+    component: ComponentCreator('/pmdaemon/changelog/tags/monitoring', 'b6c'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/multi-app',
+    component: ComponentCreator('/pmdaemon/changelog/tags/multi-app', 'fbc'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/pm-2',
+    component: ComponentCreator('/pmdaemon/changelog/tags/pm-2', '447'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/process-manager',
+    component: ComponentCreator('/pmdaemon/changelog/tags/process-manager', 'dd6'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/release',
+    component: ComponentCreator('/pmdaemon/changelog/tags/release', 'dfb'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/rust',
+    component: ComponentCreator('/pmdaemon/changelog/tags/rust', '47e'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/testing',
+    component: ComponentCreator('/pmdaemon/changelog/tags/testing', '28e'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/v0.1.0',
+    component: ComponentCreator('/pmdaemon/changelog/v0.1.0', 'd92'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/v0.1.1',
+    component: ComponentCreator('/pmdaemon/changelog/v0.1.1', '975'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/v0.1.2-ecosystem-config-files',
+    component: ComponentCreator('/pmdaemon/changelog/v0.1.2-ecosystem-config-files', '67b'),
+    exact: true
+  },
+  {
     path: '/pmdaemon/search',
     component: ComponentCreator('/pmdaemon/search', 'a96'),
     exact: true
   },
   {
     path: '/pmdaemon/docs',
-    component: ComponentCreator('/pmdaemon/docs', 'c3d'),
+    component: ComponentCreator('/pmdaemon/docs', 'b04'),
     routes: [
       {
         path: '/pmdaemon/docs',
-        component: ComponentCreator('/pmdaemon/docs', '447'),
+        component: ComponentCreator('/pmdaemon/docs', '389'),
         routes: [
           {
             path: '/pmdaemon/docs',
-            component: ComponentCreator('/pmdaemon/docs', '685'),
+            component: ComponentCreator('/pmdaemon/docs', '8b7'),
             routes: [
               {
                 path: '/pmdaemon/docs/advanced/clustering',
@@ -89,6 +184,16 @@ export default [
                 component: ComponentCreator('/pmdaemon/docs/api/api-examples', '87a'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/api/authentication',
+                component: ComponentCreator('/pmdaemon/docs/api/authentication', '09a'),
+                exact: true
+              },
+              {
+                path: '/pmdaemon/docs/api/error-handling',
+                component: ComponentCreator('/pmdaemon/docs/api/error-handling', 'd2e'),
+                exact: true
               },
               {
                 path: '/pmdaemon/docs/api/library-usage',
@@ -145,10 +250,20 @@ export default [
                 sidebar: "tutorialSidebar"
               },
               {
+                path: '/pmdaemon/docs/configuration/best-practices',
+                component: ComponentCreator('/pmdaemon/docs/configuration/best-practices', '7ae'),
+                exact: true
+              },
+              {
                 path: '/pmdaemon/docs/configuration/ecosystem-files',
                 component: ComponentCreator('/pmdaemon/docs/configuration/ecosystem-files', 'a76'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/configuration/environment-specific',
+                component: ComponentCreator('/pmdaemon/docs/configuration/environment-specific', 'fa3'),
+                exact: true
               },
               {
                 path: '/pmdaemon/docs/configuration/process-configuration',
@@ -161,6 +276,11 @@ export default [
                 component: ComponentCreator('/pmdaemon/docs/configuration/schema-validation', '708'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/examples/clustering',
+                component: ComponentCreator('/pmdaemon/docs/examples/clustering', 'b35'),
+                exact: true
               },
               {
                 path: '/pmdaemon/docs/examples/deployment-examples',
@@ -191,6 +311,11 @@ export default [
                 component: ComponentCreator('/pmdaemon/docs/features/health-checks', '45b'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/features/load-balancing',
+                component: ComponentCreator('/pmdaemon/docs/features/load-balancing', '2d2'),
+                exact: true
               },
               {
                 path: '/pmdaemon/docs/features/monitoring',
@@ -239,6 +364,21 @@ export default [
                 component: ComponentCreator('/pmdaemon/docs/getting-started/quick-start', 'f76'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/monitoring/overview',
+                component: ComponentCreator('/pmdaemon/docs/monitoring/overview', '088'),
+                exact: true
+              },
+              {
+                path: '/pmdaemon/docs/performance/optimization',
+                component: ComponentCreator('/pmdaemon/docs/performance/optimization', '8ce'),
+                exact: true
+              },
+              {
+                path: '/pmdaemon/docs/security/overview',
+                component: ComponentCreator('/pmdaemon/docs/security/overview', 'd8b'),
+                exact: true
               }
             ]
           }

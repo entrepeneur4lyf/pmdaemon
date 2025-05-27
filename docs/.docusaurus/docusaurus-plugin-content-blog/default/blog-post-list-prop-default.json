@@ -1,4 +1,23 @@
 {
-  "title": "Recent posts",
-  "items": []
+  "title": "Recent releases",
+  "items": [
+    {
+      "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
+      "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-files",
+      "unlisted": false,
+      "date": "2025-05-27T00:00:00.000Z"
+    },
+    {
+      "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
+      "permalink": "/pmdaemon/changelog/v0.1.1",
+      "unlisted": false,
+      "date": "2025-05-26T00:00:00.000Z"
+    },
+    {
+      "title": "PMDaemon v0.1.0 - Initial Release",
+      "permalink": "/pmdaemon/changelog/v0.1.0",
+      "unlisted": false,
+      "date": "2025-05-25T00:00:00.000Z"
+    }
+  ]
 }

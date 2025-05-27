@@ -1,0 +1,15 @@
+{
+  "id": "api/error-handling",
+  "title": "Error Handling",
+  "description": "PMDaemon's REST API provides comprehensive error handling with detailed error messages, status codes, and troubleshooting guidance.",
+  "source": "@site/docs/api/error-handling.md",
+  "sourceDirName": "api",
+  "slug": "/api/error-handling",
+  "permalink": "/pmdaemon/docs/api/error-handling",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/api/error-handling.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

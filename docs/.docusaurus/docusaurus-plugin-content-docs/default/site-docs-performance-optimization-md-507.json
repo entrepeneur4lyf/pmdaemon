@@ -1,0 +1,15 @@
+{
+  "id": "performance/optimization",
+  "title": "Performance Optimization",
+  "description": "This guide covers strategies and techniques for optimizing PMDaemon performance and the applications it manages.",
+  "source": "@site/docs/performance/optimization.md",
+  "sourceDirName": "performance",
+  "slug": "/performance/optimization",
+  "permalink": "/pmdaemon/docs/performance/optimization",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/performance/optimization.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

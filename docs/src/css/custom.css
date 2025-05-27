@@ -15,7 +15,24 @@
   --ifm-color-primary-lightest: #4fddbf;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
-  background-color: #1b252f;
+}
+
+/* Force dark theme styling */
+[data-theme='dark'] {
+  --ifm-color-primary: #25c2a0;
+  --ifm-background-color: #1b252f;
+  --ifm-background-surface-color: #1b252f;
+}
+
+/* Ensure navbar has proper dark styling */
+.navbar {
+  background-color: var(--ifm-background-surface-color);
+}
+
+/* Ensure badges have proper contrast */
+.badge {
+  --ifm-badge-background-color: var(--ifm-color-primary);
+  --ifm-badge-color: #fff;
 }
 
 /* Custom styles for PMDaemon */

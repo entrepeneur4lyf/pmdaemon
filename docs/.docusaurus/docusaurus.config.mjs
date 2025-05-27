@@ -44,7 +44,21 @@ export default {
           "sidebarPath": "./sidebars.js",
           "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/"
         },
-        "blog": false,
+        "blog": {
+          "path": "changelog",
+          "routeBasePath": "changelog",
+          "blogTitle": "Changelog",
+          "blogDescription": "PMDaemon release notes and changelog",
+          "blogSidebarTitle": "Recent releases",
+          "blogSidebarCount": 10,
+          "postsPerPage": "ALL",
+          "showReadingTime": false,
+          "feedOptions": {
+            "type": "all",
+            "title": "PMDaemon Changelog",
+            "description": "PMDaemon release notes and changelog"
+          }
+        },
         "theme": {
           "customCss": "./src/css/custom.css"
         }
@@ -53,8 +67,13 @@ export default {
   ],
   "themeConfig": {
     "image": "img/pmdaemon-social-card.jpg",
+    "colorMode": {
+      "disableSwitch": true,
+      "defaultMode": "dark",
+      "respectPrefersColorScheme": false
+    },
     "navbar": {
-      "title": "PMDaemon",
+      "title": "Home",
       "logo": {
         "alt": "PMDaemon Logo",
         "src": "img/logo-small.png"
@@ -77,8 +96,8 @@ export default {
           "position": "left"
         },
         {
-          "to": "/blog",
-          "label": "Blog",
+          "to": "/changelog",
+          "label": "Changelog",
           "position": "left"
         },
         {
@@ -124,6 +143,10 @@ export default {
             {
               "label": "GitHub Discussions",
               "href": "https://github.com/entrepeneur4lyf/pmdaemon/discussions"
+            },
+            {
+              "label": "X",
+              "href": "https://x.com/entrepeneur4lyf"
             }
           ]
         },
@@ -131,8 +154,8 @@ export default {
           "title": "More",
           "items": [
             {
-              "label": "Blog",
-              "to": "/blog"
+              "label": "Changelog",
+              "to": "/changelog"
             },
             {
               "label": "GitHub",
@@ -358,8 +381,8 @@ export default {
       ]
     },
     "algolia": {
-      "appId": "YOUR_APP_ID",
-      "apiKey": "YOUR_SEARCH_API_KEY",
+      "appId": "O2R9OPMFS1",
+      "apiKey": "e3b8bec8a3c350f252e460267f20312b",
       "indexName": "pmdaemon",
       "contextualSearch": true,
       "externalUrlRegex": "external\\.com|domain\\.com",
@@ -369,11 +392,6 @@ export default {
       },
       "searchParameters": {},
       "searchPagePath": "search"
-    },
-    "colorMode": {
-      "defaultMode": "light",
-      "disableSwitch": false,
-      "respectPrefersColorScheme": false
     },
     "docs": {
       "versionPersistence": "localStorage",

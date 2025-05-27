@@ -1,0 +1,15 @@
+{
+  "id": "monitoring/overview",
+  "title": "Monitoring Overview",
+  "description": "PMDaemon provides comprehensive monitoring capabilities to help you track the health and performance of your applications and the daemon itself.",
+  "source": "@site/docs/monitoring/overview.md",
+  "sourceDirName": "monitoring",
+  "slug": "/monitoring/overview",
+  "permalink": "/pmdaemon/docs/monitoring/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/monitoring/overview.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

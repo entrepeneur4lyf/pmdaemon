@@ -42,23 +42,263 @@
       "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
     }
   },
+  "/pmdaemon/changelog-04e": {
+    "__comp": "__comp---theme-blog-list-pagea-6-a-7ba",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-1-d-3-63d"
+      },
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      },
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-67-c-eaf"
+  },
+  "/pmdaemon/changelog/archive-8cd": {
+    "__comp": "__comp---theme-blog-archive-page-9-e-4-1d8",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "__props": "__props---pmdaemon-changelog-archive-9-d-9-592"
+  },
+  "/pmdaemon/changelog/authors-e68": {
+    "__comp": "__comp---theme-blog-pages-blog-authors-list-page-621-70c",
+    "__context": {
+      "data": {
+        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+      },
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "__props": "__props---pmdaemon-changelog-authorsac-0-cef"
+  },
+  "/pmdaemon/changelog/tags-f14": {
+    "__comp": "__comp---theme-blog-tags-list-page-01-a-d0b",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "__props": "__props---pmdaemon-changelog-tags-2-d-8-0d6"
+  },
+  "/pmdaemon/changelog/tags/config-files-e14": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-1-d-3-63d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-config-files-79-f-dc5"
+  },
+  "/pmdaemon/changelog/tags/delete-operations-f2c": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-delete-operations-2-cb-135"
+  },
+  "/pmdaemon/changelog/tags/ecosystem-ced": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-1-d-3-63d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-ecosystem-3-cc-bfa"
+  },
+  "/pmdaemon/changelog/tags/health-checks-36a": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-health-checks-777-234"
+  },
+  "/pmdaemon/changelog/tags/initial-59f": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-initiald-00-aae"
+  },
+  "/pmdaemon/changelog/tags/monitoring-b6c": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-monitoring-434-d88"
+  },
+  "/pmdaemon/changelog/tags/multi-app-fbc": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-1-d-3-63d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-multi-appce-3-691"
+  },
+  "/pmdaemon/changelog/tags/pm-2-447": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-pm-24-fd-449"
+  },
+  "/pmdaemon/changelog/tags/process-manager-dd6": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-process-manager-35-c-15f"
+  },
+  "/pmdaemon/changelog/tags/release-dfb": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-1-d-3-63d"
+      },
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      },
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-releasea-22-8bc"
+  },
+  "/pmdaemon/changelog/tags/rust-47e": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-rust-974-219"
+  },
+  "/pmdaemon/changelog/tags/testing-28e": {
+    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__context": {
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "items": [
+      {
+        "content": "content---pmdaemon-changelog-903-bbb"
+      }
+    ],
+    "__props": "__props---pmdaemon-changelog-tags-testingae-8-364"
+  },
+  "/pmdaemon/changelog/v0.1.0-d92": {
+    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__context": {
+      "data": {
+        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+      },
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "content": "content---pmdaemon-changelog-v-0-1-0704-8d6"
+  },
+  "/pmdaemon/changelog/v0.1.1-975": {
+    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__context": {
+      "data": {
+        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+      },
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "content": "content---pmdaemon-changelog-v-0-1-10-ee-7d5"
+  },
+  "/pmdaemon/changelog/v0.1.2-ecosystem-config-files-67b": {
+    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__context": {
+      "data": {
+        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+      },
+      "plugin": "plugin---pmdaemon-changelog-369-d18"
+    },
+    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "content": "content---pmdaemon-changelog-v-0-1-2-ecosystem-config-files-99-e-3c4"
+  },
   "/pmdaemon/search-a96": {
     "__comp": "__comp---theme-search-page-1-a-4-d6f",
     "__context": {
       "plugin": "plugin---pmdaemon-searchc-14-73a"
     }
   },
-  "/pmdaemon/docs-c3d": {
+  "/pmdaemon/docs-b04": {
     "__comp": "__comp---theme-docs-root-5-e-9-0b6",
     "__context": {
       "plugin": "plugin---pmdaemon-docsaba-9c5"
     }
   },
-  "/pmdaemon/docs-447": {
+  "/pmdaemon/docs-389": {
     "__comp": "__comp---theme-doc-version-roota-7-b-5de",
     "__props": "__props---pmdaemon-docsb-5-e-bc2"
   },
-  "/pmdaemon/docs-685": {
+  "/pmdaemon/docs-8b7": {
     "__comp": "__comp---theme-doc-roota-94-67a"
   },
   "/pmdaemon/docs/advanced/clustering-169": {
@@ -84,6 +324,14 @@
   "/pmdaemon/docs/api/api-examples-87a": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-api-api-examples-0-c-2-ce5"
+  },
+  "/pmdaemon/docs/api/authentication-09a": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-api-authenticationbae-5d9"
+  },
+  "/pmdaemon/docs/api/error-handling-d2e": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-api-error-handling-308-841"
   },
   "/pmdaemon/docs/api/library-usage-a69": {
     "__comp": "__comp---theme-doc-item-178-a40",
@@ -121,9 +369,17 @@
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-configuration-advanced-configurationadb-1db"
   },
+  "/pmdaemon/docs/configuration/best-practices-7ae": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-configuration-best-practices-510-161"
+  },
   "/pmdaemon/docs/configuration/ecosystem-files-a76": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-configuration-ecosystem-files-7-bb-71b"
+  },
+  "/pmdaemon/docs/configuration/environment-specific-fa3": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-configuration-environment-specific-491-c3c"
   },
   "/pmdaemon/docs/configuration/process-configuration-626": {
     "__comp": "__comp---theme-doc-item-178-a40",
@@ -132,6 +388,10 @@
   "/pmdaemon/docs/configuration/schema-validation-708": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-configuration-schema-validationf-0-d-433"
+  },
+  "/pmdaemon/docs/examples/clustering-b35": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-examples-clustering-887-af3"
   },
   "/pmdaemon/docs/examples/deployment-examples-881": {
     "__comp": "__comp---theme-doc-item-178-a40",
@@ -152,6 +412,10 @@
   "/pmdaemon/docs/features/health-checks-45b": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-features-health-checks-30-e-ca2"
+  },
+  "/pmdaemon/docs/features/load-balancing-2d2": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-features-load-balancinga-30-4b0"
   },
   "/pmdaemon/docs/features/monitoring-58e": {
     "__comp": "__comp---theme-doc-item-178-a40",
@@ -184,6 +448,18 @@
   "/pmdaemon/docs/getting-started/quick-start-f76": {
     "__comp": "__comp---theme-doc-item-178-a40",
     "content": "content---pmdaemon-docs-getting-started-quick-start-588-1ca"
+  },
+  "/pmdaemon/docs/monitoring/overview-088": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-monitoring-overviewded-9b1"
+  },
+  "/pmdaemon/docs/performance/optimization-8ce": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-performance-optimization-507-9e5"
+  },
+  "/pmdaemon/docs/security/overview-d8b": {
+    "__comp": "__comp---theme-doc-item-178-a40",
+    "content": "content---pmdaemon-docs-security-overview-359-24f"
   },
   "/pmdaemon/-abc": {
     "__comp": "__comp---site-src-pages-index-jsc-4-f-f99",

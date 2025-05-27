@@ -3,9 +3,9 @@
 [![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Test Coverage](https://img.shields.io/badge/tests-223%20passing-brightgreen.svg)]()
+[![Test Coverage](https://img.shields.io/badge/tests-267%20passing-brightgreen.svg)]()
 
-A high-performance process manager built in Rust, inspired by PM2 with innovative features that exceed the original. PMDaemon is designed for modern application deployment with advanced port management, real-time monitoring, and production-ready web APIs.
+A high-performance, **cross-platform** process manager built in Rust, inspired by PM2 with innovative features that exceed the original. PMDaemon runs natively on **Linux, Windows, and macOS** and is designed for modern application deployment with advanced port management, real-time monitoring, and production-ready web APIs.
 
 ## 📑 Table of Contents
 
@@ -35,6 +35,7 @@ A high-performance process manager built in Rust, inspired by PM2 with innovativ
 - **Auto-restart** - Automatic restart on crashes with configurable limits
 - **Signal Handling** - Graceful shutdown with SIGTERM/SIGINT and custom signals
 - **Configuration Persistence** - Process configs saved and restored between sessions
+- **🆕 Ecosystem Config Files** - Manage multiple applications with JSON, YAML, or TOML config files
 
 ### Advanced Monitoring & Health Checks
 - **Real-time Monitoring** - CPU, memory, uptime tracking with system metrics
@@ -56,22 +57,47 @@ A high-performance process manager built in Rust, inspired by PM2 with innovativ
 - **WebSocket Support** - Live process status and system metrics streaming
 - **Production Web Server** - Built on Axum with CORS and security headers
 
+### 🌍 Cross-Platform Support
+- **Native Windows Support** - Full functionality on Windows with platform-optimized process management
+- **Native macOS Support** - Complete support for both Intel and Apple Silicon Macs
+- **Native Linux Support** - Optimized for Linux servers and development environments
+- **Unified API** - Same commands and features work identically across all platforms
+- **Platform-Specific Optimizations** - Tailored signal handling and process termination for each OS
+
 ## 📦 Installation
 
-### From Source
+### From Source (All Platforms)
 ```bash
 git clone https://github.com/entrepeneur4lyf/pmdaemon
 cd pmdaemon
 cargo build --release
+```
+
+**Linux/macOS:**
+```bash
 sudo cp target/release/pmdaemon /usr/local/bin/
 ```
 
-### Using Cargo
+**Windows:**
+```cmd
+copy target\release\pmdaemon.exe C:\Windows\System32\
+```
+
+### Using Cargo (All Platforms)
 ```bash
 cargo install pmdaemon
 ```
 
+### Pre-built Binaries
+Download platform-specific binaries from [GitHub Releases](https://github.com/entrepeneur4lyf/pmdaemon/releases):
+- **Linux**: `pmdaemon-linux-x86_64`
+- **Windows**: `pmdaemon-windows-x86_64.exe`
+- **macOS Intel**: `pmdaemon-macos-x86_64`
+- **macOS Apple Silicon**: `pmdaemon-macos-aarch64`
+
 ## 🚀 Quick Start
+
+> **Cross-Platform Note**: All commands below work identically on Linux, Windows, and macOS. PMDaemon automatically handles platform-specific differences internally.
 
 ### Basic Process Management
 ```bash
@@ -107,6 +133,31 @@ pmdaemon start worker.js --port auto:5000-5100
 
 # Runtime port override (doesn't modify saved config)
 pmdaemon restart myapp --port 3001
+```
+
+### Ecosystem Configuration Files
+```bash
+# Start all apps from config file (JSON, YAML, or TOML)
+pmdaemon --config ecosystem.json start
+
+# Start specific app from config file
+pmdaemon --config ecosystem.yaml start --name my-web-app
+
+# Example ecosystem.json
+{
+  "apps": [
+    {
+      "name": "web-server",
+      "script": "node",
+      "args": ["server.js"],
+      "instances": 2,
+      "port": "3000-3001",
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}
 ```
 
 ### Memory Limits and Monitoring
@@ -147,6 +198,7 @@ pmdaemon web --port 9615 --host 127.0.0.1
 | Command     | Description                | Example                                |
 |-------------|----------------------------|----------------------------------------|
 | `start`     | Start a new process        | `pmdaemon start app.js --name myapp`  |
+|             | Start from config file     | `pmdaemon --config ecosystem.json start` |
 | `stop`      | Stop a process             | `pmdaemon stop myapp`                 |
 | `restart`   | Restart a process          | `pmdaemon restart myapp`              |
 | `reload`    | Graceful restart           | `pmdaemon reload myapp`               |
@@ -160,6 +212,51 @@ pmdaemon web --port 9615 --host 127.0.0.1
 | `web`       | Start web API server       | `pmdaemon web --port 9615`            |
 
 ## 🔧 Configuration Options
+
+### Ecosystem Configuration Files
+
+PMDaemon supports ecosystem configuration files in JSON, YAML, and TOML formats for managing multiple applications:
+
+```bash
+# Use ecosystem config file
+pmdaemon --config ecosystem.json start
+
+# Start specific app from config
+pmdaemon --config ecosystem.yaml start --name web-server
+```
+
+**Example ecosystem.json:**
+```json
+{
+  "apps": [
+    {
+      "name": "web-server",
+      "script": "node",
+      "args": ["server.js"],
+      "instances": 2,
+      "port": "3000-3001",
+      "env": {
+        "NODE_ENV": "production"
+      },
+      "health_check_url": "http://localhost:3000/health"
+    },
+    {
+      "name": "api-service",
+      "script": "python",
+      "args": ["api.py"],
+      "cwd": "/path/to/api",
+      "max_memory_restart": "512M"
+    }
+  ]
+}
+```
+
+**Supported config formats:**
+- `ecosystem.json` - JSON format
+- `ecosystem.yaml` / `ecosystem.yml` - YAML format
+- `ecosystem.toml` - TOML format
+
+See [CONFIG_USAGE.md](examples/CONFIG_USAGE.md) for detailed ecosystem configuration documentation.
 
 ### Process Configuration
 ```bash
@@ -294,6 +391,9 @@ PMDaemon provides comprehensive monitoring capabilities:
 | **Safe process shutdown**        |    ✅    |  ❌  |
 | Memory limit enforcement         |    ✅    |  ✅  |
 | WebSocket real-time updates      |    ✅    |  ❌  |
+| **Native Windows support**       |    ✅    |  ❌  |
+| **Native macOS support**         |    ✅    |  ❌  |
+| **Cross-platform compatibility** |    ✅    |  ❌  |
 | Rust performance                 |    ✅    |  ❌  |
 | PM2-compatible API               |    ✅    |  ✅  |
 
@@ -383,7 +483,7 @@ cargo test --test e2e_tests
 - **267 Total Tests**
   - 146 Unit tests (library)
   - 32 Unit tests (binary CLI)
-  - 13 Integration tests (including delete functionality tests)
+  - 13 Integration tests (including config file functionality tests)
   - 8 End-to-end tests
   - 8 Configuration format tests
   - 60 Documentation tests
@@ -398,6 +498,8 @@ cargo test --test e2e_tests
 - ✅ Health checks and blocking start (Phase 8)
 - ✅ Enhanced delete operations with bulk and status-based deletion
 - ✅ Safe process shutdown and lifecycle management
+- ✅ **Cross-platform support** - Native Windows, macOS, and Linux compatibility
+- ✅ **Platform-specific optimizations** - Tailored signal handling for each OS
 - ✅ Comprehensive test suite (Phase 10.1-10.3)
 
 ### In Progress 🚧

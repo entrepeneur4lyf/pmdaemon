@@ -1,0 +1,15 @@
+{
+  "id": "examples/clustering",
+  "title": "Clustering Examples",
+  "description": "This guide demonstrates how to implement clustering and load balancing with PMDaemon, including port management strategies for multi-instance applications.",
+  "source": "@site/docs/examples/clustering.md",
+  "sourceDirName": "examples",
+  "slug": "/examples/clustering",
+  "permalink": "/pmdaemon/docs/examples/clustering",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/examples/clustering.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

@@ -11,7 +11,7 @@ This comprehensive comparison shows how PMDaemon builds upon PM2's foundation wh
 | **Memory Safety** | Runtime errors possible | Memory safe by design |
 | **Resource Usage** | Higher (Node.js overhead) | Lower (native binary) |
 | **Startup Time** | Slower | Faster |
-| **Cross-platform** | ✅ Yes | ✅ Yes |
+| **Cross-platform** | ✅ Limited | ✅ **Native** |
 
 ## Feature Comparison Matrix
 
@@ -49,6 +49,9 @@ This comprehensive comparison shows how PMDaemon builds upon PM2's foundation wh
 | **WebSocket real-time updates** | ❌ | ✅ | Live process status via WebSocket |
 | **Multiple config formats** | ❌ | ✅ | JSON, YAML, TOML support |
 | **Schema validation** | ❌ | ✅ | IDE integration with JSON Schema |
+| **Native Windows support** | ❌ | ✅ | Full Windows compatibility with native APIs |
+| **Native macOS support** | ❌ | ✅ | Intel and Apple Silicon native binaries |
+| **Platform-specific optimizations** | ❌ | ✅ | OS-specific signal handling and process management |
 
 ### 🔧 Enhanced Implementations
 
@@ -61,6 +64,41 @@ This comprehensive comparison shows how PMDaemon builds upon PM2's foundation wh
 | **Error handling** | Good | Excellent | Comprehensive error messages, recovery strategies |
 
 ## Detailed Feature Analysis
+
+### Cross-Platform Support
+
+**PM2 Limitations:**
+- Requires Node.js runtime on all platforms
+- Windows support is limited and often problematic
+- macOS support varies by Node.js version
+- Platform-specific issues with signal handling
+- No native binaries - always requires Node.js ecosystem
+
+**PMDaemon Advantages:**
+```bash
+# Native binaries for each platform
+# Linux
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-linux-x86_64
+
+# Windows
+# Download pmdaemon-windows-x86_64.exe - works natively
+
+# macOS Intel
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-macos-x86_64
+
+# macOS Apple Silicon
+wget https://github.com/entrepeneur4lyf/pmdaemon/releases/latest/download/pmdaemon-macos-aarch64
+
+# Same commands work identically on all platforms
+pmdaemon start app.js --name myapp  # Works on Linux, Windows, macOS
+pmdaemon list                       # Identical output everywhere
+```
+
+**Platform-Specific Optimizations:**
+- **Linux**: Native Unix signal handling with `nix` crate
+- **Windows**: Native Windows APIs, Ctrl+C handling, `taskkill` integration
+- **macOS**: Optimized for both Intel and Apple Silicon architectures
+- **All platforms**: Same feature set, same commands, same behavior
 
 ### Port Management
 
@@ -243,6 +281,7 @@ pmdaemon start app.js --instances 4 \
 - **Legacy systems** - Running on very old systems
 
 ### Choose PMDaemon When:
+- **Cross-platform deployment** - Need native Windows, macOS, and Linux support
 - **Performance matters** - Need lower resource usage and faster startup
 - **Production reliability** - Want memory safety and robust error handling
 - **Advanced port management** - Need automatic port allocation and conflict detection
@@ -250,6 +289,9 @@ pmdaemon start app.js --instances 4 \
 - **Modern deployment** - Building new systems or modernizing existing ones
 - **Multi-language support** - Managing non-Node.js applications
 - **Real-time monitoring** - Need WebSocket updates and professional displays
+- **Windows environments** - Need reliable Windows process management
+- **Apple Silicon Macs** - Want native ARM64 performance on M1/M2/M3 Macs
+- **Containerized deployments** - Want smaller, faster container images
 
 ## Migration Checklist
 
@@ -281,7 +323,7 @@ PMDaemon represents the evolution of process management, building on PM2's prove
 
 **PMDaemon** is the better choice for:
 - Performance-critical applications
-- Multi-language environments  
+- Multi-language environments
 - Modern deployment pipelines
 - Teams wanting advanced features like health checks and automatic port management
 

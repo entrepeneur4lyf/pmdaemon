@@ -1,5 +1,5 @@
 {
-  "blogBasePath": "/pmdaemon/blog",
-  "blogTitle": "Blog",
-  "authorsListPath": "/pmdaemon/blog/authors"
+  "blogBasePath": "/pmdaemon/changelog",
+  "blogTitle": "Changelog",
+  "authorsListPath": "/pmdaemon/changelog/authors"
 }

@@ -78,8 +78,13 @@ const config = {
     ({
       // Replace with your project's social card
       image: 'img/pmdaemon-social-card.jpg',
+      colorMode: {
+        disableSwitch: true,
+        defaultMode: 'dark',
+        respectPrefersColorScheme: false,
+      },
       navbar: {
-        title: 'PMDaemon',
+        title: 'Home',
         logo: {
           alt: 'PMDaemon Logo',
           src: 'img/logo-small.png',
@@ -144,6 +149,10 @@ const config = {
               {
                 label: 'GitHub Discussions',
                 href: 'https://github.com/entrepeneur4lyf/pmdaemon/discussions',
+              },
+              {
+                label: 'X',
+                href: 'https://x.com/entrepeneur4lyf',
               },
             ],
           },

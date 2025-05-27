@@ -1,0 +1,65 @@
+{
+  "permalink": "/pmdaemon/changelog/v0.1.0",
+  "source": "@site/changelog/2025-05-25-v0.1.0.md",
+  "title": "PMDaemon v0.1.0 - Initial Release",
+  "description": "We're thrilled to announce the initial release of PMDaemon, a high-performance process manager built in Rust that takes inspiration from PM2 while adding innovative features that exceed the original.",
+  "date": "2025-05-25T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "release",
+      "permalink": "/pmdaemon/changelog/tags/release"
+    },
+    {
+      "inline": true,
+      "label": "initial",
+      "permalink": "/pmdaemon/changelog/tags/initial"
+    },
+    {
+      "inline": true,
+      "label": "process-manager",
+      "permalink": "/pmdaemon/changelog/tags/process-manager"
+    },
+    {
+      "inline": true,
+      "label": "rust",
+      "permalink": "/pmdaemon/changelog/tags/rust"
+    },
+    {
+      "inline": true,
+      "label": "pm2",
+      "permalink": "/pmdaemon/changelog/tags/pm-2"
+    }
+  ],
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "PMDaemon Team",
+      "title": "PMDaemon Maintainers",
+      "url": "https://github.com/entrepeneur4lyf/pmdaemon",
+      "imageURL": "https://github.com/entrepeneur4lyf.png",
+      "key": "pmdaemon",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "slug": "v0.1.0",
+    "title": "PMDaemon v0.1.0 - Initial Release",
+    "authors": [
+      "pmdaemon"
+    ],
+    "tags": [
+      "release",
+      "initial",
+      "process-manager",
+      "rust",
+      "pm2"
+    ],
+    "date": "2025-05-25T00:00:00.000Z"
+  },
+  "unlisted": false,
+  "prevItem": {
+    "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
+    "permalink": "/pmdaemon/changelog/v0.1.1"
+  }
+}
