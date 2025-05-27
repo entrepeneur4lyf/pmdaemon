@@ -297,6 +297,40 @@ PMDaemon provides comprehensive monitoring capabilities:
 | Rust performance                 |    ✅    |  ❌  |
 | PM2-compatible API               |    ✅    |  ✅  |
 
+## Process Flowchart
+
+```mermaid
+graph TD
+
+    17017["User<br>External Actor"]
+    subgraph 17008["PMDaemon Application<br>Rust"]
+        17009["CLI Entry Point<br>Rust"]
+        17010["Web API &amp; UI<br>Rust / HTTP"]
+        17011["Core Process Orchestrator<br>Rust"]
+        17012["Process Execution &amp; State<br>Rust"]
+        17013["Configuration Service<br>Rust"]
+        17014["Process Health Monitor<br>Rust"]
+        17015["Metrics &amp; Monitoring<br>Rust"]
+        17016["OS Signal Handler<br>Rust"]
+        %% Edges at this level (grouped by source)
+        17009["CLI Entry Point<br>Rust"] -->|Executes commands via| 17011["Core Process Orchestrator<br>Rust"]
+        17010["Web API &amp; UI<br>Rust / HTTP"] -->|Manages processes via| 17011["Core Process Orchestrator<br>Rust"]
+        17010["Web API &amp; UI<br>Rust / HTTP"] -->|Gets status from| 17015["Metrics &amp; Monitoring<br>Rust"]
+        17016["OS Signal Handler<br>Rust"] -->|Notifies of OS signals| 17011["Core Process Orchestrator<br>Rust"]
+        17011["Core Process Orchestrator<br>Rust"] -->|Controls & Monitors| 17012["Process Execution &amp; State<br>Rust"]
+        17011["Core Process Orchestrator<br>Rust"] -->|Loads/Saves config| 17013["Configuration Service<br>Rust"]
+        17011["Core Process Orchestrator<br>Rust"] -->|Manages| 17014["Process Health Monitor<br>Rust"]
+        17011["Core Process Orchestrator<br>Rust"] -->|Updates/Gets metrics from| 17015["Metrics &amp; Monitoring<br>Rust"]
+        17011["Core Process Orchestrator<br>Rust"] -->|Initializes| 17016["OS Signal Handler<br>Rust"]
+        17014["Process Health Monitor<br>Rust"] -->|Checks status of| 17012["Process Execution &amp; State<br>Rust"]
+        17015["Metrics &amp; Monitoring<br>Rust"] -->|Collects metrics from| 17012["Process Execution &amp; State<br>Rust"]
+        17012["Process Execution &amp; State<br>Rust"] -->|Uses config from| 17013["Configuration Service<br>Rust"]
+    end
+    %% Edges at this level (grouped by source)
+    17017["User<br>External Actor"] -->|Uses CLI| 17009["CLI Entry Point<br>Rust"]
+    17017["User<br>External Actor"] -->|Accesses Web UI/API| 17010["Web API &amp; UI<br>Rust / HTTP"]
+```
+
 ## 🔧 Library Usage
 
 PMDaemon can also be used as a Rust library:

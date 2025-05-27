@@ -4,20 +4,12 @@
 # This script demonstrates:
 # 1. Delete all processes
 # 2. Delete processes by status
-
-echo "=== PMDaemon Delete Features Demo ==="
-echo
-
 echo "Building PMDaemon..."
-cargo build --release || {
-    echo "❌ Build failed. Please fix any compilation errors and try again."
-    exit 1
-}
- echo
-    echo "❌ Build failed. Please fix any compilation errors and try again."
-    exit 1
-}
- echo
+ cargo build --release || {
+     echo "❌ Build failed. Please fix any compilation errors and try again."
+     exit 1
+ }
+echo
 
 # Set up demo environment
 export PM2R_HOME="/tmp/pmdaemon-demo"
