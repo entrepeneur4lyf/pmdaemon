@@ -527,15 +527,21 @@ echo "$(date): pmdaemon start exited with code $EXIT_CODE" >> deployment.log
 
 ```yaml
 # GitHub Actions example
-- name: Deploy application
-  run: |
-    pmdaemon start "node server.js" --name web-api \
-      --health-check-url http://localhost:3000/health \
-      --wait-ready
-    if [ $? -ne 0 ]; then
-      echo "Deployment failed"
-      exit 1
-    fi
+ - name: Deploy application
+   run: |
+    set -e
+     pmdaemon start "node server.js" --name web-api \
+       --health-check-url http://localhost:3000/health \
+       --wait-ready
+    exit_code=$?
+    if [ $exit_code -ne 0 ]; then
+       echo "Deployment failed"
+      echo "Exit code: $exit_code"
+      echo "Checking logs..."
+      pmdaemon logs web-api --lines 50 || true
+       exit 1
+     fi
+    echo "Deployment successful"
 ```
 
 ## Next Steps

@@ -42,7 +42,7 @@ ws.onerror = function(error) {
 ```javascript
 const ws = new WebSocket('ws://localhost:9615/ws', {
     headers: {
-        'Authorization': 'Bearer your-jwt-token'
+        'Authorization': 'Bearer your-jwt-token' // Node only
     }
 });
 ```

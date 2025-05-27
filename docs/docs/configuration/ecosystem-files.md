@@ -144,7 +144,8 @@ NODE_ENV = "production"
         "url": "http://localhost:3000/health",
         "timeout": 10,
         "interval": 30,
-        "retries": 3
+        "retries": 3,
+        "enabled": true
       },
       "out_file": "/var/log/web-cluster.out",
       "error_file": "/var/log/web-cluster.err"
@@ -266,7 +267,8 @@ apps:
         "url": "http://localhost:3000/health",
         "timeout": 10,
         "interval": 30,
-        "retries": 3
+        "retries": 3,
+        "enabled": true
       },
       "out_file": "/var/log/myapp/server.out",
       "error_file": "/var/log/myapp/server.err"

@@ -25,7 +25,7 @@ This will:
 
 ```bash
 pmdaemon --version
-# Output: pmdaemon 0.1.1
+# Output: pmdaemon 0.1.2
 ```
 
 ## Method 2: Build from Source

@@ -781,13 +781,26 @@ class PMDaemonDashboard {
     this.renderProcesses();
   }
 
-  renderProcesses() {
+renderProcesses() {
     const container = document.getElementById('processes');
-    container.innerHTML = Array.from(this.processes.values()).map(proc => `
-      <div class="process-card ${proc.status} ${proc.health}">
-        <h3>${proc.name}</h3>
-        <div class="status">Status: ${proc.status}</div>
-        <div class="health">Health: ${proc.health || 'unknown'}</div>
+   container.innerHTML = '';
+   
+   Array.from(this.processes.values()).forEach(proc => {
+     const card = document.createElement('div');
+     card.className = `process-card ${proc.status} ${proc.health}`;
+     
+     const nameEl = document.createElement('h3');
+     nameEl.textContent = proc.name;
+     card.appendChild(nameEl);
+     
+     const statusEl = document.createElement('div');
+     statusEl.className = 'status';
+     statusEl.textContent = `Status: ${proc.status}`;
+     card.appendChild(statusEl);
+     
+     // Continue with other elements...
+     container.appendChild(card);
+   });
         <div class="metrics">
           <span>CPU: ${proc.cpu?.toFixed(1) || 0}%</span>
           <span>Memory: ${proc.memory ? (proc.memory / 1024 / 1024).toFixed(1) : 0}MB</span>

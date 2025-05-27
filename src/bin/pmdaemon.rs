@@ -152,7 +152,10 @@ async fn main() -> Result<()> {
     // Initialize logging
     let log_level = if cli.verbose { "debug" } else { "info" };
     tracing_subscriber::fmt()
-        .with_env_filter(format!("pmdaemon={},pmdaemon={}", log_level, log_level))
+        .with_env_filter(format!(
+            "pmdaemon={},pmdaemon_cli={}",
+            log_level, log_level
+        ))
         .init();
 
     info!("PMDaemon v{} starting", pmdaemon::VERSION);
@@ -259,8 +262,8 @@ async fn main() -> Result<()> {
 
                 // Parse environment variables
                 for env_var in env {
-                    if let Some((key, value)) = env_var.split_once('=') {
-                        config_builder = config_builder.env(key, value);
+                    if let [key_slice, value_slice] = env_var.splitn(2, '=').collect::<Vec<_>>().as_slice() {
+                        config_builder = config_builder.env(*key_slice, *value_slice);
                     } else {
                         error!("Invalid environment variable format: {}", env_var);
                         std::process::exit(1);

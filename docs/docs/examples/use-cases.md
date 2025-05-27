@@ -100,14 +100,32 @@ Deploy a Node.js e-commerce platform with multiple services, load balancing, and
 
 ```bash
 #!/bin/bash
+ set -e
+set -u  # Exit on undefined variables
+set -o pipefail  # Exit on pipe failures
+
 # deploy-ecommerce.sh
 
-set -e
+# Configuration
+CONFIG_FILE="ecommerce.json"
+LOG_FILE="/var/log/deployment.log"
 
-echo "🚀 Deploying E-commerce Platform..."
+# Logging function
+log() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S'): $1" | tee -a "$LOG_FILE"
+}
 
-# Stop existing processes
-pmdaemon delete all --force 2>/dev/null || true
+# Validation
+if [[ ! -f "$CONFIG_FILE" ]]; then
+    log "ERROR: Configuration file $CONFIG_FILE not found"
+    exit 1
+fi
+
+log "🚀 Deploying E-commerce Platform..."
+
+ # Stop existing processes
+log "📦 Stopping existing processes..."
+pmdaemon delete all --force 2>/dev/null || log "No existing processes to stop"
 
 # Start services with health check waiting
 echo "📦 Starting API services..."
@@ -527,8 +545,7 @@ apps:
     args:
       - run
       - --rm
-      - --name
-      - web-app-${PM2_INSTANCE_ID}
+      -      - web-app-${PM2_INSTANCE_ID:-0}
       - -p
       - "${PORT}:3000"
       - myapp:latest

@@ -951,6 +951,17 @@ impl EcosystemConfig {
     /// - File content is not valid for the detected format
     /// - Configuration validation fails
     pub async fn from_file(path: &std::path::Path) -> Result<Self> {
+       // Check file size before reading
+       let metadata = tokio::fs::metadata(path)
+           .await
+           .map_err(|e| Error::config(format!("Failed to access config file '{}': {}", path.display(), e)))?;
+       
+       const MAX_CONFIG_SIZE: u64 = 10 * 1024 * 1024; // 10MB limit
+       if metadata.len() > MAX_CONFIG_SIZE {
+           return Err(Error::config(format!("Config file '{}' is too large ({}MB). Maximum allowed: {}MB", 
+               path.display(), metadata.len() / 1024 / 1024, MAX_CONFIG_SIZE / 1024 / 1024)));
+       }
+       
         let content = tokio::fs::read_to_string(path)
             .await
             .map_err(|e| Error::config(format!("Failed to read config file '{}': {}", path.display(), e)))?;

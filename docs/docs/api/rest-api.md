@@ -174,7 +174,8 @@ Start a new process.
     "url": "http://localhost:3000/health",
     "timeout": 5,
     "interval": 30,
-    "retries": 3
+    "retries": 3,
+    "enabled": true
   }
 }
 ```

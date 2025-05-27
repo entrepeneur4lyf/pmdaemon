@@ -41,8 +41,9 @@ NODE_ENV = "production"
 REDIS_URL = "redis://localhost:6379"
 
 [[apps]]
-name = "static-server"
-script = "python"
-args = ["-m", "http.server", "8080"]
-port = "8080"
-cwd = "/var/www/html"
+ name = "static-server"
+ script = "python"
+instances = 1
+ args = ["-m", "http.server", "8080"]
+ port = "8080"
+ cwd = "/var/www/html"

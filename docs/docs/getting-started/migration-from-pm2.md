@@ -114,9 +114,19 @@ Use this script to convert PM2 ecosystem files:
 #!/bin/bash
 # convert-pm2-config.sh
 
+# Check if ecosystem.config.js exists
+if [ ! -f "./ecosystem.config.js" ]; then
+  echo "Error: ecosystem.config.js not found in current directory"
+  exit 1
+fi
+
 # Convert PM2 ecosystem.config.js to PMDaemon ecosystem.json
 node -e "
+try {
 const pm2Config = require('./ecosystem.config.js');
+if (!pm2Config.apps || !Array.isArray(pm2Config.apps)) {
+  throw new Error('Invalid ecosystem.config.js: apps array not found');
+}
 const pmdConfig = {
   apps: pm2Config.apps.map(app => ({
     name: app.name,
@@ -132,8 +142,11 @@ const pmdConfig = {
   }))
 };
 console.log(JSON.stringify(pmdConfig, null, 2));
+} catch (error) {
+  console.error('Conversion failed:', error.message);
+  process.exit(1);
+}
 " > ecosystem.json
-```
 
 ### Step 4: Start with PMDaemon
 

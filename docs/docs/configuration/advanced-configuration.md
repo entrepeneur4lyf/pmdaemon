@@ -53,7 +53,8 @@ Create separate configuration files for different environments:
         "check_type": "http",
         "url": "http://localhost:3000/health",
         "timeout": 10,
-        "interval": 30
+        "interval": 30,
+        "enabled": true
       }
     }
   ]
@@ -246,7 +247,8 @@ Different instance types with specialized roles:
     "script": "./health-checks/comprehensive.sh",
     "timeout": 30,
     "interval": 45,
-    "retries": 3
+    "retries": 3,
+    "enabled": true
   }
 }
 ```
@@ -304,7 +306,8 @@ exit 0
     "check_type": "script",
     "script": "./health-checks/adaptive.sh",
     "timeout": 20,
-    "interval": 30
+    "interval": 30,
+    "enabled": true
   }
 }
 ```
@@ -447,7 +450,8 @@ esac
         "check_type": "script",
         "script": "./health-checks/postgres.sh",
         "timeout": 10,
-        "interval": 30
+        "interval": 30,
+        "enabled": true
       }
     },
     {
@@ -459,7 +463,8 @@ esac
         "check_type": "script",
         "script": "./health-checks/redis.sh",
         "timeout": 5,
-        "interval": 30
+        "interval": 30,
+        "enabled": true
       }
     },
     {
@@ -473,7 +478,8 @@ esac
         "check_type": "http",
         "url": "http://localhost:3000/health",
         "timeout": 10,
-        "interval": 30
+        "interval": 30,
+        "enabled": true
       }
     }
   ]
@@ -553,7 +559,8 @@ process.on('SIGTERM', async () => {
   },
   "health_check": {
     "check_type": "http",
-    "url": "http://localhost:3000/health"
+    "url": "http://localhost:3000/health",
+    "enabled": true
   }
 }
 ```
@@ -654,7 +661,8 @@ API_KEY=private-key
     "check_type": "http",
     "url": "http://localhost:3000/health",
     "timeout": 10,
-    "interval": 30
+    "interval": 30,
+    "enabled": true
   }
 }
 ```

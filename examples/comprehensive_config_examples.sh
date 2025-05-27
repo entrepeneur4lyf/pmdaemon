@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
-set -euo pipefail
+2,3c2
+ set -euo pipefail
 # PMDaemon Comprehensive Configuration Examples
 # This script demonstrates all available configuration options with their defaults
 #
