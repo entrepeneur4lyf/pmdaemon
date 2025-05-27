@@ -373,5 +373,5 @@ safe_mode_enabled = true
 - CIS Controls for infrastructure security
 - NIST guidelines for authentication and access control
 
-For specific authentication configurations, see our [Authentication Guide](authentication.md).
+For specific authentication configurations, see our [Authentication Guide](../api/authentication.md).
 For more security configurations, refer to our [Configuration Best Practices](../configuration/best-practices.md).

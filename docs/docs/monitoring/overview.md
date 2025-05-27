@@ -174,4 +174,4 @@ Integrate with popular monitoring dashboards:
 - Review alert thresholds
 - Verify network connectivity
 
-For more detailed monitoring configuration, see our [Configuration Guide](../configuration/overview.md).
+For more detailed monitoring configuration, see our [Configuration Guide](../configuration/ecosystem-files.md).
