@@ -1178,7 +1178,10 @@ impl ProcessManager {
         let mut result = String::new();
 
         // Debug: Log the paths being used
-        debug!("Looking for logs at: stdout={:?}, stderr={:?}", out_log, err_log);
+        debug!(
+            "Looking for logs at: stdout={:?}, stderr={:?}",
+            out_log, err_log
+        );
 
         // Read stdout log
         if out_log.exists() {
@@ -1195,7 +1198,11 @@ impl ProcessManager {
                         } else {
                             0
                         };
-                        debug!("Showing {} lines from stdout (total: {})", log_lines.len() - start, log_lines.len());
+                        debug!(
+                            "Showing {} lines from stdout (total: {})",
+                            log_lines.len() - start,
+                            log_lines.len()
+                        );
                         for line in &log_lines[start..] {
                             result.push_str(line);
                             result.push('\n');
@@ -1227,7 +1234,11 @@ impl ProcessManager {
                         } else {
                             0
                         };
-                        debug!("Showing {} lines from stderr (total: {})", log_lines.len() - start, log_lines.len());
+                        debug!(
+                            "Showing {} lines from stderr (total: {})",
+                            log_lines.len() - start,
+                            log_lines.len()
+                        );
                         for line in &log_lines[start..] {
                             result.push_str(line);
                             result.push('\n');
@@ -1680,7 +1691,8 @@ impl ProcessManager {
 
                 for pattern in &patterns {
                     if let Ok(re) = regex::Regex::new(pattern) {
-                        for line in content.lines().rev().take(50) { // Check last 50 lines
+                        for line in content.lines().rev().take(50) {
+                            // Check last 50 lines
                             if let Some(captures) = re.captures(line) {
                                 if let Some(port_match) = captures.get(1) {
                                     if let Ok(port) = port_match.as_str().parse::<u16>() {
@@ -1791,7 +1803,10 @@ impl ProcessManager {
                 if process.assigned_port.is_none() {
                     if let Some(detected_port) = self.detect_port_from_logs(&config.name).await {
                         process.assigned_port = Some(detected_port);
-                        debug!("Detected port {} for process {} from logs", detected_port, config.name);
+                        debug!(
+                            "Detected port {} for process {} from logs",
+                            detected_port, config.name
+                        );
                     }
                 }
 

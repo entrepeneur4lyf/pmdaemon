@@ -1,6 +1,6 @@
 [package]
 name = "pmdaemon"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "PMDaemon - A high-performance, cross-platform process manager built in Rust with advanced port management and monitoring capabilities"
 license = "MIT"
