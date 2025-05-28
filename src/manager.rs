@@ -160,7 +160,16 @@ impl ProcessManager {
     }
 
     /// Get the configuration directory path
+    ///
+    /// Checks for PM2R_HOME environment variable first, which allows overriding
+    /// the default configuration directory. This is particularly useful for testing
+    /// and when running multiple isolated PMDaemon instances.
     fn get_config_dir() -> Result<PathBuf> {
+        // Check for PM2R_HOME environment variable first
+        if let Ok(pm2r_home) = std::env::var("PM2R_HOME") {
+            return Ok(PathBuf::from(pm2r_home));
+        }
+
         let home_dir =
             dirs::home_dir().ok_or_else(|| Error::config("Could not determine home directory"))?;
         Ok(home_dir.join(crate::CONFIG_DIR))

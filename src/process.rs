@@ -453,7 +453,10 @@ impl Process {
                 self.error = None;
 
                 // Note: Process is now detached and will continue running independently
-                debug!("Process {} detached and running independently", self.config.name);
+                debug!(
+                    "Process {} detached and running independently",
+                    self.config.name
+                );
                 Ok(())
             }
             Err(e) => {

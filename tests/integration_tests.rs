@@ -195,7 +195,10 @@ fn test_start_simple_process() {
         .stdout(predicate::str::contains("Stopped"));
 
     // Clean up - ensure process is deleted
-    let _ = env.cmd().args(["delete", &process_name, "--force"]).output();
+    let _ = env
+        .cmd()
+        .args(["delete", &process_name, "--force"])
+        .output();
 }
 
 #[test]
@@ -236,7 +239,10 @@ fn test_start_with_args() {
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up - try to delete, but don't fail if process doesn't exist
-    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
+    let _ = env
+        .cmd()
+        .args(["delete", &process_name, "--force"])
+        .assert();
 }
 
 #[test]
@@ -276,7 +282,10 @@ fn test_start_with_port() {
         .stdout(predicate::str::contains("8080"));
 
     // Clean up - try to delete, but don't fail if process doesn't exist
-    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
+    let _ = env
+        .cmd()
+        .args(["delete", &process_name, "--force"])
+        .assert();
 }
 
 #[test]
@@ -353,7 +362,10 @@ fn test_list_format() {
         .stdout(predicate::str::contains("ID"));
 
     // Clean up - try to delete, but don't fail if process doesn't exist
-    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
+    let _ = env
+        .cmd()
+        .args(["delete", &process_name, "--force"])
+        .assert();
 }
 
 #[test]
@@ -545,5 +557,8 @@ fn test_restart_process() {
         .stdout(predicate::str::contains("Restarted"));
 
     // Clean up - try to delete, but don't fail if process doesn't exist
-    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
+    let _ = env
+        .cmd()
+        .args(["delete", &process_name, "--force"])
+        .assert();
 }
