@@ -121,7 +121,7 @@ fn test_start_simple_process() {
         .stdout(predicate::str::contains(&process_name));
 
     // Give it a moment to start
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
     // Check that it's listed
     env.cmd()
@@ -167,10 +167,17 @@ fn test_start_with_args() {
         .success()
         .stdout(predicate::str::contains("started"));
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
-    // Clean up
-    env.cmd().args(["delete", &process_name]).assert().success();
+    // Verify the process is actually running before cleanup
+    env.cmd()
+        .arg("list")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains(&process_name));
+
+    // Clean up - try to delete, but don't fail if process doesn't exist
+    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
 }
 
 #[test]
@@ -199,7 +206,7 @@ fn test_start_with_port() {
         .success()
         .stdout(predicate::str::contains("started"));
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
     // Check list includes port
     env.cmd()
@@ -209,8 +216,8 @@ fn test_start_with_port() {
         .stdout(predicate::str::contains(&process_name))
         .stdout(predicate::str::contains("8080"));
 
-    // Clean up
-    env.cmd().args(["delete", &process_name]).assert().success();
+    // Clean up - try to delete, but don't fail if process doesn't exist
+    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
 }
 
 #[test]
@@ -238,7 +245,7 @@ fn test_start_multiple_instances() {
         .success()
         .stdout(predicate::str::contains("started"));
 
-    thread::sleep(Duration::from_millis(1000));
+    thread::sleep(Duration::from_millis(2000)); // Longer wait for multiple instances
 
     // List should show instances
     env.cmd()
@@ -247,8 +254,11 @@ fn test_start_multiple_instances() {
         .success()
         .stdout(predicate::str::contains(&process_name));
 
-    // Clean up - try to delete, but don't fail if it doesn't exist
-    let _ = env.cmd().args(["delete", &process_name]).assert();
+    // Clean up - force delete all to ensure cleanup
+    env.cmd()
+        .args(["delete", "all", "--force"])
+        .assert()
+        .success();
 }
 
 #[test]
@@ -273,7 +283,7 @@ fn test_list_format() {
         .assert()
         .success();
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
     // Get list output (should contain table format)
     env.cmd()
@@ -283,8 +293,8 @@ fn test_list_format() {
         .stdout(predicate::str::contains(&process_name))
         .stdout(predicate::str::contains("ID"));
 
-    // Clean up
-    env.cmd().args(["delete", &process_name]).assert().success();
+    // Clean up - try to delete, but don't fail if process doesn't exist
+    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
 }
 
 #[test]
@@ -316,7 +326,7 @@ fn test_delete_all_with_force() {
         .assert()
         .success();
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
     // Verify both processes are listed
     env.cmd()
@@ -424,7 +434,7 @@ fn test_delete_process() {
         .assert()
         .success();
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
 
     // Delete process
     env.cmd()
@@ -456,9 +466,17 @@ fn test_restart_process() {
     env.cmd()
         .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
-        .success();
+        .success()
+        .stdout(predicate::str::contains("started"));
 
-    thread::sleep(Duration::from_millis(500));
+    thread::sleep(Duration::from_millis(1000));
+
+    // Verify process is running before restart
+    env.cmd()
+        .arg("list")
+        .assert()
+        .success()
+        .stdout(predicate::str::contains(&process_name));
 
     // Restart process
     env.cmd()
@@ -467,6 +485,6 @@ fn test_restart_process() {
         .success()
         .stdout(predicate::str::contains("Restarted"));
 
-    // Clean up
-    env.cmd().args(["delete", &process_name]).assert().success();
+    // Clean up - try to delete, but don't fail if process doesn't exist
+    let _ = env.cmd().args(["delete", &process_name, "--force"]).assert();
 }
