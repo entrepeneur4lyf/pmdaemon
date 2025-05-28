@@ -1,9 +1,9 @@
-//! Error types for PM2 Rust
+//! Error types for PMDaemon
 
-/// Result type alias for PM2 Rust operations
+/// Result type alias for PMDaemon operations
 pub type Result<T> = std::result::Result<T, Error>;
 
-/// Main error type for PM2 Rust
+/// Main error type for PMDaemon
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// IO operation failed

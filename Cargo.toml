@@ -2,7 +2,7 @@
 name = "pmdaemon"
 version = "0.1.2"
 edition = "2021"
-description = "A cross-platform, feature-rich PM2 clone in Rust with advanced port management and monitoring capabilities"
+description = "PMDaemon - A high-performance, cross-platform process manager built in Rust with advanced port management and monitoring capabilities"
 license = "MIT"
 authors = ["Shawn McAllister <founder@engineered4ai.com>"]
 repository = "https://github.com/entrepeneur4lyf/pmdaemon"

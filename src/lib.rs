@@ -132,7 +132,7 @@ pub use monitoring::{MonitoringData, SystemMetrics};
 pub use process::{Process, ProcessId, ProcessState, ProcessStatus};
 pub use signals::{ProcessSignal, SignalHandler};
 
-/// Version of the PM2 Rust library
+/// Version of the PMDaemon library
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Default configuration directory name
