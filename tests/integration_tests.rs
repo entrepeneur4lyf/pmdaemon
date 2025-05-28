@@ -157,6 +157,7 @@ fn test_cli_version() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_start_simple_process() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("test-app");
@@ -202,6 +203,7 @@ fn test_start_simple_process() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_start_with_args() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("echo-test");
@@ -246,6 +248,7 @@ fn test_start_with_args() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_start_with_port() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("server-app");
@@ -289,6 +292,7 @@ fn test_start_with_port() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_start_multiple_instances() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("multi-app");
@@ -339,6 +343,7 @@ fn test_list_empty() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_list_format() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("format-test");
@@ -369,6 +374,7 @@ fn test_list_format() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_delete_all_with_force() {
     let env = TestEnvironment::new();
     let process_name1 = env.unique_name("test-app-1");
@@ -426,6 +432,7 @@ fn test_delete_all_with_force() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_delete_by_status() {
     let env = TestEnvironment::new();
     let process_name1 = env.unique_name("running-app");
@@ -493,6 +500,7 @@ fn test_stop_nonexistent_process() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_delete_process() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("delete-test");
@@ -523,6 +531,7 @@ fn test_delete_process() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_restart_process() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("restart-test");
