@@ -57,7 +57,7 @@ impl TestEnvironment {
         // Also clean up any leftover config files
         if let Ok(entries) = fs::read_dir(&self.config_dir) {
             for entry in entries.flatten() {
-                if entry.path().extension().map_or(false, |ext| ext == "json") {
+                if entry.path().extension().is_some_and(|ext| ext == "json") {
                     let _ = fs::remove_file(entry.path());
                 }
             }
@@ -66,7 +66,7 @@ impl TestEnvironment {
         // Clean up any leftover PID files
         if let Ok(entries) = fs::read_dir(&self.config_dir) {
             for entry in entries.flatten() {
-                if entry.path().extension().map_or(false, |ext| ext == "pid") {
+                if entry.path().extension().is_some_and(|ext| ext == "pid") {
                     let _ = fs::remove_file(entry.path());
                 }
             }
