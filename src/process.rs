@@ -425,6 +425,20 @@ impl Process {
 
         cmd.stdin(Stdio::null());
 
+        // Configure process to run independently (detached from parent)
+        #[cfg(unix)]
+        {
+            #[allow(unused_imports)]
+            use std::os::unix::process::CommandExt;
+            cmd.process_group(0); // Create new process group to detach from parent
+        }
+
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+            cmd.creation_flags(0x00000008); // CREATE_NO_WINDOW flag to detach
+        }
+
         // Spawn the process
         match cmd.spawn() {
             Ok(child) => {
@@ -433,9 +447,13 @@ impl Process {
                     self.config.name,
                     child.id().unwrap_or(0)
                 );
+                // Store the child process handle
                 self.child = Some(child);
                 self.set_state(ProcessState::Online);
                 self.error = None;
+
+                // Note: Process is now detached and will continue running independently
+                debug!("Process {} detached and running independently", self.config.name);
                 Ok(())
             }
             Err(e) => {
