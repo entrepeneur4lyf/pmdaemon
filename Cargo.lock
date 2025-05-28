@@ -1740,6 +1740,7 @@ dependencies = [
  "notify",
  "predicates",
  "pretty_assertions",
+ "regex",
  "reqwest",
  "rstest",
  "serde",

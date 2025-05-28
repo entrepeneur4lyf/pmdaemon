@@ -309,10 +309,15 @@ impl ProcessManager {
         // Save PID file if process started successfully
         if let Some(pid) = process.pid() {
             self.save_pid_file(&process.config.name, pid).await?;
+            // Also store the PID in the process for later retrieval
+            process.set_stored_pid(Some(pid));
         }
 
         // Save configuration to disk
         self.save_process_config(&process).await?;
+
+        // Save runtime metadata (assigned port, etc.)
+        self.save_process_metadata(&process).await?;
 
         // Store process
         let mut processes = self.processes.write().await;
@@ -619,9 +624,15 @@ impl ProcessManager {
             }
 
             // Clean up files
-            let _ = self.remove_process_config(&process_name).await;
-            let _ = self.remove_pid_file(&process_name).await;
-            let _ = self.remove_log_files(&process_name).await;
+            if let Err(e) = self.remove_process_config(&process_name).await {
+                warn!("Failed to remove config for {}: {}", process_name, e);
+            }
+            if let Err(e) = self.remove_pid_file(&process_name).await {
+                warn!("Failed to remove PID file for {}: {}", process_name, e);
+            }
+            if let Err(e) = self.remove_log_files(&process_name).await {
+                warn!("Failed to remove log files for {}: {}", process_name, e);
+            }
         }
 
         if stopped_count > 0 {
@@ -1166,20 +1177,29 @@ impl ProcessManager {
         let (out_log, err_log, _combined_log) = self.get_log_paths(&process_name);
         let mut result = String::new();
 
+        // Debug: Log the paths being used
+        debug!("Looking for logs at: stdout={:?}, stderr={:?}", out_log, err_log);
+
         // Read stdout log
         if out_log.exists() {
             result.push_str(&format!("==> {} stdout <==\n", process_name));
             match fs::read_to_string(&out_log).await {
                 Ok(content) => {
-                    let log_lines: Vec<&str> = content.lines().collect();
-                    let start = if log_lines.len() > lines {
-                        log_lines.len() - lines
+                    debug!("Read {} bytes from stdout log", content.len());
+                    if content.is_empty() {
+                        result.push_str("(stdout log file is empty)\n");
                     } else {
-                        0
-                    };
-                    for line in &log_lines[start..] {
-                        result.push_str(line);
-                        result.push('\n');
+                        let log_lines: Vec<&str> = content.lines().collect();
+                        let start = if log_lines.len() > lines {
+                            log_lines.len() - lines
+                        } else {
+                            0
+                        };
+                        debug!("Showing {} lines from stdout (total: {})", log_lines.len() - start, log_lines.len());
+                        for line in &log_lines[start..] {
+                            result.push_str(line);
+                            result.push('\n');
+                        }
                     }
                 }
                 Err(e) => {
@@ -1189,7 +1209,7 @@ impl ProcessManager {
             result.push('\n');
         } else {
             result.push_str(&format!("==> {} stdout <==\n", process_name));
-            result.push_str("No stdout log file found\n\n");
+            result.push_str(&format!("No stdout log file found at: {:?}\n\n", out_log));
         }
 
         // Read stderr log
@@ -1197,15 +1217,21 @@ impl ProcessManager {
             result.push_str(&format!("==> {} stderr <==\n", process_name));
             match fs::read_to_string(&err_log).await {
                 Ok(content) => {
-                    let log_lines: Vec<&str> = content.lines().collect();
-                    let start = if log_lines.len() > lines {
-                        log_lines.len() - lines
+                    debug!("Read {} bytes from stderr log", content.len());
+                    if content.is_empty() {
+                        result.push_str("(stderr log file is empty)\n");
                     } else {
-                        0
-                    };
-                    for line in &log_lines[start..] {
-                        result.push_str(line);
-                        result.push('\n');
+                        let log_lines: Vec<&str> = content.lines().collect();
+                        let start = if log_lines.len() > lines {
+                            log_lines.len() - lines
+                        } else {
+                            0
+                        };
+                        debug!("Showing {} lines from stderr (total: {})", log_lines.len() - start, log_lines.len());
+                        for line in &log_lines[start..] {
+                            result.push_str(line);
+                            result.push('\n');
+                        }
                     }
                 }
                 Err(e) => {
@@ -1214,7 +1240,7 @@ impl ProcessManager {
             }
         } else {
             result.push_str(&format!("==> {} stderr <==\n", process_name));
-            result.push_str("No stderr log file found\n");
+            result.push_str(&format!("No stderr log file found at: {:?}\n", err_log));
         }
 
         Ok(result)
@@ -1498,12 +1524,20 @@ impl ProcessManager {
                         process.config.name, e
                     );
                 } else {
-                    // Update PID file for restarted process
+                    // Update PID file and metadata for restarted process
                     if let Some(new_pid) = process.pid() {
+                        process.set_stored_pid(Some(new_pid));
                         let process_name = process.config.name.clone();
                         drop(processes); // Release lock before async operation
                         if let Err(e) = self.save_pid_file(&process_name, new_pid).await {
                             warn!("Failed to update PID file after restart: {}", e);
+                        }
+                        // Re-acquire lock to save metadata
+                        let processes = self.processes.read().await;
+                        if let Some(process) = processes.get(&process_id) {
+                            if let Err(e) = self.save_process_metadata(process).await {
+                                warn!("Failed to update metadata after restart: {}", e);
+                            }
                         }
                         break; // Re-acquire lock in next iteration
                     }
@@ -1555,6 +1589,115 @@ impl ProcessManager {
         Ok(())
     }
 
+    /// Save process runtime metadata (assigned port, etc.) to disk
+    async fn save_process_metadata(&self, process: &Process) -> Result<()> {
+        use serde_json::json;
+
+        let metadata_file = self
+            .config_dir
+            .join(format!("{}.meta.json", process.config.name));
+
+        let metadata = json!({
+            "id": process.id,
+            "assigned_port": process.assigned_port,
+            "instance": process.instance,
+            "stored_pid": process.stored_pid
+        });
+
+        let metadata_json = serde_json::to_string_pretty(&metadata)
+            .map_err(|e| Error::config(format!("Failed to serialize metadata: {}", e)))?;
+
+        fs::write(&metadata_file, metadata_json)
+            .await
+            .map_err(|e| Error::config(format!("Failed to write metadata file: {}", e)))?;
+
+        debug!("Saved metadata for process: {}", process.config.name);
+        Ok(())
+    }
+
+    /// Load process runtime metadata from disk
+    async fn load_process_metadata(&self, process: &mut Process) -> Result<()> {
+        let metadata_file = self
+            .config_dir
+            .join(format!("{}.meta.json", process.config.name));
+
+        if !metadata_file.exists() {
+            // No metadata file, that's okay
+            return Ok(());
+        }
+
+        let metadata_content = fs::read_to_string(&metadata_file)
+            .await
+            .map_err(|e| Error::config(format!("Failed to read metadata file: {}", e)))?;
+
+        let metadata: serde_json::Value = serde_json::from_str(&metadata_content)
+            .map_err(|e| Error::config(format!("Failed to parse metadata file: {}", e)))?;
+
+        // Restore process ID
+        if let Some(id_str) = metadata.get("id").and_then(|v| v.as_str()) {
+            if let Ok(id) = uuid::Uuid::parse_str(id_str) {
+                process.set_id(id);
+            }
+        }
+
+        // Restore assigned port
+        if let Some(port) = metadata.get("assigned_port").and_then(|v| v.as_u64()) {
+            process.assigned_port = Some(port as u16);
+        }
+
+        // Restore instance number
+        if let Some(instance) = metadata.get("instance").and_then(|v| v.as_u64()) {
+            process.instance = Some(instance as u32);
+        }
+
+        // Restore stored PID
+        if let Some(pid) = metadata.get("stored_pid").and_then(|v| v.as_u64()) {
+            process.stored_pid = Some(pid as u32);
+        }
+
+        debug!("Loaded metadata for process: {}", process.config.name);
+        Ok(())
+    }
+
+    /// Attempt to detect port from process logs
+    async fn detect_port_from_logs(&self, process_name: &str) -> Option<u16> {
+        let (out_log, _err_log, _combined_log) = self.get_log_paths(process_name);
+
+        if !out_log.exists() {
+            return None;
+        }
+
+        match fs::read_to_string(&out_log).await {
+            Ok(content) => {
+                // Common patterns for port detection
+                let patterns = [
+                    r"(?i)server.*(?:listening|bound|running).*(?:on|at).*:(\d+)",
+                    r"(?i)listening.*(?:on|at).*:(\d+)",
+                    r"(?i)bound.*(?:to|on).*:(\d+)",
+                    r"(?i)port\s*:?\s*(\d+)",
+                    r"(?i)running.*(?:on|at).*:(\d+)",
+                ];
+
+                for pattern in &patterns {
+                    if let Ok(re) = regex::Regex::new(pattern) {
+                        for line in content.lines().rev().take(50) { // Check last 50 lines
+                            if let Some(captures) = re.captures(line) {
+                                if let Some(port_match) = captures.get(1) {
+                                    if let Ok(port) = port_match.as_str().parse::<u16>() {
+                                        debug!("Detected port {} from log line: {}", port, line);
+                                        return Some(port);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                None
+            }
+            Err(_) => None,
+        }
+    }
+
     /// Load all process configurations from disk
     async fn load_processes(&mut self) -> Result<()> {
         let mut entries = fs::read_dir(&self.config_dir)
@@ -1567,9 +1710,12 @@ impl ProcessManager {
             .map_err(|e| Error::config(format!("Failed to read directory entry: {}", e)))?
         {
             let path = entry.path();
-            if path.extension().and_then(|s| s.to_str()) == Some("json") {
-                if let Err(e) = self.load_process_config(&path).await {
-                    warn!("Failed to load process config from {:?}: {}", path, e);
+            if let Some(file_name) = path.file_name().and_then(|n| n.to_str()) {
+                // Only load process config files, not metadata files
+                if file_name.ends_with(".json") && !file_name.ends_with(".meta.json") {
+                    if let Err(e) = self.load_process_config(&path).await {
+                        warn!("Failed to load process config from {:?}: {}", path, e);
+                    }
                 }
             }
         }
@@ -1593,6 +1739,9 @@ impl ProcessManager {
         // Create process but don't start it automatically
         let mut process = Process::new(config.clone());
         let process_id = process.id;
+
+        // Load runtime metadata if it exists
+        self.load_process_metadata(&mut process).await?;
 
         // Check if the process is still running by checking PID files
         if let Ok(Some(pid)) = self.read_pid_file(&config.name).await {
@@ -1636,6 +1785,16 @@ impl ProcessManager {
                 }
 
                 // Note: We can't restore the actual Child handle, but we can track the PID
+                process.set_stored_pid(Some(pid));
+
+                // Try to detect port from logs if not already assigned
+                if process.assigned_port.is_none() {
+                    if let Some(detected_port) = self.detect_port_from_logs(&config.name).await {
+                        process.assigned_port = Some(detected_port);
+                        debug!("Detected port {} for process {} from logs", detected_port, config.name);
+                    }
+                }
+
                 debug!("Found running process {} with PID {}", config.name, pid);
             } else {
                 // PID file exists but process is not running, clean up
@@ -1670,6 +1829,16 @@ impl ProcessManager {
                 .map_err(|e| Error::config(format!("Failed to remove config file: {}", e)))?;
             debug!("Removed configuration file for process: {}", process_name);
         }
+
+        // Also remove metadata file
+        let metadata_file = self.config_dir.join(format!("{}.meta.json", process_name));
+        if metadata_file.exists() {
+            fs::remove_file(&metadata_file)
+                .await
+                .map_err(|e| Error::config(format!("Failed to remove metadata file: {}", e)))?;
+            debug!("Removed metadata file for process: {}", process_name);
+        }
+
         Ok(())
     }
 

@@ -1,6 +1,6 @@
 //! # PMDaemon - Advanced Process Manager
 //!
-//! A feature-rich PM2 clone in Rust with advanced capabilities that exceed the original PM2.
+//! PMDaemon - A high-performance, cross-platform process manager built in Rust with advanced capabilities.
 //! PMDaemon is designed as a general-purpose process manager with innovative features for
 //! modern application deployment and monitoring.
 //!

@@ -242,7 +242,7 @@ async fn root_handler() -> Json<Value> {
     Json(json!({
         "name": "PMDaemon",
         "version": env!("CARGO_PKG_VERSION"),
-        "description": "A feature-limited PM2 clone in Rust with some extra features",
+        "description": "PMDaemon - A high-performance, cross-platform process manager built in Rust",
         "status": "running",
         "endpoints": {
             "processes": "/api/processes",

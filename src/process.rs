@@ -186,6 +186,9 @@ pub struct Process {
     /// Port assigned to this process by the port manager
     pub assigned_port: Option<u16>,
 
+    /// Stored PID for processes restored from disk (when child handle is unavailable)
+    pub stored_pid: Option<u32>,
+
     /// Real-time monitoring data (CPU, memory, etc.)
     pub monitoring: ProcessMonitoring,
 }
@@ -254,6 +257,7 @@ impl Process {
             error: None,
             instance: None,
             assigned_port: None,
+            stored_pid: None,
             monitoring: ProcessMonitoring::default(),
         }
     }
@@ -287,7 +291,7 @@ impl Process {
             id: self.id,
             name: self.config.name.clone(),
             state: self.state,
-            pid: self.child.as_ref().and_then(|c| c.id()),
+            pid: self.child.as_ref().and_then(|c| c.id()).or(self.stored_pid),
             uptime: self.started_at,
             restarts: self.restarts,
             cpu_usage: self.monitoring.cpu_usage,
@@ -609,6 +613,16 @@ impl Process {
     /// Set the instance number for this process
     pub fn set_instance(&mut self, instance: Option<u32>) {
         self.instance = instance;
+    }
+
+    /// Set the stored PID for this process (used when restoring from disk)
+    pub fn set_stored_pid(&mut self, pid: Option<u32>) {
+        self.stored_pid = pid;
+    }
+
+    /// Set the process ID (used when restoring from disk)
+    pub fn set_id(&mut self, id: ProcessId) {
+        self.id = id;
     }
 
     /// Update monitoring data
