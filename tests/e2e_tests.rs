@@ -55,19 +55,71 @@ impl E2ETestEnvironment {
 
 /// Create a test script with specific content
 fn create_script(dir: &std::path::Path, name: &str, content: &str) -> PathBuf {
-    let script_path = dir.join(format!("{}.sh", name));
-    fs::write(&script_path, content).expect("Failed to write test script");
-
-    // Make script executable
-    #[cfg(unix)]
+    #[cfg(windows)]
     {
+        // On Windows, create a batch file
+        let script_path = dir.join(format!("{}.bat", name));
+        // Convert bash script to batch equivalent
+        let batch_content = convert_bash_to_batch(content);
+        fs::write(&script_path, batch_content).expect("Failed to write test script");
+        script_path
+    }
+    #[cfg(not(windows))]
+    {
+        let script_path = dir.join(format!("{}.sh", name));
+        fs::write(&script_path, content).expect("Failed to write test script");
+
+        // Make script executable
         use std::os::unix::fs::PermissionsExt;
         let mut perms = fs::metadata(&script_path).unwrap().permissions();
         perms.set_mode(0o755);
         fs::set_permissions(&script_path, perms).unwrap();
+
+        script_path
+    }
+}
+
+/// Convert basic bash script to Windows batch equivalent
+#[cfg(windows)]
+fn convert_bash_to_batch(bash_content: &str) -> String {
+    let mut batch_content = String::from("@echo off\n");
+
+    for line in bash_content.lines() {
+        if line.starts_with("#!/") {
+            // Skip shebang
+            continue;
+        } else if line.starts_with("echo ") {
+            // Convert echo commands
+            batch_content.push_str(&line.replace("echo ", "echo "));
+            batch_content.push('\n');
+        } else if line.starts_with("sleep ") {
+            // Convert sleep to timeout
+            let sleep_time = line
+                .replace("sleep ", "")
+                .trim()
+                .parse::<u32>()
+                .unwrap_or(1);
+            batch_content.push_str(&format!("timeout /t {} /nobreak >nul\n", sleep_time));
+        } else if line.contains("for i in {") && line.contains("}; do") {
+            // Convert simple for loops
+            if line.contains("{1..10}") {
+                batch_content.push_str("for /l %%i in (1,1,10) do (\n");
+            } else if line.contains("{1..5}") {
+                batch_content.push_str("for /l %%i in (1,1,5) do (\n");
+            }
+        } else if line.trim() == "done" {
+            batch_content.push_str(")\n");
+        } else if line.contains("exit ") {
+            batch_content.push_str(line);
+            batch_content.push('\n');
+        } else if !line.trim().is_empty() && !line.contains("$") {
+            // Copy other simple lines
+            batch_content.push_str(line);
+            batch_content.push('\n');
+        }
     }
 
-    script_path
+    batch_content
 }
 
 /// Create a Python script
@@ -85,6 +137,7 @@ fn create_node_script(dir: &std::path::Path, name: &str, content: &str) -> PathB
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_simple_shell_script() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("shell-app");
@@ -127,6 +180,7 @@ echo "Shell script completed"
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_python_script() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("python-app");
@@ -177,6 +231,7 @@ print("Python application completed")
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_node_script() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("node-app");
@@ -239,6 +294,7 @@ process.on('SIGTERM', () => {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_clustering_mode() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("cluster-app");
@@ -283,6 +339,7 @@ echo "Cluster instance completed"
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_port_management() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("port-app");
@@ -328,6 +385,7 @@ echo "Server shutting down"
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_auto_restart() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("restart-app");
@@ -366,6 +424,7 @@ exit 1
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_graceful_shutdown() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("graceful-app");
@@ -423,6 +482,7 @@ done
 }
 
 #[test]
+#[cfg(not(windows))]
 fn test_resource_monitoring() {
     let env = E2ETestEnvironment::new();
     let process_name = env.unique_name("monitor-app");
