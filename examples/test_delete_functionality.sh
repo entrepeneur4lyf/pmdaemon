@@ -4,9 +4,9 @@
 echo "Testing new delete functionality..."
 
 # Set up test environment
-export PM2R_HOME="/tmp/pmdaemon-test-delete"
-rm -rf "$PM2R_HOME"
-mkdir -p "$PM2R_HOME"
+export PMDAEMON_HOME="/tmp/pmdaemon-test-delete"
+rm -rf "$PMDAEMON_HOME"
+mkdir -p "$PMDAEMON_HOME"
 
 PMDAEMON="./target/debug/pmdaemon"
 

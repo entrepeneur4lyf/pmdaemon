@@ -136,7 +136,7 @@ pub use signals::{ProcessSignal, SignalHandler};
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// Default configuration directory name
-pub const CONFIG_DIR: &str = ".pm2r";
+pub const CONFIG_DIR: &str = ".pmdaemon";
 
 /// Default log directory name
 pub const LOG_DIR: &str = "logs";

@@ -91,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **State persistence**: Configuration file references maintained for process lifecycle
 
 #### **Configuration Directory Management**
-- **Environment variable override**: Enhanced `PM2R_HOME` environment variable support for custom configuration directories
+- **Environment variable override**: Enhanced `PMDAEMON_HOME` environment variable support for custom configuration directories
 - **Test isolation**: Improved testing infrastructure with proper configuration directory isolation
 - **Multi-instance support**: Better support for running multiple isolated PMDaemon instances
 
@@ -99,8 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Configuration parsing**: Robust parsing for all supported formats (JSON, YAML, TOML)
 - **Field validation**: Comprehensive validation prevents invalid configurations
 - **Error handling**: Graceful handling of malformed or missing configuration files
-- **Environment variable support**: Fixed `PM2R_HOME` environment variable support for configuration directory override
-- **Test isolation**: Improved test isolation by properly respecting `PM2R_HOME` in integration tests
+- **Environment variable support**: Fixed `PMDAEMON_HOME` environment variable support for configuration directory override
+- **Test isolation**: Improved test isolation by properly respecting `PMDAEMON_HOME` in integration tests
 - **Code quality**: Fixed clippy warnings and formatting issues for better code maintainability
 
 ### 📊 Technical Details

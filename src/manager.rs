@@ -161,13 +161,13 @@ impl ProcessManager {
 
     /// Get the configuration directory path
     ///
-    /// Checks for PM2R_HOME environment variable first, which allows overriding
+    /// Checks for PMDAEMON_HOME environment variable first, which allows overriding
     /// the default configuration directory. This is particularly useful for testing
     /// and when running multiple isolated PMDaemon instances.
     fn get_config_dir() -> Result<PathBuf> {
-        // Check for PM2R_HOME environment variable first
-        if let Ok(pm2r_home) = std::env::var("PM2R_HOME") {
-            return Ok(PathBuf::from(pm2r_home));
+        // Check for PMDAEMON_HOME environment variable first
+        if let Ok(pmdaemon_home) = std::env::var("PMDAEMON_HOME") {
+            return Ok(PathBuf::from(pmdaemon_home));
         }
 
         let home_dir =
@@ -1927,7 +1927,7 @@ mod tests {
         let result = ProcessManager::get_config_dir();
         assert!(result.is_ok());
         let path = result.unwrap();
-        assert!(path.to_string_lossy().contains(".pm2r"));
+        assert!(path.to_string_lossy().contains(".pmdaemon"));
     }
 
     #[tokio::test]

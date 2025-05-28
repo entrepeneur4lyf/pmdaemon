@@ -20,7 +20,7 @@ struct E2ETestEnvironment {
 impl E2ETestEnvironment {
     fn new() -> Self {
         let temp_dir = TempDir::new().expect("Failed to create temp directory");
-        let config_dir = temp_dir.path().join(".pm2r");
+        let config_dir = temp_dir.path().join(".pmdaemon");
 
         // Create config directory
         fs::create_dir_all(&config_dir).expect("Failed to create config directory");
@@ -33,7 +33,7 @@ impl E2ETestEnvironment {
 
     fn cmd(&self) -> Command {
         let mut cmd = Command::cargo_bin("pmdaemon").expect("Failed to find binary");
-        cmd.env("PM2R_HOME", &self.config_dir);
+        cmd.env("PMDAEMON_HOME", &self.config_dir);
         cmd.env("NO_COLOR", "1");
         cmd.env("RUST_LOG", "error");
         cmd

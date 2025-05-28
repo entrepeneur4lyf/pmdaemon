@@ -12,8 +12,8 @@ echo "Building PMDaemon..."
 echo
 
 # Set up demo environment
-export PM2R_HOME="/tmp/pmdaemon-demo"
-mkdir -p "$PM2R_HOME"
+export PMDAEMON_HOME="/tmp/pmdaemon-demo"
+mkdir -p "$PMDAEMON_HOME"
 PMDAEMON="./target/release/pmdaemon"
 
 echo "=== Demo 1: Delete All Processes ==="
