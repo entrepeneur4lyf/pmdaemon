@@ -102,8 +102,16 @@ impl Monitor {
             0.0
         };
 
+        // Handle edge cases where CPU usage might be negative or NaN (especially on macOS)
+        let raw_cpu_usage = self.system.global_cpu_info().cpu_usage();
+        let cpu_usage = if raw_cpu_usage.is_finite() && raw_cpu_usage >= 0.0 {
+            raw_cpu_usage
+        } else {
+            0.0 // Default to 0.0 for invalid values
+        };
+
         SystemMetrics {
-            cpu_usage: self.system.global_cpu_info().cpu_usage(),
+            cpu_usage,
             memory_usage: memory_used,
             memory_total,
             memory_percent,
@@ -124,8 +132,17 @@ impl Monitor {
 
         if let Some(process) = self.system.process(Pid::from(pid as usize)) {
             let uptime = process.run_time();
+
+            // Handle edge cases where CPU usage might be negative or NaN
+            let raw_cpu_usage = process.cpu_usage();
+            let cpu_usage = if raw_cpu_usage.is_finite() && raw_cpu_usage >= 0.0 {
+                raw_cpu_usage
+            } else {
+                0.0 // Default to 0.0 for invalid values
+            };
+
             let monitoring_data = MonitoringData {
-                cpu_usage: process.cpu_usage(),
+                cpu_usage,
                 memory_usage: process.memory(),
                 uptime: Some(uptime),
                 open_files: None, // sysinfo doesn't provide this directly
@@ -152,8 +169,17 @@ impl Monitor {
         for &pid in pids {
             if let Some(process) = self.system.process(Pid::from(pid as usize)) {
                 let uptime = process.run_time();
+
+                // Handle edge cases where CPU usage might be negative or NaN
+                let raw_cpu_usage = process.cpu_usage();
+                let cpu_usage = if raw_cpu_usage.is_finite() && raw_cpu_usage >= 0.0 {
+                    raw_cpu_usage
+                } else {
+                    0.0 // Default to 0.0 for invalid values
+                };
+
                 let monitoring_data = MonitoringData {
-                    cpu_usage: process.cpu_usage(),
+                    cpu_usage,
                     memory_usage: process.memory(),
                     uptime: Some(uptime),
                     open_files: None,

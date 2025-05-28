@@ -1,4 +1,8 @@
-# PMDaemon - Advanced Process Manager
+<div style="background-color: #1b252f; color: white; padding: 20px; text-align: center; border-radius: 8px;">
+  <img src="assets/logo.png" alt="PMDaemon Logo" style="height: 60px; display: block; margin: 0 auto 10px;">
+  <h1 style="margin: 0; color: white;">PMDaemon - Advanced Process Manager</h1>
+  <p style="margin: 5px 0 0; color: #cccccc;">A high-performance, cross-platform process manager built in Rust</p>
+</div>
 
 [![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

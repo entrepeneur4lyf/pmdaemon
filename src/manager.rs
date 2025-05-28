@@ -2207,6 +2207,7 @@ mod tests {
         let system_info = manager.get_system_info().await.unwrap();
 
         // Verify system metrics have reasonable values
+        // CPU usage should now be normalized to >= 0.0 by the monitoring system
         assert!(system_info.cpu_usage >= 0.0);
         assert!(system_info.memory_usage > 0);
         assert!(system_info.memory_total > 0);
