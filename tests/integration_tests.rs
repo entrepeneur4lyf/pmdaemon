@@ -170,10 +170,7 @@ fn test_start_with_args() {
     thread::sleep(Duration::from_millis(500));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -213,10 +210,7 @@ fn test_start_with_port() {
         .stdout(predicate::str::contains("8080"));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -290,10 +284,7 @@ fn test_list_format() {
         .stdout(predicate::str::contains("ID"));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -477,8 +468,5 @@ fn test_restart_process() {
         .stdout(predicate::str::contains("Restarted"));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }

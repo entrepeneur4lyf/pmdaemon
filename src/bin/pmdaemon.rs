@@ -810,8 +810,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_restart_command() {
-        let cli =
-            Cli::try_parse_from(["pmdaemon", "restart", "my-app", "--port", "4000"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "restart", "my-app", "--port", "4000"]).unwrap();
         if let Commands::Restart { identifier, port } = cli.command {
             assert_eq!(identifier, "my-app");
             assert_eq!(port, Some("4000".to_string()));

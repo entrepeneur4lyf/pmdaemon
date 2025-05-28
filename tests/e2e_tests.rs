@@ -123,10 +123,7 @@ echo "Shell script completed"
     // Stop and clean up
     env.cmd().args(["stop", &process_name]).assert().success();
 
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -176,10 +173,7 @@ print("Python application completed")
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -241,10 +235,7 @@ process.on('SIGTERM', () => {
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -333,10 +324,7 @@ echo "Server shutting down"
         .stdout(predicate::str::contains("9000"));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -431,10 +419,7 @@ done
         .stdout(predicate::str::contains("Stopped"));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
 
 #[test]
@@ -478,8 +463,5 @@ echo "Resource process completed"
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up
-    env.cmd()
-        .args(["delete", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["delete", &process_name]).assert().success();
 }
