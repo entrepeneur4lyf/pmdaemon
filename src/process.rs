@@ -368,7 +368,11 @@ impl Process {
     /// - Command/script is not found
     /// - Log files cannot be created
     /// - Process spawn fails for any reason
-    pub async fn start_with_logs(&mut self, out_log: Option<PathBuf>, err_log: Option<PathBuf>) -> Result<()> {
+    pub async fn start_with_logs(
+        &mut self,
+        out_log: Option<PathBuf>,
+        err_log: Option<PathBuf>,
+    ) -> Result<()> {
         if self.is_running() {
             return Err(Error::ProcessAlreadyRunning(self.config.name.clone()));
         }
@@ -399,7 +403,8 @@ impl Process {
         // Configure stdio with log file redirection
         if let Some(out_path) = out_log {
             // Create/open stdout log file
-            let stdout_file = File::create(&out_path).await
+            let stdout_file = File::create(&out_path)
+                .await
                 .map_err(|e| Error::config(format!("Failed to create stdout log file: {}", e)))?;
             cmd.stdout(stdout_file.into_std().await);
             debug!("Redirecting stdout to: {:?}", out_path);
@@ -409,7 +414,8 @@ impl Process {
 
         if let Some(err_path) = err_log {
             // Create/open stderr log file
-            let stderr_file = File::create(&err_path).await
+            let stderr_file = File::create(&err_path)
+                .await
                 .map_err(|e| Error::config(format!("Failed to create stderr log file: {}", e)))?;
             cmd.stderr(stderr_file.into_std().await);
             debug!("Redirecting stderr to: {:?}", err_path);
@@ -422,7 +428,11 @@ impl Process {
         // Spawn the process
         match cmd.spawn() {
             Ok(child) => {
-                info!("Process {} started with PID: {}", self.config.name, child.id().unwrap_or(0));
+                info!(
+                    "Process {} started with PID: {}",
+                    self.config.name,
+                    child.id().unwrap_or(0)
+                );
                 self.child = Some(child);
                 self.set_state(ProcessState::Online);
                 self.error = None;
@@ -434,7 +444,7 @@ impl Process {
                 self.error = Some(format!("Failed to start: {}", e));
                 Err(Error::ProcessStartFailed {
                     name: self.config.name.clone(),
-                    reason: e.to_string()
+                    reason: e.to_string(),
                 })
             }
         }
@@ -459,7 +469,10 @@ impl Process {
                 if let Some(pid) = child.id() {
                     let pid = Pid::from_raw(pid as i32);
                     if let Err(e) = signal::kill(pid, Signal::SIGTERM) {
-                        warn!("Failed to send SIGTERM to process {}: {}", self.config.name, e);
+                        warn!(
+                            "Failed to send SIGTERM to process {}: {}",
+                            self.config.name, e
+                        );
                     } else {
                         debug!("Sent SIGTERM to process {}", self.config.name);
                     }
@@ -470,24 +483,33 @@ impl Process {
             let timeout = tokio::time::Duration::from_secs(10);
             match tokio::time::timeout(timeout, child.wait()).await {
                 Ok(Ok(exit_status)) => {
-                    info!("Process {} stopped gracefully with exit code: {:?}",
-                          self.config.name, exit_status.code());
+                    info!(
+                        "Process {} stopped gracefully with exit code: {:?}",
+                        self.config.name,
+                        exit_status.code()
+                    );
                     self.exit_code = exit_status.code();
                 }
                 Ok(Err(e)) => {
-                    error!("Error waiting for process {} to stop: {}", self.config.name, e);
+                    error!(
+                        "Error waiting for process {} to stop: {}",
+                        self.config.name, e
+                    );
                     return Err(Error::ProcessStopFailed {
                         name: self.config.name.clone(),
-                        reason: e.to_string()
+                        reason: e.to_string(),
                     });
                 }
                 Err(_) => {
-                    warn!("Process {} did not stop gracefully, killing forcefully", self.config.name);
+                    warn!(
+                        "Process {} did not stop gracefully, killing forcefully",
+                        self.config.name
+                    );
                     if let Err(e) = child.kill().await {
                         error!("Failed to kill process {}: {}", self.config.name, e);
                         return Err(Error::ProcessStopFailed {
                             name: self.config.name.clone(),
-                            reason: e.to_string()
+                            reason: e.to_string(),
                         });
                     }
                     if let Ok(exit_status) = child.wait().await {
@@ -525,7 +547,11 @@ impl Process {
             match child.try_wait() {
                 Ok(Some(exit_status)) => {
                     // Process has exited
-                    info!("Process {} exited with status: {:?}", self.config.name, exit_status.code());
+                    info!(
+                        "Process {} exited with status: {:?}",
+                        self.config.name,
+                        exit_status.code()
+                    );
                     self.exit_code = exit_status.code();
                     self.set_state(ProcessState::Stopped);
                     self.child = None;
@@ -573,14 +599,15 @@ impl Process {
 
     /// Get uptime in seconds
     pub fn uptime_seconds(&self) -> Option<i64> {
-        self.started_at.map(|start| (Utc::now() - start).num_seconds())
+        self.started_at
+            .map(|start| (Utc::now() - start).num_seconds())
     }
 
     /// Check if process should be auto-restarted
     pub fn should_auto_restart(&self) -> bool {
-        self.config.autorestart &&
-        self.state == ProcessState::Stopped &&
-        self.config.max_restarts > self.restarts
+        self.config.autorestart
+            && self.state == ProcessState::Stopped
+            && self.config.max_restarts > self.restarts
     }
 }
 
@@ -818,7 +845,10 @@ mod tests {
 
         let result = process.start().await;
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), Error::ProcessAlreadyRunning(_)));
+        assert!(matches!(
+            result.unwrap_err(),
+            Error::ProcessAlreadyRunning(_)
+        ));
     }
 
     #[tokio::test]
@@ -833,7 +863,10 @@ mod tests {
         let result = process.start().await;
 
         assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), Error::ProcessStartFailed { .. }));
+        assert!(matches!(
+            result.unwrap_err(),
+            Error::ProcessStartFailed { .. }
+        ));
         assert_eq!(process.state, ProcessState::Errored);
         assert!(process.error.is_some());
     }

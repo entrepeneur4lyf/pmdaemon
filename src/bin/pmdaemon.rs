@@ -2,13 +2,13 @@
 //!
 //! Command-line interface for the PMDaemon process manager.
 
+use chrono::{Local, Utc};
 use clap::{Parser, Subcommand};
-use pmdaemon::{ProcessManager, ProcessConfig, EcosystemConfig, Result};
+use comfy_table::{Attribute, Cell, Color, Table};
 use pmdaemon::config::format_memory;
+use pmdaemon::{EcosystemConfig, ProcessConfig, ProcessManager, Result};
 use std::path::PathBuf;
 use tracing::{error, info};
-use comfy_table::{Table, Cell, Attribute, Color};
-use chrono::{Local, Utc};
 
 #[derive(Parser)]
 #[command(name = "pmdaemon")]
@@ -152,10 +152,7 @@ async fn main() -> Result<()> {
     // Initialize logging
     let log_level = if cli.verbose { "debug" } else { "info" };
     tracing_subscriber::fmt()
-        .with_env_filter(format!(
-            "pmdaemon={},pmdaemon_cli={}",
-            log_level, log_level
-        ))
+        .with_env_filter(format!("pmdaemon={},pmdaemon_cli={}", log_level, log_level))
         .init();
 
     info!("PMDaemon v{} starting", pmdaemon::VERSION);
@@ -183,10 +180,16 @@ async fn main() -> Result<()> {
                     // Start specific app from config
                     if let Some(app_config) = ecosystem.get_app(app_name) {
                         let process_id = manager.start(app_config.clone()).await?;
-                        println!("Started process '{}' from config file with ID: {}", app_name, process_id);
+                        println!(
+                            "Started process '{}' from config file with ID: {}",
+                            app_name, process_id
+                        );
                     } else {
-                        error!("App '{}' not found in config file. Available apps: {}",
-                               app_name, ecosystem.app_names().join(", "));
+                        error!(
+                            "App '{}' not found in config file. Available apps: {}",
+                            app_name,
+                            ecosystem.app_names().join(", ")
+                        );
                         std::process::exit(1);
                     }
                 } else if script.is_none() {
@@ -195,7 +198,10 @@ async fn main() -> Result<()> {
                     for app_config in &ecosystem.apps {
                         match manager.start(app_config.clone()).await {
                             Ok(process_id) => {
-                                println!("Started process '{}' with ID: {}", app_config.name, process_id);
+                                println!(
+                                    "Started process '{}' with ID: {}",
+                                    app_config.name, process_id
+                                );
                                 started_count += 1;
                             }
                             Err(e) => {
@@ -237,7 +243,10 @@ async fn main() -> Result<()> {
                     match pmdaemon::config::parse_memory_string(&memory_str) {
                         Ok(memory_bytes) => {
                             config_builder = config_builder.max_memory_restart(memory_bytes);
-                            info!("Set memory limit to {} bytes ({})", memory_bytes, memory_str);
+                            info!(
+                                "Set memory limit to {} bytes ({})",
+                                memory_bytes, memory_str
+                            );
                         }
                         Err(e) => {
                             error!("Invalid memory format '{}': {}", memory_str, e);
@@ -262,7 +271,9 @@ async fn main() -> Result<()> {
 
                 // Parse environment variables
                 for env_var in env {
-                    if let [key_slice, value_slice] = env_var.splitn(2, '=').collect::<Vec<_>>().as_slice() {
+                    if let [key_slice, value_slice] =
+                        env_var.splitn(2, '=').collect::<Vec<_>>().as_slice()
+                    {
                         config_builder = config_builder.env(*key_slice, *value_slice);
                     } else {
                         error!("Invalid environment variable format: {}", env_var);
@@ -298,7 +309,9 @@ async fn main() -> Result<()> {
                 None
             };
 
-            manager.restart_with_port(&identifier, port_override).await?;
+            manager
+                .restart_with_port(&identifier, port_override)
+                .await?;
             println!("Restarted process: {}", identifier);
         }
 
@@ -322,7 +335,11 @@ async fn main() -> Result<()> {
             println!("Reloaded process: {}", identifier);
         }
 
-        Commands::Delete { identifier, status, force } => {
+        Commands::Delete {
+            identifier,
+            status,
+            force,
+        } => {
             if identifier == "all" {
                 // Delete all processes
                 if !force {
@@ -340,7 +357,10 @@ async fn main() -> Result<()> {
             } else if status {
                 // Delete by status
                 if !force {
-                    print!("Are you sure you want to delete all processes with status '{}'? (y/N): ", identifier);
+                    print!(
+                        "Are you sure you want to delete all processes with status '{}'? (y/N): ",
+                        identifier
+                    );
                     std::io::Write::flush(&mut std::io::stdout()).unwrap();
                     let mut input = String::new();
                     std::io::stdin().read_line(&mut input).unwrap();
@@ -350,7 +370,10 @@ async fn main() -> Result<()> {
                     }
                 }
                 let deleted_count = manager.delete_by_status(&identifier).await?;
-                println!("Stopped and deleted {} processes with status '{}'", deleted_count, identifier);
+                println!(
+                    "Stopped and deleted {} processes with status '{}'",
+                    deleted_count, identifier
+                );
             } else {
                 // Delete single process by name/ID
                 manager.delete(&identifier).await?;
@@ -384,11 +407,13 @@ async fn main() -> Result<()> {
 
             // Add processes to table
             for process in processes {
-                let uptime = process.uptime
+                let uptime = process
+                    .uptime
                     .map(|t| format_duration(Utc::now() - t))
                     .unwrap_or_else(|| "-".to_string());
 
-                let port_display = process.assigned_port
+                let port_display = process
+                    .assigned_port
                     .map(|p| p.to_string())
                     .unwrap_or_else(|| "-".to_string());
 
@@ -417,7 +442,12 @@ async fn main() -> Result<()> {
                     Cell::new(&process.id.to_string()[..8]),
                     Cell::new(truncate_string(&process.name, 20)),
                     status_cell,
-                    Cell::new(process.pid.map(|p| p.to_string()).unwrap_or_else(|| "-".to_string())),
+                    Cell::new(
+                        process
+                            .pid
+                            .map(|p| p.to_string())
+                            .unwrap_or_else(|| "-".to_string()),
+                    ),
                     Cell::new(uptime),
                     Cell::new(process.restarts),
                     cpu_cell,
@@ -429,10 +459,12 @@ async fn main() -> Result<()> {
             println!("{}", table);
         }
 
-        Commands::Monit { interval: interval_secs } => {
+        Commands::Monit {
+            interval: interval_secs,
+        } => {
+            use comfy_table::presets::UTF8_FULL;
             use std::io::{self, Write};
             use tokio::time::{interval, Duration};
-            use comfy_table::presets::UTF8_FULL;
 
             println!("Starting real-time monitoring with {}-second intervals... (Press Ctrl+C to exit)\n", interval_secs);
 
@@ -447,7 +479,10 @@ async fn main() -> Result<()> {
                 let processes = manager.list().await?;
 
                 // System header
-                println!("┌─ PMDaemon Process Monitor ─ {} ─┐", Local::now().format("%Y-%m-%d %H:%M:%S"));
+                println!(
+                    "┌─ PMDaemon Process Monitor ─ {} ─┐",
+                    Local::now().format("%Y-%m-%d %H:%M:%S")
+                );
                 println!("│ System CPU: {:>5.1}% │ Memory: {:>5.1}% ({:.1}GB/{:.1}GB) │ Load: {:.2} {:.2} {:.2} │",
                     system_info.cpu_usage,
                     system_info.memory_percent,
@@ -464,26 +499,26 @@ async fn main() -> Result<()> {
                 } else {
                     // Create table
                     let mut table = Table::new();
-                    table
-                        .load_preset(UTF8_FULL)
-                        .set_header(vec![
-                            Cell::new("ID").add_attribute(Attribute::Bold),
-                            Cell::new("Name").add_attribute(Attribute::Bold),
-                            Cell::new("Status").add_attribute(Attribute::Bold),
-                            Cell::new("PID").add_attribute(Attribute::Bold),
-                            Cell::new("Uptime").add_attribute(Attribute::Bold),
-                            Cell::new("↻").add_attribute(Attribute::Bold), // Restart symbol
-                            Cell::new("CPU %").add_attribute(Attribute::Bold),
-                            Cell::new("Memory").add_attribute(Attribute::Bold),
-                            Cell::new("Port").add_attribute(Attribute::Bold),
-                        ]);
+                    table.load_preset(UTF8_FULL).set_header(vec![
+                        Cell::new("ID").add_attribute(Attribute::Bold),
+                        Cell::new("Name").add_attribute(Attribute::Bold),
+                        Cell::new("Status").add_attribute(Attribute::Bold),
+                        Cell::new("PID").add_attribute(Attribute::Bold),
+                        Cell::new("Uptime").add_attribute(Attribute::Bold),
+                        Cell::new("↻").add_attribute(Attribute::Bold), // Restart symbol
+                        Cell::new("CPU %").add_attribute(Attribute::Bold),
+                        Cell::new("Memory").add_attribute(Attribute::Bold),
+                        Cell::new("Port").add_attribute(Attribute::Bold),
+                    ]);
 
                     for process in processes {
-                        let uptime = process.uptime
+                        let uptime = process
+                            .uptime
                             .map(|t| format_duration(Utc::now() - t))
                             .unwrap_or_else(|| "-".to_string());
 
-                        let port_display = process.assigned_port
+                        let port_display = process
+                            .assigned_port
                             .map(|p| p.to_string())
                             .unwrap_or_else(|| "-".to_string());
 
@@ -512,7 +547,12 @@ async fn main() -> Result<()> {
                             Cell::new(&process.id.to_string()[..8]),
                             Cell::new(truncate_string(&process.name, 20)),
                             status_cell,
-                            Cell::new(process.pid.map(|p| p.to_string()).unwrap_or_else(|| "-".to_string())),
+                            Cell::new(
+                                process
+                                    .pid
+                                    .map(|p| p.to_string())
+                                    .unwrap_or_else(|| "-".to_string()),
+                            ),
                             Cell::new(uptime),
                             Cell::new(process.restarts),
                             cpu_cell,
@@ -530,7 +570,11 @@ async fn main() -> Result<()> {
             }
         }
 
-        Commands::Logs { identifier, lines, follow } => {
+        Commands::Logs {
+            identifier,
+            lines,
+            follow,
+        } => {
             if let Some(id) = identifier {
                 manager.read_logs(&id, Some(lines), follow).await?;
             } else {
@@ -568,22 +612,20 @@ fn format_duration(duration: chrono::Duration) -> String {
     }
 }
 
-
-
 /// Truncate strings to fit in table columns
 fn truncate_string(s: &str, max_len: usize) -> String {
     if s.len() <= max_len {
         s.to_string()
     } else {
-        format!("{}...", &s[..max_len-3])
+        format!("{}...", &s[..max_len - 3])
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use clap::Parser;
     use chrono::Duration;
+    use clap::Parser;
 
     #[test]
     fn test_format_duration_seconds() {
@@ -660,7 +702,7 @@ mod tests {
     #[test]
     fn test_cli_parsing_basic_commands() {
         // Test basic command parsing
-        let cli = Cli::try_parse_from(&["pmdaemon", "list"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "list"]).unwrap();
         assert!(!cli.verbose);
         assert!(cli.config.is_none());
         assert!(matches!(cli.command, Commands::List));
@@ -668,20 +710,31 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_verbose_flag() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "--verbose", "list"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "--verbose", "list"]).unwrap();
         assert!(cli.verbose);
     }
 
     #[test]
     fn test_cli_parsing_config_flag() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "--config", "/path/to/config.json", "list"]).unwrap();
+        let cli =
+            Cli::try_parse_from(["pmdaemon", "--config", "/path/to/config.json", "list"]).unwrap();
         assert_eq!(cli.config, Some(PathBuf::from("/path/to/config.json")));
     }
 
     #[test]
     fn test_cli_parsing_start_command_basic() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "start", "script.js"]).unwrap();
-        if let Commands::Start { script, name, instances, cwd, env, max_memory, port, args } = cli.command {
+        let cli = Cli::try_parse_from(["pmdaemon", "start", "script.js"]).unwrap();
+        if let Commands::Start {
+            script,
+            name,
+            instances,
+            cwd,
+            env,
+            max_memory,
+            port,
+            args,
+        } = cli.command
+        {
             assert_eq!(script, Some("script.js".to_string()));
             assert_eq!(name, None);
             assert_eq!(instances, 1);
@@ -697,19 +750,41 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_start_command_with_options() {
-        let cli = Cli::try_parse_from(&[
-            "pmdaemon", "start", "app.js",
-            "--name", "my-app",
-            "--instances", "3",
-            "--cwd", "/app",
-            "--env", "NODE_ENV=production",
-            "--env", "PORT=3000",
-            "--max-memory", "512M",
-            "--port", "3000-3010",
-            "--", "--arg1", "value1"
-        ]).unwrap();
+        let cli = Cli::try_parse_from([
+            "pmdaemon",
+            "start",
+            "app.js",
+            "--name",
+            "my-app",
+            "--instances",
+            "3",
+            "--cwd",
+            "/app",
+            "--env",
+            "NODE_ENV=production",
+            "--env",
+            "PORT=3000",
+            "--max-memory",
+            "512M",
+            "--port",
+            "3000-3010",
+            "--",
+            "--arg1",
+            "value1",
+        ])
+        .unwrap();
 
-        if let Commands::Start { script, name, instances, cwd, env, max_memory, port, args } = cli.command {
+        if let Commands::Start {
+            script,
+            name,
+            instances,
+            cwd,
+            env,
+            max_memory,
+            port,
+            args,
+        } = cli.command
+        {
             assert_eq!(script, Some("app.js".to_string()));
             assert_eq!(name, Some("my-app".to_string()));
             assert_eq!(instances, 3);
@@ -725,7 +800,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_stop_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "stop", "my-app"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "stop", "my-app"]).unwrap();
         if let Commands::Stop { identifier } = cli.command {
             assert_eq!(identifier, "my-app");
         } else {
@@ -735,7 +810,8 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_restart_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "restart", "my-app", "--port", "4000"]).unwrap();
+        let cli =
+            Cli::try_parse_from(["pmdaemon", "restart", "my-app", "--port", "4000"]).unwrap();
         if let Commands::Restart { identifier, port } = cli.command {
             assert_eq!(identifier, "my-app");
             assert_eq!(port, Some("4000".to_string()));
@@ -746,7 +822,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_reload_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "reload", "my-app"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "reload", "my-app"]).unwrap();
         if let Commands::Reload { identifier, port } = cli.command {
             assert_eq!(identifier, "my-app");
             assert_eq!(port, None);
@@ -757,8 +833,13 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_delete_command_basic() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "delete", "my-app"]).unwrap();
-        if let Commands::Delete { identifier, status, force } = cli.command {
+        let cli = Cli::try_parse_from(["pmdaemon", "delete", "my-app"]).unwrap();
+        if let Commands::Delete {
+            identifier,
+            status,
+            force,
+        } = cli.command
+        {
             assert_eq!(identifier, "my-app");
             assert!(!status);
             assert!(!force);
@@ -769,8 +850,14 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_delete_command_with_flags() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "delete", "stopped", "--status", "--force"]).unwrap();
-        if let Commands::Delete { identifier, status, force } = cli.command {
+        let cli =
+            Cli::try_parse_from(["pmdaemon", "delete", "stopped", "--status", "--force"]).unwrap();
+        if let Commands::Delete {
+            identifier,
+            status,
+            force,
+        } = cli.command
+        {
             assert_eq!(identifier, "stopped");
             assert!(status);
             assert!(force);
@@ -781,7 +868,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_monit_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "monit", "--interval", "5"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "monit", "--interval", "5"]).unwrap();
         if let Commands::Monit { interval } = cli.command {
             assert_eq!(interval, 5);
         } else {
@@ -791,7 +878,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_monit_command_default() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "monit"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "monit"]).unwrap();
         if let Commands::Monit { interval } = cli.command {
             assert_eq!(interval, 1); // Default value
         } else {
@@ -801,8 +888,14 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_logs_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "logs", "my-app", "--lines", "50", "--follow"]).unwrap();
-        if let Commands::Logs { identifier, lines, follow } = cli.command {
+        let cli = Cli::try_parse_from(["pmdaemon", "logs", "my-app", "--lines", "50", "--follow"])
+            .unwrap();
+        if let Commands::Logs {
+            identifier,
+            lines,
+            follow,
+        } = cli.command
+        {
             assert_eq!(identifier, Some("my-app".to_string()));
             assert_eq!(lines, 50);
             assert!(follow);
@@ -813,8 +906,13 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_logs_command_defaults() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "logs"]).unwrap();
-        if let Commands::Logs { identifier, lines, follow } = cli.command {
+        let cli = Cli::try_parse_from(["pmdaemon", "logs"]).unwrap();
+        if let Commands::Logs {
+            identifier,
+            lines,
+            follow,
+        } = cli.command
+        {
             assert_eq!(identifier, None);
             assert_eq!(lines, 20); // Default value
             assert!(!follow);
@@ -825,7 +923,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_info_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "info", "my-app"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "info", "my-app"]).unwrap();
         if let Commands::Info { identifier } = cli.command {
             assert_eq!(identifier, "my-app");
         } else {
@@ -835,7 +933,8 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_web_command() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "web", "--port", "8080", "--host", "0.0.0.0"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "web", "--port", "8080", "--host", "0.0.0.0"])
+            .unwrap();
         if let Commands::Web { port, host } = cli.command {
             assert_eq!(port, 8080);
             assert_eq!(host, "0.0.0.0");
@@ -846,7 +945,7 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_web_command_defaults() {
-        let cli = Cli::try_parse_from(&["pmdaemon", "web"]).unwrap();
+        let cli = Cli::try_parse_from(["pmdaemon", "web"]).unwrap();
         if let Commands::Web { port, host } = cli.command {
             assert_eq!(port, pmdaemon::DEFAULT_WEB_PORT);
             assert_eq!(host, "127.0.0.1");
@@ -857,30 +956,30 @@ mod tests {
 
     #[test]
     fn test_cli_parsing_invalid_command() {
-        let result = Cli::try_parse_from(&["pmdaemon", "invalid-command"]);
+        let result = Cli::try_parse_from(["pmdaemon", "invalid-command"]);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_cli_parsing_missing_required_args() {
         // Stop command requires identifier
-        let result = Cli::try_parse_from(&["pmdaemon", "stop"]);
+        let result = Cli::try_parse_from(["pmdaemon", "stop"]);
         assert!(result.is_err());
 
         // Info command requires identifier
-        let result = Cli::try_parse_from(&["pmdaemon", "info"]);
+        let result = Cli::try_parse_from(["pmdaemon", "info"]);
         assert!(result.is_err());
     }
 
     #[test]
     fn test_cli_parsing_help() {
-        let result = Cli::try_parse_from(&["pmdaemon", "--help"]);
+        let result = Cli::try_parse_from(["pmdaemon", "--help"]);
         assert!(result.is_err()); // Help exits with error code but shows help
     }
 
     #[test]
     fn test_cli_parsing_version() {
-        let result = Cli::try_parse_from(&["pmdaemon", "--version"]);
+        let result = Cli::try_parse_from(["pmdaemon", "--version"]);
         assert!(result.is_err()); // Version exits with error code but shows version
     }
 }

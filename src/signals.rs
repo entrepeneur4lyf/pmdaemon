@@ -47,12 +47,12 @@
 
 use crate::error::{Error, Result};
 #[cfg(unix)]
-use nix::sys::signal::{Signal, kill};
+use nix::sys::signal::{kill, Signal};
 #[cfg(unix)]
 use nix::unistd::Pid;
 use std::str::FromStr;
-use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use tokio::signal;
 use tracing::{debug, info, warn};
 
@@ -181,7 +181,12 @@ impl SignalHandler {
         };
 
         debug!("Sending signal {} to PID {}", signal, pid);
-        kill(pid, signal).map_err(|e| Error::signal(format!("Failed to send signal {} to PID {}: {}", signal, pid, e)))?;
+        kill(pid, signal).map_err(|e| {
+            Error::signal(format!(
+                "Failed to send signal {} to PID {}: {}",
+                signal, pid, e
+            ))
+        })?;
         Ok(())
     }
 
@@ -205,13 +210,19 @@ impl SignalHandler {
 
                 if !output.status.success() {
                     let stderr = String::from_utf8_lossy(&output.stderr);
-                    return Err(Error::signal(format!("Failed to kill process {}: {}", pid, stderr)));
+                    return Err(Error::signal(format!(
+                        "Failed to kill process {}: {}",
+                        pid, stderr
+                    )));
                 }
                 Ok(())
             }
             _ => {
                 // Other signals are not supported on Windows
-                Err(Error::signal(format!("Signal {} is not supported on Windows", signal)))
+                Err(Error::signal(format!(
+                    "Signal {} is not supported on Windows",
+                    signal
+                )))
             }
         }
     }
@@ -360,7 +371,10 @@ impl SignalHandler {
     /// ```
     #[cfg(unix)]
     pub async fn graceful_shutdown(&self, pid: u32, timeout_ms: u64) -> Result<()> {
-        debug!("Initiating graceful shutdown for PID {} with timeout {}ms (Unix)", pid, timeout_ms);
+        debug!(
+            "Initiating graceful shutdown for PID {} with timeout {}ms (Unix)",
+            pid, timeout_ms
+        );
 
         // Send SIGTERM first
         self.send_signal(pid, ProcessSignal::Term)?;
@@ -387,7 +401,10 @@ impl SignalHandler {
         }
 
         // Timeout reached, send SIGKILL
-        warn!("Process {} did not exit gracefully within {}ms, sending SIGKILL", pid, timeout_ms);
+        warn!(
+            "Process {} did not exit gracefully within {}ms, sending SIGKILL",
+            pid, timeout_ms
+        );
         self.send_signal(pid, ProcessSignal::Kill)?;
 
         // Wait a bit longer for SIGKILL to take effect and verify
@@ -409,7 +426,10 @@ impl SignalHandler {
         }
 
         // If we get here, even SIGKILL didn't work
-        Err(Error::signal(format!("Failed to kill process {} even with SIGKILL", pid)))
+        Err(Error::signal(format!(
+            "Failed to kill process {} even with SIGKILL",
+            pid
+        )))
     }
 
     /// Gracefully shutdown a process (Windows implementation).
@@ -417,7 +437,10 @@ impl SignalHandler {
     /// On Windows, this uses taskkill to terminate the process.
     #[cfg(windows)]
     pub async fn graceful_shutdown(&self, pid: u32, timeout_ms: u64) -> Result<()> {
-        debug!("Initiating graceful shutdown for PID {} with timeout {}ms (Windows)", pid, timeout_ms);
+        debug!(
+            "Initiating graceful shutdown for PID {} with timeout {}ms (Windows)",
+            pid, timeout_ms
+        );
 
         // On Windows, we'll try a graceful termination first, then force kill
         // First attempt: try normal termination
@@ -446,7 +469,10 @@ impl SignalHandler {
         }
 
         // Force kill if graceful didn't work
-        warn!("Process {} did not exit gracefully within {}ms, force killing", pid, timeout_ms);
+        warn!(
+            "Process {} did not exit gracefully within {}ms, force killing",
+            pid, timeout_ms
+        );
         self.send_signal(pid, ProcessSignal::Kill)?;
 
         info!("Process {} forcefully terminated", pid);
@@ -519,11 +545,12 @@ impl ProcessSignal {
         ]
     }
 
-
-
     /// Check if this is a termination signal
     pub fn is_termination_signal(&self) -> bool {
-        matches!(self, ProcessSignal::Term | ProcessSignal::Kill | ProcessSignal::Int | ProcessSignal::Quit)
+        matches!(
+            self,
+            ProcessSignal::Term | ProcessSignal::Kill | ProcessSignal::Int | ProcessSignal::Quit
+        )
     }
 
     /// Check if this is a user signal
@@ -536,8 +563,6 @@ impl ProcessSignal {
 mod tests {
     use super::*;
     use pretty_assertions::assert_eq;
-
-
 
     #[test]
     fn test_signal_handler_new() {
@@ -587,7 +612,7 @@ mod tests {
     #[test]
     fn test_process_signal_clone() {
         let original = ProcessSignal::Term;
-        let cloned = original.clone();
+        let cloned = original;
         assert_eq!(format!("{:?}", original), format!("{:?}", cloned));
     }
 
@@ -663,7 +688,10 @@ mod tests {
 
         let result = handler.send_signal(fake_pid, ProcessSignal::Term);
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Failed to send signal"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Failed to send signal"));
     }
 
     // Note: Commented out because sending signals to self can interfere with test runner
@@ -684,7 +712,10 @@ mod tests {
 
         let result = handler.graceful_shutdown(fake_pid, 100).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Failed to send signal"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Failed to send signal"));
     }
 
     // Note: Commented out because it can interfere with test environment

@@ -1,6 +1,6 @@
 use pmdaemon::config::{EcosystemConfig, PortConfig};
-use tempfile::NamedTempFile;
 use std::io::Write;
+use tempfile::NamedTempFile;
 
 #[tokio::test]
 async fn test_json_config_format() {
@@ -49,7 +49,7 @@ async fn test_json_config_format() {
     assert_eq!(app1.max_memory_restart, Some(512 * 1024 * 1024)); // 512MB in bytes
     assert_eq!(app1.env.get("NODE_ENV"), Some(&"production".to_string()));
     assert_eq!(app1.env.get("PORT"), Some(&"3000".to_string()));
-    assert_eq!(app1.autorestart, true);
+    assert!(app1.autorestart);
     assert_eq!(app1.max_restarts, 10);
     assert_eq!(app1.namespace, "test");
 
@@ -61,7 +61,7 @@ async fn test_json_config_format() {
     assert_eq!(app2.instances, 1); // default
     assert_eq!(app2.port, None); // default
     assert_eq!(app2.max_memory_restart, None); // default
-    assert_eq!(app2.autorestart, true); // default
+    assert!(app2.autorestart); // default
     assert_eq!(app2.max_restarts, 16); // default
     assert_eq!(app2.namespace, "default"); // default
 }
@@ -113,7 +113,10 @@ apps:
     assert_eq!(app1.port, Some(PortConfig::Auto(8000, 8100)));
     assert_eq!(app1.max_memory_restart, Some(1024 * 1024 * 1024)); // 1GB in bytes
     assert_eq!(app1.env.get("PYTHONPATH"), Some(&"/opt/app".to_string()));
-    assert_eq!(app1.env.get("DATABASE_URL"), Some(&"postgres://localhost/db".to_string()));
+    assert_eq!(
+        app1.env.get("DATABASE_URL"),
+        Some(&"postgres://localhost/db".to_string())
+    );
     assert_eq!(app1.cwd, Some(std::path::PathBuf::from("/opt/myapp")));
     assert_eq!(app1.min_uptime, 5000);
     assert_eq!(app1.restart_delay, 1000);
@@ -125,7 +128,10 @@ apps:
     assert_eq!(app2.script, "node");
     assert_eq!(app2.args, vec!["worker.js"]);
     assert_eq!(app2.max_memory_restart, Some(256 * 1024 * 1024)); // 256MB in bytes
-    assert_eq!(app2.env.get("REDIS_URL"), Some(&"redis://localhost:6379".to_string()));
+    assert_eq!(
+        app2.env.get("REDIS_URL"),
+        Some(&"redis://localhost:6379".to_string())
+    );
 }
 
 #[tokio::test]
@@ -173,11 +179,14 @@ PYTHONUNBUFFERED = "1"
     assert_eq!(app1.instances, 1);
     assert_eq!(app1.port, Some(PortConfig::Single(9090)));
     assert_eq!(app1.max_memory_restart, Some(128 * 1024 * 1024)); // 128MB in bytes
-    assert_eq!(app1.autorestart, true);
+    assert!(app1.autorestart);
     assert_eq!(app1.max_restarts, 5);
     assert_eq!(app1.namespace, "rust-apps");
     assert_eq!(app1.env.get("RUST_LOG"), Some(&"debug".to_string()));
-    assert_eq!(app1.env.get("CARGO_TARGET_DIR"), Some(&"/tmp/target".to_string()));
+    assert_eq!(
+        app1.env.get("CARGO_TARGET_DIR"),
+        Some(&"/tmp/target".to_string())
+    );
 
     // Test second app
     let app2 = &config.apps[1];
@@ -233,7 +242,10 @@ async fn test_memory_format_parsing() {
     // Test different memory formats
     assert_eq!(config.apps[0].max_memory_restart, Some(512 * 1024)); // 512K
     assert_eq!(config.apps[1].max_memory_restart, Some(256 * 1024 * 1024)); // 256M
-    assert_eq!(config.apps[2].max_memory_restart, Some(2 * 1024 * 1024 * 1024)); // 2G
+    assert_eq!(
+        config.apps[2].max_memory_restart,
+        Some(2 * 1024 * 1024 * 1024)
+    ); // 2G
     assert_eq!(config.apps[3].max_memory_restart, Some(1048576)); // Raw bytes
     assert_eq!(config.apps[4].max_memory_restart, None); // No limit
 }
@@ -297,7 +309,10 @@ async fn test_config_validation() {
 
     let result = EcosystemConfig::from_file(temp_file.path()).await;
     assert!(result.is_err());
-    assert!(result.unwrap_err().to_string().contains("Duplicate app name"));
+    assert!(result
+        .unwrap_err()
+        .to_string()
+        .contains("Duplicate app name"));
 }
 
 #[tokio::test]
@@ -350,5 +365,7 @@ async fn test_file_extension_detection() {
     let mut unknown_file = NamedTempFile::with_suffix(".unknown").unwrap();
     unknown_file.write_all(content.as_bytes()).unwrap();
     unknown_file.flush().unwrap();
-    assert!(EcosystemConfig::from_file(unknown_file.path()).await.is_ok());
+    assert!(EcosystemConfig::from_file(unknown_file.path())
+        .await
+        .is_ok());
 }

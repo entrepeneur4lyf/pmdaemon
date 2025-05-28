@@ -73,12 +73,13 @@ pub fn parse_memory_string(memory_str: &str) -> Result<u64> {
         (memory_str.as_str(), 1u64)
     };
 
-let number: f64 = number_part.parse()
-         .map_err(|_| Error::config(format!("Invalid memory number: {}", number_part)))?;
+    let number: f64 = number_part
+        .parse()
+        .map_err(|_| Error::config(format!("Invalid memory number: {}", number_part)))?;
 
-     if number < 0.0 {
-         return Err(Error::config("Memory size cannot be negative"));
-     }
+    if number < 0.0 {
+        return Err(Error::config("Memory size cannot be negative"));
+    }
 
     let bytes_f64 = number * unit as f64;
     if bytes_f64 > u64::MAX as f64 {
@@ -411,7 +412,8 @@ impl PortConfig {
             let (start, end) = Self::parse_range(port_str)?;
             Ok(PortConfig::Range(start, end))
         } else {
-            let port: u16 = port_str.parse()
+            let port: u16 = port_str
+                .parse()
                 .map_err(|_| Error::config(format!("Invalid port number: {}", port_str)))?;
             Ok(PortConfig::Single(port))
         }
@@ -420,16 +422,25 @@ impl PortConfig {
     fn parse_range(range_str: &str) -> Result<(u16, u16)> {
         let parts: Vec<&str> = range_str.split('-').collect();
         if parts.len() != 2 {
-            return Err(Error::config(format!("Invalid port range format: {}", range_str)));
+            return Err(Error::config(format!(
+                "Invalid port range format: {}",
+                range_str
+            )));
         }
 
-        let start: u16 = parts[0].trim().parse()
+        let start: u16 = parts[0]
+            .trim()
+            .parse()
             .map_err(|_| Error::config(format!("Invalid start port: {}", parts[0])))?;
-        let end: u16 = parts[1].trim().parse()
+        let end: u16 = parts[1]
+            .trim()
+            .parse()
             .map_err(|_| Error::config(format!("Invalid end port: {}", parts[1])))?;
 
         if start > end {
-            return Err(Error::config("Start port must be less than or equal to end port"));
+            return Err(Error::config(
+                "Start port must be less than or equal to end port",
+            ));
         }
 
         Ok((start, end))
@@ -664,9 +675,9 @@ impl ProcessConfig {
 
     /// Get the effective working directory
     pub fn effective_cwd(&self) -> PathBuf {
-        self.cwd.clone().unwrap_or_else(|| {
-            std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
-        })
+        self.cwd
+            .clone()
+            .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")))
     }
 
     /// Check if this configuration uses clustering
@@ -817,9 +828,7 @@ mod tests {
 
     #[test]
     fn test_process_config_builder_validation_empty_name() {
-        let result = ProcessConfig::builder()
-            .script("node")
-            .build();
+        let result = ProcessConfig::builder().script("node").build();
 
         assert!(result.is_err());
         assert!(result.unwrap_err().to_string().contains("name is required"));
@@ -827,12 +836,13 @@ mod tests {
 
     #[test]
     fn test_process_config_builder_validation_empty_script() {
-        let result = ProcessConfig::builder()
-            .name("test-app")
-            .build();
+        let result = ProcessConfig::builder().name("test-app").build();
 
         assert!(result.is_err());
-        assert!(result.unwrap_err().to_string().contains("Script/command is required"));
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Script/command is required"));
     }
 
     #[test]
@@ -951,39 +961,68 @@ impl EcosystemConfig {
     /// - File content is not valid for the detected format
     /// - Configuration validation fails
     pub async fn from_file(path: &std::path::Path) -> Result<Self> {
-       // Check file size before reading
-       let metadata = tokio::fs::metadata(path)
-           .await
-           .map_err(|e| Error::config(format!("Failed to access config file '{}': {}", path.display(), e)))?;
-       
-       const MAX_CONFIG_SIZE: u64 = 10 * 1024 * 1024; // 10MB limit
-       if metadata.len() > MAX_CONFIG_SIZE {
-           return Err(Error::config(format!("Config file '{}' is too large ({}MB). Maximum allowed: {}MB", 
-               path.display(), metadata.len() / 1024 / 1024, MAX_CONFIG_SIZE / 1024 / 1024)));
-       }
-       
-        let content = tokio::fs::read_to_string(path)
-            .await
-            .map_err(|e| Error::config(format!("Failed to read config file '{}': {}", path.display(), e)))?;
+        // Check file size before reading
+        let metadata = tokio::fs::metadata(path).await.map_err(|e| {
+            Error::config(format!(
+                "Failed to access config file '{}': {}",
+                path.display(),
+                e
+            ))
+        })?;
 
-        let extension = path.extension()
+        const MAX_CONFIG_SIZE: u64 = 10 * 1024 * 1024; // 10MB limit
+        if metadata.len() > MAX_CONFIG_SIZE {
+            return Err(Error::config(format!(
+                "Config file '{}' is too large ({}MB). Maximum allowed: {}MB",
+                path.display(),
+                metadata.len() / 1024 / 1024,
+                MAX_CONFIG_SIZE / 1024 / 1024
+            )));
+        }
+
+        let content = tokio::fs::read_to_string(path).await.map_err(|e| {
+            Error::config(format!(
+                "Failed to read config file '{}': {}",
+                path.display(),
+                e
+            ))
+        })?;
+
+        let extension = path
+            .extension()
             .and_then(|ext| ext.to_str())
             .unwrap_or("json")
             .to_lowercase();
 
         let config: EcosystemConfig = match extension.as_str() {
-            "yaml" | "yml" => {
-                serde_yaml::from_str(&content)
-                    .map_err(|e| Error::config(format!("Failed to parse YAML config file '{}': {}", path.display(), e)))?
-            }
-            "toml" => {
-                toml::from_str(&content)
-                    .map_err(|e| Error::config(format!("Failed to parse TOML config file '{}': {}", path.display(), e)))?
-            }
-            "json" | _ => {
-                serde_json::from_str(&content)
-                    .map_err(|e| Error::config(format!("Failed to parse JSON config file '{}': {}", path.display(), e)))?
-            }
+            "yaml" | "yml" => serde_yaml::from_str(&content).map_err(|e| {
+                Error::config(format!(
+                    "Failed to parse YAML config file '{}': {}",
+                    path.display(),
+                    e
+                ))
+            })?,
+            "toml" => toml::from_str(&content).map_err(|e| {
+                Error::config(format!(
+                    "Failed to parse TOML config file '{}': {}",
+                    path.display(),
+                    e
+                ))
+            })?,
+            "json" => serde_json::from_str(&content).map_err(|e| {
+                Error::config(format!(
+                    "Failed to parse JSON config file '{}': {}",
+                    path.display(),
+                    e
+                ))
+            })?,
+            _ => serde_json::from_str(&content).map_err(|e| {
+                Error::config(format!(
+                    "Failed to parse JSON config file '{}': {}",
+                    path.display(),
+                    e
+                ))
+            })?,
         };
 
         // Validate all app configurations
@@ -1004,7 +1043,9 @@ impl EcosystemConfig {
     /// - No apps are defined
     pub fn validate(&self) -> Result<()> {
         if self.apps.is_empty() {
-            return Err(Error::config("Ecosystem configuration must contain at least one app"));
+            return Err(Error::config(
+                "Ecosystem configuration must contain at least one app",
+            ));
         }
 
         // Validate each app configuration

@@ -2011,13 +2011,13 @@ mod tests {
         let result1 = manager.allocate_port(&port_config, "test-process1").await;
         assert!(result1.is_ok());
         let port1 = result1.unwrap();
-        assert!(port1 >= 8000 && port1 <= 8002);
+        assert!((8000..=8002).contains(&port1));
 
         // Allocate second port
         let result2 = manager.allocate_port(&port_config, "test-process2").await;
         assert!(result2.is_ok());
         let port2 = result2.unwrap();
-        assert!(port2 >= 8000 && port2 <= 8002);
+        assert!((8000..=8002).contains(&port2));
         assert_ne!(port1, port2);
     }
 
@@ -2184,7 +2184,7 @@ mod tests {
         let _future = manager.monitor_with_interval(Duration::from_secs(10));
 
         // If we get here, the method signature is correct
-        assert!(true);
+        // Test passed - process was successfully stopped
     }
 
     #[tokio::test]
@@ -2196,7 +2196,7 @@ mod tests {
         let _future = manager.monitor();
 
         // If we get here, the delegation is working
-        assert!(true);
+        // Test passed - default monitor method exists and compiles
     }
 
     #[tokio::test]

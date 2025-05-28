@@ -1,30 +1,33 @@
 //! Web server for monitoring API and WebSocket support
 
+use crate::config::{PortConfig, ProcessConfig};
 use crate::error::{Error, Result};
 use crate::manager::ProcessManager;
 use crate::monitoring::{Monitor, SystemMetrics};
-use crate::process::{ProcessStatus, ProcessState};
-use crate::config::{ProcessConfig, PortConfig};
+use crate::process::{ProcessState, ProcessStatus};
+use axum::response::IntoResponse;
 use axum::{
-    extract::{Path, Query, State, WebSocketUpgrade, ws::{WebSocket, Message}},
-    http::{StatusCode, HeaderValue, header},
+    extract::{
+        ws::{Message, WebSocket},
+        Path, Query, State, WebSocketUpgrade,
+    },
+    http::{header, HeaderValue, StatusCode},
     response::{Json, Response},
     routing::{get, post},
     Router,
 };
-use axum::response::IntoResponse;
+use futures_util::{SinkExt, StreamExt};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::net::TcpListener;
-use tokio::sync::{RwLock, broadcast};
+use tokio::sync::{broadcast, RwLock};
 use tokio::time::interval;
 use tower_http::cors::CorsLayer;
-use tower_http::trace::TraceLayer;
 use tower_http::set_header::SetResponseHeaderLayer;
-use tracing::{info, warn, error, debug};
-use futures_util::{SinkExt, StreamExt};
+use tower_http::trace::TraceLayer;
+use tracing::{debug, error, info, warn};
 
 /// Query parameters for process listing
 #[derive(Debug, Deserialize)]
@@ -168,9 +171,9 @@ impl WebServer {
                 manager.list().await.unwrap_or_default()
             };
 
-            let _ = state.broadcast_tx.send(WebSocketMessage::ProcessList {
-                processes,
-            });
+            let _ = state
+                .broadcast_tx
+                .send(WebSocketMessage::ProcessList { processes });
         }
     }
 
@@ -179,23 +182,22 @@ impl WebServer {
         Router::new()
             // Root endpoint
             .route("/", get(root_handler))
-
             // Process management endpoints
             .route("/api/processes", get(list_processes).post(create_process))
-            .route("/api/processes/:id", get(get_process).delete(delete_process))
+            .route(
+                "/api/processes/:id",
+                get(get_process).delete(delete_process),
+            )
             .route("/api/processes/:id/start", post(start_process))
             .route("/api/processes/:id/stop", post(stop_process))
             .route("/api/processes/:id/restart", post(restart_process))
             .route("/api/processes/:id/reload", post(reload_process))
             .route("/api/processes/:id/logs", get(get_process_logs))
-
             // System information
             .route("/api/system", get(system_info))
             .route("/api/status", get(status_info))
-
             // WebSocket endpoint
             .route("/ws", get(websocket_handler))
-
             // Add middleware layers
             .layer(
                 CorsLayer::new()
@@ -206,11 +208,7 @@ impl WebServer {
                         axum::http::Method::DELETE,
                         axum::http::Method::OPTIONS,
                     ])
-                    .allow_headers([
-                        header::CONTENT_TYPE,
-                        header::AUTHORIZATION,
-                        header::ACCEPT,
-                    ])
+                    .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION, header::ACCEPT]),
             )
             .layer(SetResponseHeaderLayer::if_not_present(
                 header::X_CONTENT_TYPE_OPTIONS,
@@ -280,7 +278,8 @@ async fn list_processes(
                     "total": pm2_processes.len(),
                     "namespace": query.namespace
                 }
-            })).into_response()
+            }))
+            .into_response()
         }
         Err(e) => {
             error!("Failed to list processes: {}", e);
@@ -290,8 +289,9 @@ async fn list_processes(
                     "success": false,
                     "error": "Failed to list processes",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -301,17 +301,33 @@ async fn create_process(
     State(state): State<AppState>,
     Json(request): Json<StartProcessRequest>,
 ) -> impl IntoResponse {
-    match state.manager.write().await.start(request.config.clone()).await {
+    match state
+        .manager
+        .write()
+        .await
+        .start(request.config.clone())
+        .await
+    {
         Ok(process_id) => {
-            info!("Created process {} with ID {}", request.config.name, process_id);
+            info!(
+                "Created process {} with ID {}",
+                request.config.name, process_id
+            );
 
             // Get the created process status
-            match state.manager.read().await.get_process_info(&process_id.to_string()).await {
+            match state
+                .manager
+                .read()
+                .await
+                .get_process_info(&process_id.to_string())
+                .await
+            {
                 Ok(status) => Json(json!({
                     "success": true,
                     "data": process_status_to_pm2_format(&status),
                     "message": format!("Process '{}' started successfully", request.config.name)
-                })).into_response(),
+                }))
+                .into_response(),
                 Err(_) => Json(json!({
                     "success": true,
                     "data": {
@@ -319,7 +335,8 @@ async fn create_process(
                         "name": request.config.name
                     },
                     "message": "Process started successfully"
-                })).into_response()
+                }))
+                .into_response(),
             }
         }
         Err(e) => {
@@ -330,22 +347,21 @@ async fn create_process(
                     "success": false,
                     "error": "Failed to create process",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
 
 /// Get specific process
-async fn get_process(
-    State(state): State<AppState>,
-    Path(id): Path<String>,
-) -> impl IntoResponse {
+async fn get_process(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
     match state.manager.read().await.get_process_info(&id).await {
         Ok(status) => Json(json!({
             "success": true,
             "data": process_status_to_pm2_format(&status)
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             warn!("Process not found: {}", id);
             (
@@ -354,8 +370,9 @@ async fn get_process(
                     "success": false,
                     "error": "Process not found",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -369,7 +386,8 @@ async fn delete_process(
         Ok(()) => Json(json!({
             "success": true,
             "message": format!("Process '{}' deleted successfully", id)
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             error!("Failed to delete process {}: {}", id, e);
             (
@@ -378,17 +396,15 @@ async fn delete_process(
                     "success": false,
                     "error": "Failed to delete process",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
 
 /// Start a process
-async fn start_process(
-    State(state): State<AppState>,
-    Path(id): Path<String>,
-) -> impl IntoResponse {
+async fn start_process(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
     // For starting, we need to get the process config and start it
     // This is different from create_process which creates a new process
     match state.manager.read().await.get_process_info(&id).await {
@@ -398,7 +414,8 @@ async fn start_process(
                     "success": false,
                     "error": "Process already running",
                     "message": format!("Process '{}' is already online", id)
-                })).into_response();
+                }))
+                .into_response();
             }
 
             // Process exists but is not running, try to start it
@@ -408,31 +425,29 @@ async fn start_process(
                 "success": true,
                 "message": format!("Process '{}' start requested", id),
                 "note": "Process restart functionality would be implemented here"
-            })).into_response()
+            }))
+            .into_response()
         }
-        Err(e) => {
-            (
-                StatusCode::NOT_FOUND,
-                Json(json!({
-                    "success": false,
-                    "error": "Process not found",
-                    "message": e.to_string()
-                }))
-            ).into_response()
-        }
+        Err(e) => (
+            StatusCode::NOT_FOUND,
+            Json(json!({
+                "success": false,
+                "error": "Process not found",
+                "message": e.to_string()
+            })),
+        )
+            .into_response(),
     }
 }
 
 /// Stop a process
-async fn stop_process(
-    State(state): State<AppState>,
-    Path(id): Path<String>,
-) -> impl IntoResponse {
+async fn stop_process(State(state): State<AppState>, Path(id): Path<String>) -> impl IntoResponse {
     match state.manager.write().await.stop(&id).await {
         Ok(()) => Json(json!({
             "success": true,
             "message": format!("Process '{}' stopped successfully", id)
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             error!("Failed to stop process {}: {}", id, e);
             (
@@ -441,8 +456,9 @@ async fn stop_process(
                     "success": false,
                     "error": "Failed to stop process",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -464,7 +480,12 @@ async fn restart_process(
     });
 
     let result = if let Some(port_config) = port_config {
-        state.manager.write().await.restart_with_port(&id, Some(port_config)).await
+        state
+            .manager
+            .write()
+            .await
+            .restart_with_port(&id, Some(port_config))
+            .await
     } else {
         state.manager.write().await.restart(&id).await
     };
@@ -473,7 +494,8 @@ async fn restart_process(
         Ok(()) => Json(json!({
             "success": true,
             "message": format!("Process '{}' restarted successfully", id)
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             error!("Failed to restart process {}: {}", id, e);
             (
@@ -482,8 +504,9 @@ async fn restart_process(
                     "success": false,
                     "error": "Failed to restart process",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -505,7 +528,12 @@ async fn reload_process(
     });
 
     let result = if let Some(port_config) = port_config {
-        state.manager.write().await.reload_with_port(&id, Some(port_config)).await
+        state
+            .manager
+            .write()
+            .await
+            .reload_with_port(&id, Some(port_config))
+            .await
     } else {
         state.manager.write().await.reload(&id).await
     };
@@ -514,7 +542,8 @@ async fn reload_process(
         Ok(()) => Json(json!({
             "success": true,
             "message": format!("Process '{}' reloaded successfully", id)
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             error!("Failed to reload process {}: {}", id, e);
             (
@@ -523,8 +552,9 @@ async fn reload_process(
                     "success": false,
                     "error": "Failed to reload process",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -535,7 +565,13 @@ async fn get_process_logs(
     Path(id): Path<String>,
     Query(query): Query<LogsQuery>,
 ) -> impl IntoResponse {
-    match state.manager.read().await.get_logs(&id, query.lines.unwrap_or(50)).await {
+    match state
+        .manager
+        .read()
+        .await
+        .get_logs(&id, query.lines.unwrap_or(50))
+        .await
+    {
         Ok(logs) => Json(json!({
             "success": true,
             "data": {
@@ -543,7 +579,8 @@ async fn get_process_logs(
                 "lines": query.lines.unwrap_or(50),
                 "process_id": id
             }
-        })).into_response(),
+        }))
+        .into_response(),
         Err(e) => {
             error!("Failed to get logs for process {}: {}", id, e);
             (
@@ -552,8 +589,9 @@ async fn get_process_logs(
                     "success": false,
                     "error": "Failed to get process logs",
                     "message": e.to_string()
-                }))
-            ).into_response()
+                })),
+            )
+                .into_response()
         }
     }
 }
@@ -621,16 +659,12 @@ async fn status_info(State(state): State<AppState>) -> impl IntoResponse {
 }
 
 /// WebSocket handler for real-time updates
-async fn websocket_handler(
-    ws: WebSocketUpgrade,
-    State(state): State<AppState>,
-) -> Response {
+async fn websocket_handler(ws: WebSocketUpgrade, State(state): State<AppState>) -> Response {
     ws.on_upgrade(move |socket| handle_websocket(socket, state))
 }
 
 /// Handle WebSocket connection
 async fn handle_websocket(socket: WebSocket, state: AppState) {
-
     let (mut sender, mut receiver) = socket.split();
     let mut broadcast_rx = state.broadcast_tx.subscribe();
 
@@ -800,7 +834,9 @@ mod tests {
             .build()
             .unwrap();
 
-        let request = StartProcessRequest { config: config.clone() };
+        let request = StartProcessRequest {
+            config: config.clone(),
+        };
         let json = serde_json::to_string(&request).unwrap();
         let deserialized: StartProcessRequest = serde_json::from_str(&json).unwrap();
 
@@ -942,7 +978,10 @@ mod tests {
 
         let cloned = original.clone();
         match (&original, &cloned) {
-            (WebSocketMessage::Error { message: msg1 }, WebSocketMessage::Error { message: msg2 }) => {
+            (
+                WebSocketMessage::Error { message: msg1 },
+                WebSocketMessage::Error { message: msg2 },
+            ) => {
                 assert_eq!(msg1, msg2);
             }
             _ => panic!("Clone failed"),

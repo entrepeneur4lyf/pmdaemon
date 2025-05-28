@@ -1,9 +1,9 @@
 //! Process monitoring and system metrics
 
-use serde::{Deserialize, Serialize};
 use chrono::{DateTime, Utc};
-use sysinfo::{System, SystemExt, ProcessExt, Pid, CpuExt};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use sysinfo::{CpuExt, Pid, ProcessExt, System, SystemExt};
 use tracing::{debug, warn};
 
 /// System-wide monitoring data
@@ -108,7 +108,11 @@ impl Monitor {
             memory_total,
             memory_percent,
             memory_used,
-            load_average: [load_avg.one as f32, load_avg.five as f32, load_avg.fifteen as f32],
+            load_average: [
+                load_avg.one as f32,
+                load_avg.five as f32,
+                load_avg.fifteen as f32,
+            ],
             uptime: self.system.uptime(),
             timestamp: Utc::now(),
         }
@@ -159,7 +163,10 @@ impl Monitor {
                 results.insert(pid, monitoring_data.clone());
                 self.process_cache.insert(pid, monitoring_data);
             } else {
-                debug!("Process with PID {} not found during monitoring update", pid);
+                debug!(
+                    "Process with PID {} not found during monitoring update",
+                    pid
+                );
             }
         }
 
@@ -248,7 +255,7 @@ mod tests {
         let data = MonitoringData {
             cpu_usage: 15.2,
             memory_usage: 512 * 1024 * 1024, // 512MB
-            uptime: Some(1800), // 30 minutes
+            uptime: Some(1800),              // 30 minutes
             open_files: Some(42),
             timestamp: Utc::now(),
         };

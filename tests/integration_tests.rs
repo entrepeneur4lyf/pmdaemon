@@ -27,7 +27,10 @@ impl TestEnvironment {
         // Create config directory
         fs::create_dir_all(&config_dir).expect("Failed to create config directory");
 
-        Self { temp_dir, config_dir }
+        Self {
+            temp_dir,
+            config_dir,
+        }
     }
 
     fn unique_name(&self, base: &str) -> String {
@@ -78,7 +81,9 @@ fn test_cli_help() {
         .arg("--help")
         .assert()
         .success()
-        .stdout(predicate::str::contains("A process manager built in Rust inspired by PM2"))
+        .stdout(predicate::str::contains(
+            "A process manager built in Rust inspired by PM2",
+        ))
         .stdout(predicate::str::contains("start"))
         .stdout(predicate::str::contains("stop"))
         .stdout(predicate::str::contains("list"));
@@ -104,12 +109,12 @@ fn test_start_simple_process() {
     let script = create_test_script(
         env.temp_path(),
         "test_app",
-        "#!/bin/bash\necho 'Hello from test app'\nsleep 5\n"
+        "#!/bin/bash\necho 'Hello from test app'\nsleep 5\n",
     );
 
     // Start the process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"))
@@ -128,7 +133,7 @@ fn test_start_simple_process() {
 
     // Stop the process
     env.cmd()
-        .args(&["stop", &process_name])
+        .args(["stop", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("Stopped"));
@@ -143,16 +148,20 @@ fn test_start_with_args() {
     let script = create_test_script(
         env.temp_path(),
         "echo_args",
-        "#!/bin/bash\necho \"Args: $@\"\nsleep 2\n"
+        "#!/bin/bash\necho \"Args: $@\"\nsleep 2\n",
     );
 
     // Start with arguments
     env.cmd()
-        .args(&[
+        .args([
             "start",
             script.to_str().unwrap(),
-            "--name", &process_name,
-            "--", "arg1", "arg2", "arg3"
+            "--name",
+            &process_name,
+            "--",
+            "arg1",
+            "arg2",
+            "arg3",
         ])
         .assert()
         .success()
@@ -162,7 +171,7 @@ fn test_start_with_args() {
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -176,16 +185,18 @@ fn test_start_with_port() {
     let script = create_test_script(
         env.temp_path(),
         "server",
-        "#!/bin/bash\necho 'Server starting on port 8080'\nsleep 3\n"
+        "#!/bin/bash\necho 'Server starting on port 8080'\nsleep 3\n",
     );
 
     // Start with port specification
     env.cmd()
-        .args(&[
+        .args([
             "start",
             script.to_str().unwrap(),
-            "--name", &process_name,
-            "--port", "8080"
+            "--name",
+            &process_name,
+            "--port",
+            "8080",
         ])
         .assert()
         .success()
@@ -203,7 +214,7 @@ fn test_start_with_port() {
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -216,16 +227,18 @@ fn test_start_multiple_instances() {
     let script = create_test_script(
         env.temp_path(),
         "multi_app",
-        "#!/bin/bash\necho 'Instance starting'\nsleep 3\n"
+        "#!/bin/bash\necho 'Instance starting'\nsleep 3\n",
     );
 
     // Start with multiple instances
     env.cmd()
-        .args(&[
+        .args([
             "start",
             script.to_str().unwrap(),
-            "--name", &process_name,
-            "--instances", "2"  // Reduced to 2 instances for more reliable testing
+            "--name",
+            &process_name,
+            "--instances",
+            "2", // Reduced to 2 instances for more reliable testing
         ])
         .assert()
         .success()
@@ -241,23 +254,16 @@ fn test_start_multiple_instances() {
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up - try to delete, but don't fail if it doesn't exist
-    let _ = env.cmd()
-        .args(&["delete", &process_name])
-        .assert();
+    let _ = env.cmd().args(["delete", &process_name]).assert();
 }
 
 #[test]
 fn test_list_empty() {
     let env = TestEnvironment::new();
 
-    env.cmd()
-        .arg("list")
-        .assert()
-        .success()
-        .stdout(
-            predicate::str::contains("No processes")
-                .or(predicate::str::contains("ID"))  // Table header if processes exist
-        );
+    env.cmd().arg("list").assert().success().stdout(
+        predicate::str::contains("No processes").or(predicate::str::contains("ID")), // Table header if processes exist
+    );
 }
 
 #[test]
@@ -265,15 +271,11 @@ fn test_list_format() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("format-test");
 
-    let script = create_test_script(
-        env.temp_path(),
-        "format_test",
-        "#!/bin/bash\nsleep 2\n"
-    );
+    let script = create_test_script(env.temp_path(), "format_test", "#!/bin/bash\nsleep 2\n");
 
     // Start a process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success();
 
@@ -289,7 +291,7 @@ fn test_list_format() {
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -304,22 +306,22 @@ fn test_delete_all_with_force() {
     let script1 = create_test_script(
         env.temp_path(),
         "test_app_1",
-        "#!/bin/bash\necho 'App 1'\nsleep 2\n"
+        "#!/bin/bash\necho 'App 1'\nsleep 2\n",
     );
     let script2 = create_test_script(
         env.temp_path(),
         "test_app_2",
-        "#!/bin/bash\necho 'App 2'\nsleep 2\n"
+        "#!/bin/bash\necho 'App 2'\nsleep 2\n",
     );
 
     // Start both processes
     env.cmd()
-        .args(&["start", script1.to_str().unwrap(), "--name", &process_name1])
+        .args(["start", script1.to_str().unwrap(), "--name", &process_name1])
         .assert()
         .success();
 
     env.cmd()
-        .args(&["start", script2.to_str().unwrap(), "--name", &process_name2])
+        .args(["start", script2.to_str().unwrap(), "--name", &process_name2])
         .assert()
         .success();
 
@@ -335,10 +337,13 @@ fn test_delete_all_with_force() {
 
     // Delete all processes with force flag
     env.cmd()
-        .args(&["delete", "all", "--force"])
+        .args(["delete", "all", "--force"])
         .assert()
         .success()
-        .stdout(predicate::str::contains("Stopped and deleted").and(predicate::str::contains("processes")));
+        .stdout(
+            predicate::str::contains("Stopped and deleted")
+                .and(predicate::str::contains("processes")),
+        );
 
     // Verify no processes remain
     env.cmd()
@@ -358,23 +363,23 @@ fn test_delete_by_status() {
     let script1 = create_test_script(
         env.temp_path(),
         "running_app",
-        "#!/bin/bash\necho 'Running app'\nsleep 5\n"
+        "#!/bin/bash\necho 'Running app'\nsleep 5\n",
     );
     let script2 = create_test_script(
         env.temp_path(),
         "stopped_app",
-        "#!/bin/bash\necho 'Stopped app'\nexit 0\n"
+        "#!/bin/bash\necho 'Stopped app'\nexit 0\n",
     );
 
     // Start first process (will keep running)
     env.cmd()
-        .args(&["start", script1.to_str().unwrap(), "--name", &process_name1])
+        .args(["start", script1.to_str().unwrap(), "--name", &process_name1])
         .assert()
         .success();
 
     // Start second process (will exit quickly)
     env.cmd()
-        .args(&["start", script2.to_str().unwrap(), "--name", &process_name2])
+        .args(["start", script2.to_str().unwrap(), "--name", &process_name2])
         .assert()
         .success();
 
@@ -383,23 +388,23 @@ fn test_delete_by_status() {
 
     // Delete stopped processes with force flag
     env.cmd()
-        .args(&["delete", "stopped", "--status", "--force"])
+        .args(["delete", "stopped", "--status", "--force"])
         .assert()
         .success()
-        .stdout(predicate::str::contains("Stopped and deleted").and(predicate::str::contains("stopped")));
+        .stdout(
+            predicate::str::contains("Stopped and deleted")
+                .and(predicate::str::contains("stopped")),
+        );
 
     // Verify that the delete by status command worked
     // The exact process states in integration tests can be unpredictable,
     // so we just verify that the command executed successfully
     // and that we can still list processes
-    env.cmd()
-        .arg("list")
-        .assert()
-        .success();
+    env.cmd().arg("list").assert().success();
 
     // Clean up any remaining processes
     env.cmd()
-        .args(&["delete", "all", "--force"])
+        .args(["delete", "all", "--force"])
         .assert()
         .success();
 }
@@ -409,7 +414,7 @@ fn test_stop_nonexistent_process() {
     let env = TestEnvironment::new();
 
     env.cmd()
-        .args(&["stop", "nonexistent"])
+        .args(["stop", "nonexistent"])
         .assert()
         .failure()
         .stderr(predicate::str::contains("ProcessNotFound"));
@@ -420,15 +425,11 @@ fn test_delete_process() {
     let env = TestEnvironment::new();
     let process_name = env.unique_name("delete-test");
 
-    let script = create_test_script(
-        env.temp_path(),
-        "delete_test",
-        "#!/bin/bash\nsleep 5\n"
-    );
+    let script = create_test_script(env.temp_path(), "delete_test", "#!/bin/bash\nsleep 5\n");
 
     // Start process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success();
 
@@ -436,7 +437,7 @@ fn test_delete_process() {
 
     // Delete process
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("Stopped and deleted"));
@@ -457,12 +458,12 @@ fn test_restart_process() {
     let script = create_test_script(
         env.temp_path(),
         "restart_test",
-        "#!/bin/bash\necho 'Starting'\nsleep 10\n"
+        "#!/bin/bash\necho 'Starting'\nsleep 10\n",
     );
 
     // Start process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success();
 
@@ -470,14 +471,14 @@ fn test_restart_process() {
 
     // Restart process
     env.cmd()
-        .args(&["restart", &process_name])
+        .args(["restart", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("Restarted"));
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }

@@ -14,21 +14,21 @@ pub enum Error {
     #[error("Process error: {message}")]
     Process {
         /// Error message describing the process operation failure
-        message: String
+        message: String,
     },
 
     /// Process not found
     #[error("Process not found: {identifier}")]
     ProcessNotFound {
         /// Process identifier (name or ID) that was not found
-        identifier: String
+        identifier: String,
     },
 
     /// Process already exists
     #[error("Process already exists: {name}")]
     ProcessAlreadyExists {
         /// Name of the process that already exists
-        name: String
+        name: String,
     },
 
     /// Process already running
@@ -41,7 +41,7 @@ pub enum Error {
         /// Name of the process that failed to start
         name: String,
         /// Reason for the start failure
-        reason: String
+        reason: String,
     },
 
     /// Process stop failed
@@ -50,14 +50,14 @@ pub enum Error {
         /// Name of the process that failed to stop
         name: String,
         /// Reason for the stop failure
-        reason: String
+        reason: String,
     },
 
     /// Configuration error
     #[error("Configuration error: {message}")]
     Config {
         /// Configuration error message
-        message: String
+        message: String,
     },
 
     /// Serialization/deserialization error
@@ -77,63 +77,63 @@ pub enum Error {
     #[error("Signal error: {message}")]
     Signal {
         /// Signal handling error message
-        message: String
+        message: String,
     },
 
     /// Monitoring error
     #[error("Monitoring error: {message}")]
     Monitoring {
         /// Monitoring system error message
-        message: String
+        message: String,
     },
 
     /// Web server error
     #[error("Web server error: {message}")]
     WebServer {
         /// Web server error message
-        message: String
+        message: String,
     },
 
     /// Timeout error
     #[error("Operation timed out: {operation}")]
     Timeout {
         /// Operation that timed out
-        operation: String
+        operation: String,
     },
 
     /// Permission denied
     #[error("Permission denied: {message}")]
     PermissionDenied {
         /// Permission denied error message
-        message: String
+        message: String,
     },
 
     /// Invalid argument
     #[error("Invalid argument: {message}")]
     InvalidArgument {
         /// Invalid argument error message
-        message: String
+        message: String,
     },
 
     /// Resource not available
     #[error("Resource not available: {resource}")]
     ResourceNotAvailable {
         /// Resource that is not available
-        resource: String
+        resource: String,
     },
 
     /// Internal error
     #[error("Internal error: {message}")]
     Internal {
         /// Internal error message
-        message: String
+        message: String,
     },
 
     /// Health check error
     #[error("Health check error: {message}")]
     HealthCheck {
         /// Health check error message
-        message: String
+        message: String,
     },
 }
 
@@ -154,9 +154,7 @@ impl Error {
 
     /// Create a new process already exists error
     pub fn process_already_exists<S: Into<String>>(name: S) -> Self {
-        Self::ProcessAlreadyExists {
-            name: name.into(),
-        }
+        Self::ProcessAlreadyExists { name: name.into() }
     }
 
     /// Create a new configuration error
@@ -409,7 +407,10 @@ mod tests {
     #[test]
     fn test_error_category() {
         assert_eq!(Error::process("test").category(), "process");
-        assert_eq!(Error::process_not_found("test").category(), "process_not_found");
+        assert_eq!(
+            Error::process_not_found("test").category(),
+            "process_not_found"
+        );
         assert_eq!(
             Error::process_already_exists("test").category(),
             "process_already_exists"
@@ -439,8 +440,14 @@ mod tests {
         assert_eq!(Error::monitoring("test").category(), "monitoring");
         assert_eq!(Error::web_server("test").category(), "web_server");
         assert_eq!(Error::timeout("test").category(), "timeout");
-        assert_eq!(Error::permission_denied("test").category(), "permission_denied");
-        assert_eq!(Error::invalid_argument("test").category(), "invalid_argument");
+        assert_eq!(
+            Error::permission_denied("test").category(),
+            "permission_denied"
+        );
+        assert_eq!(
+            Error::invalid_argument("test").category(),
+            "invalid_argument"
+        );
         assert_eq!(
             Error::resource_not_available("test").category(),
             "resource_not_available"

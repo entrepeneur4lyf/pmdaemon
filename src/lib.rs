@@ -130,7 +130,7 @@ pub use health::{HealthCheck, HealthCheckConfig, HealthCheckType, HealthState, H
 pub use manager::ProcessManager;
 pub use monitoring::{MonitoringData, SystemMetrics};
 pub use process::{Process, ProcessId, ProcessState, ProcessStatus};
-pub use signals::{SignalHandler, ProcessSignal};
+pub use signals::{ProcessSignal, SignalHandler};
 
 /// Version of the PM2 Rust library
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");

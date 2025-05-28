@@ -53,7 +53,10 @@ async fn demo_http_health_check() -> Result<()> {
             println!("   Consecutive failures: {}", status.consecutive_failures);
 
             if let Some(last_check) = status.last_check {
-                println!("   Last check: {}", last_check.format("%Y-%m-%d %H:%M:%S UTC"));
+                println!(
+                    "   Last check: {}",
+                    last_check.format("%Y-%m-%d %H:%M:%S UTC")
+                );
             }
 
             if status.is_healthy() {
@@ -130,7 +133,10 @@ async fn demo_script_health_check() -> Result<()> {
             Ok(status) => {
                 println!("   Consecutive failures: {}", status.consecutive_failures);
                 if status.consecutive_failures >= 3 {
-                    println!("   🔴 Health check marked as unhealthy after {} failures", status.consecutive_failures);
+                    println!(
+                        "   🔴 Health check marked as unhealthy after {} failures",
+                        status.consecutive_failures
+                    );
                     break;
                 }
             }

@@ -535,13 +535,13 @@ impl HealthCheck {
     /// let config = HealthCheckConfig::http("http://localhost:9615/health");
     /// let health_check = HealthCheck::new(config);
     /// ```
-pub fn new(config: HealthCheckConfig) -> Self {
-     Self {
-         config,
-         status: HealthStatus::default(),
-        http_client: Some(reqwest::Client::new()),
-     }
- }
+    pub fn new(config: HealthCheckConfig) -> Self {
+        Self {
+            config,
+            status: HealthStatus::default(),
+            http_client: Some(reqwest::Client::new()),
+        }
+    }
 
     /// Get the current health status.
     ///
@@ -683,17 +683,22 @@ pub fn new(config: HealthCheckConfig) -> Self {
     /// - The HTTP request fails (network error, timeout, etc.)
     /// - The response status code is not 2xx
     async fn check_http(&self, url: &str) -> Result<()> {
-        let client = self.http_client.as_ref()
+        let client = self
+            .http_client
+            .as_ref()
             .ok_or_else(|| Error::health_check("HTTP client not initialized"))?;
 
         debug!("Performing HTTP health check to: {}", url);
 
-        let response = tokio::time::timeout(
-            self.config.timeout,
-            client.get(url).send()
-        ).await
-        .map_err(|_| Error::health_check(format!("HTTP health check timed out after {:?}", self.config.timeout)))?
-        .map_err(|e| Error::health_check(format!("HTTP request failed: {}", e)))?;
+        let response = tokio::time::timeout(self.config.timeout, client.get(url).send())
+            .await
+            .map_err(|_| {
+                Error::health_check(format!(
+                    "HTTP health check timed out after {:?}",
+                    self.config.timeout
+                ))
+            })?
+            .map_err(|e| Error::health_check(format!("HTTP request failed: {}", e)))?;
 
         if response.status().is_success() {
             debug!("HTTP health check successful: {}", response.status());
@@ -726,15 +731,20 @@ pub fn new(config: HealthCheckConfig) -> Self {
 
         let mut cmd = Command::new(path);
         cmd.stdout(Stdio::null())
-           .stderr(Stdio::null())
-           .stdin(Stdio::null());
+            .stderr(Stdio::null())
+            .stdin(Stdio::null());
 
-        let output = tokio::time::timeout(
-            self.config.timeout,
-            cmd.output()
-        ).await
-        .map_err(|_| Error::health_check(format!("Script health check timed out after {:?}", self.config.timeout)))?
-        .map_err(|e| Error::health_check(format!("Failed to execute health check script: {}", e)))?;
+        let output = tokio::time::timeout(self.config.timeout, cmd.output())
+            .await
+            .map_err(|_| {
+                Error::health_check(format!(
+                    "Script health check timed out after {:?}",
+                    self.config.timeout
+                ))
+            })?
+            .map_err(|e| {
+                Error::health_check(format!("Failed to execute health check script: {}", e))
+            })?;
 
         if output.status.success() {
             debug!("Script health check successful");
@@ -863,8 +873,7 @@ mod tests {
 
     #[test]
     fn test_health_check_new() {
-        let config = HealthCheckConfig::http("http://localhost:9615/health")
-            .enabled(true);
+        let config = HealthCheckConfig::http("http://localhost:9615/health").enabled(true);
         let health_check = HealthCheck::new(config);
 
         assert!(health_check.is_enabled());
@@ -874,8 +883,7 @@ mod tests {
 
     #[test]
     fn test_health_check_disabled() {
-        let config = HealthCheckConfig::http("http://localhost:9615/health")
-            .enabled(false);
+        let config = HealthCheckConfig::http("http://localhost:9615/health").enabled(false);
         let health_check = HealthCheck::new(config);
 
         assert!(!health_check.is_enabled());
@@ -883,8 +891,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_health_check_disabled_check() {
-        let config = HealthCheckConfig::http("http://localhost:9615/health")
-            .enabled(false);
+        let config = HealthCheckConfig::http("http://localhost:9615/health").enabled(false);
         let mut health_check = HealthCheck::new(config);
 
         let status = health_check.check().await.unwrap();
@@ -1004,17 +1011,22 @@ mod tests {
 
     #[test]
     fn test_health_status_serialization() {
-        let mut status = HealthStatus::default();
-        status.state = HealthState::Healthy;
-        status.consecutive_failures = 2;
-        status.total_checks = 10;
-        status.error_message = Some("Test error".to_string());
+        let status = HealthStatus {
+            state: HealthState::Healthy,
+            consecutive_failures: 2,
+            total_checks: 10,
+            error_message: Some("Test error".to_string()),
+            ..Default::default()
+        };
 
         let serialized = serde_json::to_string(&status).unwrap();
         let deserialized: HealthStatus = serde_json::from_str(&serialized).unwrap();
 
         assert_eq!(status.state, deserialized.state);
-        assert_eq!(status.consecutive_failures, deserialized.consecutive_failures);
+        assert_eq!(
+            status.consecutive_failures,
+            deserialized.consecutive_failures
+        );
         assert_eq!(status.total_checks, deserialized.total_checks);
         assert_eq!(status.error_message, deserialized.error_message);
     }

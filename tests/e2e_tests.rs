@@ -25,7 +25,10 @@ impl E2ETestEnvironment {
         // Create config directory
         fs::create_dir_all(&config_dir).expect("Failed to create config directory");
 
-        Self { temp_dir, config_dir }
+        Self {
+            temp_dir,
+            config_dir,
+        }
     }
 
     fn cmd(&self) -> Command {
@@ -97,12 +100,12 @@ for i in {1..10}; do
     sleep 1
 done
 echo "Shell script completed"
-"#
+"#,
     );
 
     // Start the process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -118,13 +121,10 @@ echo "Shell script completed"
         .stdout(predicate::str::contains("online"));
 
     // Stop and clean up
-    env.cmd()
-        .args(&["stop", &process_name])
-        .assert()
-        .success();
+    env.cmd().args(["stop", &process_name]).assert().success();
 
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -147,7 +147,7 @@ for i in range(5):
     print(f"Python iteration {i+1}")
     time.sleep(1)
 print("Python application completed")
-"#
+"#,
     );
 
     // Make script executable
@@ -161,11 +161,7 @@ print("Python application completed")
 
     // Start the process (Python script with shebang)
     env.cmd()
-        .args(&[
-            "start",
-            script.to_str().unwrap(),
-            "--name", &process_name
-        ])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -181,7 +177,7 @@ print("Python application completed")
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -216,7 +212,7 @@ process.on('SIGTERM', () => {
     clearInterval(interval);
     process.exit(0);
 });
-"#
+"#,
     );
 
     // Make script executable
@@ -230,11 +226,7 @@ process.on('SIGTERM', () => {
 
     // Start the process (Node.js script with shebang)
     env.cmd()
-        .args(&[
-            "start",
-            script.to_str().unwrap(),
-            "--name", &process_name
-        ])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -250,7 +242,7 @@ process.on('SIGTERM', () => {
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -269,16 +261,18 @@ echo "Cluster instance starting with PID $$"
 echo "Instance ID: ${PM2_INSTANCE_ID:-0}"
 sleep 5
 echo "Cluster instance completed"
-"#
+"#,
     );
 
     // Start with clustering
     env.cmd()
-        .args(&[
+        .args([
             "start",
             script.to_str().unwrap(),
-            "--name", &process_name,
-            "--instances", "2"
+            "--name",
+            &process_name,
+            "--instances",
+            "2",
         ])
         .assert()
         .success()
@@ -294,9 +288,7 @@ echo "Cluster instance completed"
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up - try to delete, but don't fail if it doesn't exist
-    let _ = env.cmd()
-        .args(&["delete", &process_name])
-        .assert();
+    let _ = env.cmd().args(["delete", &process_name]).assert();
 }
 
 #[test]
@@ -313,16 +305,18 @@ echo "Server starting on port ${PORT:-8080}"
 echo "Process PID: $$"
 sleep 5
 echo "Server shutting down"
-"#
+"#,
     );
 
     // Start with port allocation
     env.cmd()
-        .args(&[
+        .args([
             "start",
             script.to_str().unwrap(),
-            "--name", &process_name,
-            "--port", "9000"
+            "--name",
+            &process_name,
+            "--port",
+            "9000",
         ])
         .assert()
         .success()
@@ -340,7 +334,7 @@ echo "Server shutting down"
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -359,16 +353,12 @@ echo "Process starting..."
 sleep 1
 echo "Process exiting..."
 exit 1
-"#
+"#,
     );
 
     // Start the process (auto-restart is enabled by default)
     env.cmd()
-        .args(&[
-            "start",
-            script.to_str().unwrap(),
-            "--name", &process_name
-        ])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -384,9 +374,7 @@ exit 1
         .stdout(predicate::str::contains(&process_name));
 
     // Clean up - try to delete, but don't fail if it doesn't exist
-    let _ = env.cmd()
-        .args(&["delete", &process_name])
-        .assert();
+    let _ = env.cmd().args(["delete", &process_name]).assert();
 }
 
 #[test]
@@ -415,12 +403,12 @@ echo "Waiting for signal..."
 while true; do
     sleep 1
 done
-"#
+"#,
     );
 
     // Start the process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -437,14 +425,14 @@ done
 
     // Stop gracefully
     env.cmd()
-        .args(&["stop", &process_name])
+        .args(["stop", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("Stopped"));
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
@@ -470,12 +458,12 @@ for i in {1..5}; do
 done
 
 echo "Resource process completed"
-"#
+"#,
     );
 
     // Start the process
     env.cmd()
-        .args(&["start", script.to_str().unwrap(), "--name", &process_name])
+        .args(["start", script.to_str().unwrap(), "--name", &process_name])
         .assert()
         .success()
         .stdout(predicate::str::contains("started"));
@@ -491,7 +479,7 @@ echo "Resource process completed"
 
     // Clean up
     env.cmd()
-        .args(&["delete", &process_name])
+        .args(["delete", &process_name])
         .assert()
         .success();
 }
