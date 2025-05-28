@@ -2,6 +2,11 @@
 //!
 //! These tests verify that the CLI commands work correctly end-to-end,
 //! testing the actual binary with real process management scenarios.
+//!
+//! **IMPORTANT**: These tests must be run sequentially (--test-threads=1)
+//! because they manage real processes and shared resources that can
+//! interfere with each other when run in parallel. The CI configuration
+//! is set up to handle this automatically.
 
 use assert_cmd::Command;
 use predicates::prelude::*;
@@ -27,10 +32,54 @@ impl TestEnvironment {
         // Create config directory
         fs::create_dir_all(&config_dir).expect("Failed to create config directory");
 
-        Self {
+        let env = Self {
             temp_dir,
             config_dir,
+        };
+
+        // Clean up any existing processes to ensure test isolation
+        env.cleanup_all_processes();
+
+        // Ensure we start with a completely clean config directory
+        env.reset_config_dir();
+
+        env
+    }
+
+    /// Clean up all processes to ensure test isolation
+    fn cleanup_all_processes(&self) {
+        // Try to delete all processes, ignore failures since this is cleanup
+        let _ = self.cmd().args(["delete", "all", "--force"]).output();
+
+        // Wait a moment for cleanup to complete
+        thread::sleep(Duration::from_millis(100));
+
+        // Also clean up any leftover config files
+        if let Ok(entries) = fs::read_dir(&self.config_dir) {
+            for entry in entries.flatten() {
+                if entry.path().extension().map_or(false, |ext| ext == "json") {
+                    let _ = fs::remove_file(entry.path());
+                }
+            }
         }
+
+        // Clean up any leftover PID files
+        if let Ok(entries) = fs::read_dir(&self.config_dir) {
+            for entry in entries.flatten() {
+                if entry.path().extension().map_or(false, |ext| ext == "pid") {
+                    let _ = fs::remove_file(entry.path());
+                }
+            }
+        }
+    }
+
+    /// Reset the config directory to ensure complete isolation
+    fn reset_config_dir(&self) {
+        // Remove the entire config directory
+        let _ = fs::remove_dir_all(&self.config_dir);
+
+        // Recreate it
+        let _ = fs::create_dir_all(&self.config_dir);
     }
 
     fn unique_name(&self, base: &str) -> String {
@@ -53,6 +102,13 @@ impl TestEnvironment {
 
     fn temp_path(&self) -> &std::path::Path {
         self.temp_dir.path()
+    }
+}
+
+impl Drop for TestEnvironment {
+    fn drop(&mut self) {
+        // Clean up all processes when test environment is dropped
+        self.cleanup_all_processes();
     }
 }
 
@@ -137,6 +193,9 @@ fn test_start_simple_process() {
         .assert()
         .success()
         .stdout(predicate::str::contains("Stopped"));
+
+    // Clean up - ensure process is deleted
+    let _ = env.cmd().args(["delete", &process_name, "--force"]).output();
 }
 
 #[test]

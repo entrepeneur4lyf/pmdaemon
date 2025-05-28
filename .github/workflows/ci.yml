@@ -35,7 +35,7 @@ jobs:
         run: cargo test --verbose --all-features
 
       - name: Run integration tests
-        run: cargo test --verbose --test integration_tests
+        run: cargo test --verbose --test integration_tests -- --test-threads=1
 
       - name: Run end-to-end tests
         run: cargo test --verbose --test e2e_tests
