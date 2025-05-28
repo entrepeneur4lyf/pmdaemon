@@ -927,7 +927,7 @@ mod tests {
     async fn test_health_check_script_failure() {
         // Use a command that should fail on all platforms
         let config = if cfg!(windows) {
-            HealthCheckConfig::script("cmd")
+            HealthCheckConfig::script("cmd /c exit 1")
                 .timeout(Duration::from_secs(5))
                 .retries(1)
                 .enabled(true)
@@ -956,7 +956,7 @@ mod tests {
     async fn test_health_check_script_retry_logic() {
         // Use a command that should fail on all platforms
         let config = if cfg!(windows) {
-            HealthCheckConfig::script("cmd")
+            HealthCheckConfig::script("cmd /c exit 1")
                 .timeout(Duration::from_secs(5))
                 .retries(3)
                 .enabled(true)
