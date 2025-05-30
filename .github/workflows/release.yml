@@ -2,6 +2,11 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.0.0)'
+        required: true
+        type: string
 
 env:
   CARGO_TERM_COLOR: always
@@ -58,4 +63,25 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.event.inputs.tag }}
+          name: PMDaemon ${{ github.event.inputs.tag }}
           files: target/${{ matrix.target }}/release/${{ matrix.binary_name }}
+          body: |
+            See [RELEASE.md](https://github.com/${{ github.repository }}/blob/main/RELEASE.md) for detailed release notes.
+
+            ## Installation
+
+            ### From Binary
+            Download the appropriate binary for your platform from the assets below.
+
+            ### From Source
+            ```bash
+            git clone https://github.com/${{ github.repository }}
+            cd pmdaemon
+            cargo install --path .
+            ```
+
+            ### Using Cargo
+            ```bash
+            cargo install pmdaemon
+            ```
