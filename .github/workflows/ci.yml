@@ -1,10 +1,7 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
@@ -138,7 +135,6 @@ jobs:
   release:
     name: Release Build
     runs-on: ${{ matrix.os }}
-    if: startsWith(github.ref, 'refs/tags/')
     needs: [test, lint, build, security]
     strategy:
       matrix:
