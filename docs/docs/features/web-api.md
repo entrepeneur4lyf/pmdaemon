@@ -18,14 +18,14 @@ The Web API provides:
 ### Basic Usage
 
 ```bash
-# Start on default port (9615)
+# Start on default port (9615) without authentication
 pmdaemon web
 
-# Custom port and host
-pmdaemon web --port 8080 --host 0.0.0.0
+# With API key authentication (recommended for production)
+pmdaemon web --api-key "your-secret-api-key"
 
-# Bind to all interfaces for remote access
-pmdaemon web --port 9615 --host 0.0.0.0
+# Custom port and host with authentication
+pmdaemon web --port 8080 --host 0.0.0.0 --api-key "$API_KEY"
 ```
 
 ### Configuration Options
@@ -34,20 +34,24 @@ pmdaemon web --port 9615 --host 0.0.0.0
 |--------|---------|-------------|
 | `--port` | `9615` | Port to bind the web server |
 | `--host` | `127.0.0.1` | Host address to bind |
+| `--api-key` | None | API key for authentication (optional) |
 
 ### Security Considerations
 
 ```bash
-# Local development (secure)
+# Local development (no authentication needed)
 pmdaemon web --host 127.0.0.1
 
-# Production with reverse proxy (recommended)
-pmdaemon web --host 127.0.0.1 --port 9615
-# Use nginx/Apache as reverse proxy with SSL
+# Production with authentication (recommended)
+pmdaemon web --host 127.0.0.1 --api-key "$API_KEY"
 
-# Direct remote access (use with caution)
-pmdaemon web --host 0.0.0.0 --port 9615
-# Consider firewall rules and authentication
+# Behind reverse proxy with SSL
+pmdaemon web --host 127.0.0.1 --api-key "$API_KEY"
+# Use nginx/Apache as reverse proxy with HTTPS
+
+# Environment variable for API key
+export PMDAEMON_API_KEY="your-secret-key"
+pmdaemon web --host 0.0.0.0
 ```
 
 ## REST API Endpoints

@@ -27,6 +27,13 @@ const sidebars = {
     },
     {
       type: 'category',
+      label: 'Architecture',
+      items: [
+        'architecture/overview',
+      ],
+    },
+    {
+      type: 'category',
       label: 'Core Features',
       items: [
         'features/process-management',

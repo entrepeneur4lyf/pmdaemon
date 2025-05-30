@@ -54,11 +54,7 @@ pmdaemon --config ecosystem.json start --name api-server
 | `--min-uptime` | Duration | Minimum uptime before stable | `--min-uptime 5s` |
 | `--restart-delay` | Duration | Delay between restarts | `--restart-delay 2s` |
 | `--kill-timeout` | Duration | Graceful shutdown timeout | `--kill-timeout 30s` |
-| `--health-check-url` | URL | HTTP health check endpoint | `--health-check-url http://localhost:3000/health` |
-| `--health-check-script` | Path | Health check script | `--health-check-script ./health.sh` |
-| `--health-check-timeout` | Duration | Health check timeout | `--health-check-timeout 10s` |
-| `--health-check-interval` | Duration | Health check interval | `--health-check-interval 30s` |
-| `--health-check-retries` | Number | Health check retries | `--health-check-retries 3` |
+
 | `--wait-ready` | Flag | Block until process is healthy | `--wait-ready` |
 | `--wait-timeout` | Duration | Timeout for blocking start | `--wait-timeout 60s` |
 | `--out-file` | Path | Output log file | `--out-file /var/log/app.out` |
@@ -75,17 +71,14 @@ pmdaemon start "node api.js" \
   --instances 4 \
   --port auto:3000-3100 \
   --max-memory 1G \
-  --health-check-url http://localhost:3000/health \
-  --health-check-timeout 10s \
   --wait-ready \
   --env NODE_ENV=production
 
-# Python microservice with script health check
+# Python microservice
 pmdaemon start "python -m uvicorn main:app" \
   --name python-api \
   --port 8000 \
   --max-memory 512M \
-  --health-check-script ./health-check.py \
   --cwd /path/to/api
 
 # Background worker with custom restart behavior
@@ -374,17 +367,22 @@ pmdaemon web [OPTIONS]
 |--------|------|-------------|---------|---------|
 | `--port`, `-p` | Number | Web server port | 9615 | `--port 8080` |
 | `--host`, `-h` | String | Bind address | 127.0.0.1 | `--host 0.0.0.0` |
+| `--api-key` | String | API key for authentication | None | `--api-key "secret123"` |
 
 #### Examples
 
 ```bash
-# Start with default settings
+# Start with default settings (no authentication)
 pmdaemon web
 
-# Custom port and host
-pmdaemon web --port 8080 --host 0.0.0.0
+# With API key authentication (recommended for production)
+pmdaemon web --api-key "your-secret-api-key"
 
-# Bind to all interfaces for remote access
+# Custom port and host with authentication
+pmdaemon web --port 8080 --host 0.0.0.0 --api-key "$API_KEY"
+
+# Environment variable for API key
+export PMDAEMON_API_KEY="your-secret-key"
 pmdaemon web --host 0.0.0.0
 ```
 
@@ -474,12 +472,12 @@ pmdaemon start "node server.js" \
   --max-restarts 10
 ```
 
-### 3. Use Health Checks for Critical Services
+### 3. Use Process Management for Critical Services
 
 ```bash
 pmdaemon start "node api.js" \
   --name critical-api \
-  --health-check-url http://localhost:3000/health \
+  --max-restarts 10 \
   --wait-ready
 ```
 

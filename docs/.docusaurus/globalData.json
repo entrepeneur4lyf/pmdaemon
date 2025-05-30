@@ -64,6 +64,11 @@
               "sidebar": "tutorialSidebar"
             },
             {
+              "id": "architecture/overview",
+              "path": "/pmdaemon/docs/architecture/overview",
+              "sidebar": "tutorialSidebar"
+            },
+            {
               "id": "cli/commands",
               "path": "/pmdaemon/docs/cli/commands",
               "sidebar": "tutorialSidebar"
@@ -139,6 +144,10 @@
               "id": "features/configuration",
               "path": "/pmdaemon/docs/features/configuration",
               "sidebar": "tutorialSidebar"
+            },
+            {
+              "id": "features/cross-platform",
+              "path": "/pmdaemon/docs/features/cross-platform"
             },
             {
               "id": "features/health-checks",

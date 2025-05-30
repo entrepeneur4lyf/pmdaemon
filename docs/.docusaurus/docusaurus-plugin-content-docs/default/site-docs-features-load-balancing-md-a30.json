@@ -1,7 +1,7 @@
 {
   "id": "features/load-balancing",
-  "title": "Load Balancing",
-  "description": "PMDaemon provides built-in load balancing capabilities for distributing traffic across multiple application instances, ensuring high availability and optimal resource utilization.",
+  "title": "Clustering & Process Distribution",
+  "description": "PMDaemon provides clustering capabilities that allow you to run multiple instances of your application for improved performance and reliability. While PMDaemon handles process management and port distribution, external load balancing is handled by reverse proxies or load balancers.",
   "source": "@site/docs/features/load-balancing.md",
   "sourceDirName": "features",
   "slug": "/features/load-balancing",

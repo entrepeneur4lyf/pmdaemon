@@ -349,18 +349,8 @@ class PMDaemonWebSocket {
     });
   }
 
-  stopProcess(name) {
-    this.send('command', {
-      action: 'stop',
-      process: name
-    });
-  }
-
-  send(type, data) {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws.send(JSON.stringify({ type, data }));
-    }
-  }
+  // Note: WebSocket API is read-only for security
+  // Use REST API for process management commands
 
   on(event, callback) {
     if (!this.listeners.has(event)) {

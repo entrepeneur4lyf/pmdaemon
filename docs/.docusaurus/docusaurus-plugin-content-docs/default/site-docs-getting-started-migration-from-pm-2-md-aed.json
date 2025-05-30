@@ -18,7 +18,7 @@
     "permalink": "/pmdaemon/docs/getting-started/quick-start"
   },
   "next": {
-    "title": "Process Management",
-    "permalink": "/pmdaemon/docs/features/process-management"
+    "title": "Architecture Overview",
+    "permalink": "/pmdaemon/docs/architecture/overview"
   }
 }

@@ -14,8 +14,8 @@
   "frontMatter": {},
   "sidebar": "tutorialSidebar",
   "previous": {
-    "title": "Migration from PM2",
-    "permalink": "/pmdaemon/docs/getting-started/migration-from-pm2"
+    "title": "Architecture Overview",
+    "permalink": "/pmdaemon/docs/architecture/overview"
   },
   "next": {
     "title": "Port Management",

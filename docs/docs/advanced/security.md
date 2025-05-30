@@ -493,56 +493,93 @@ docker run -d \
 
 ## API Security
 
-### Authentication and Authorization
+### Built-in Authentication
 
-```javascript
-// JWT-based authentication
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+PMDaemon includes built-in API key authentication for secure access control:
 
-// Login endpoint
-app.post('/auth/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
+```bash
+# Start with API key authentication (recommended for production)
+pmdaemon web --api-key "your-secure-api-key-here"
+
+# Environment variable approach
+export PMDAEMON_API_KEY="your-secure-api-key-here"
+pmdaemon web
+
+# Custom host/port with authentication
+pmdaemon web --host 0.0.0.0 --port 8080 --api-key "$API_KEY"
+```
+
+### API Key Security
+
+**Generate strong API keys:**
+```bash
+# Generate a secure 32-byte API key
+openssl rand -hex 32
+
+# Or use a password manager to generate long random strings
+# Example: "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+```
+
+**Secure API key storage:**
+```bash
+# Use environment variables (recommended)
+echo 'export PMDAEMON_API_KEY="your-key-here"' >> ~/.bashrc
+
+# Or use systemd environment files
+echo 'PMDAEMON_API_KEY=your-key-here' | sudo tee /etc/pmdaemon/api.env
+sudo chmod 600 /etc/pmdaemon/api.env
+```
+
+### Authentication Headers
+
+PMDaemon accepts multiple authentication formats:
+
+```bash
+# Bearer token (recommended)
+curl -H "Authorization: Bearer your-api-key" \
+     http://localhost:9615/api/processes
+
+# X-API-Key header
+curl -H "X-API-Key: your-api-key" \
+     http://localhost:9615/api/processes
+
+# ApiKey authorization
+curl -H "Authorization: ApiKey your-api-key" \
+     http://localhost:9615/api/processes
+```
+
+### Network Security
+
+**Restrict access by binding to localhost:**
+```bash
+# Only allow local connections
+pmdaemon web --host 127.0.0.1 --api-key "$API_KEY"
+```
+
+**Use reverse proxy for external access:**
+```nginx
+# /etc/nginx/sites-available/pmdaemon
+server {
+    listen 443 ssl http2;
+    server_name pmdaemon.example.com;
+
+    # SSL configuration
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
     
-    // Validate user credentials
-    const user = await User.findOne({ username });
-    if (!user || !await bcrypt.compare(password, user.passwordHash)) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    # Security headers
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    
+    location / {
+        proxy_pass http://127.0.0.1:9615;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
-    // Generate JWT token
-    const token = jwt.sign(
-      { userId: user.id, username: user.username },
-      process.env.JWT_SECRET,
-      { expiresIn: '1h' }
-    );
-    
-    res.json({ token });
-  } catch (error) {
-    res.status(500).json({ error: 'Authentication failed' });
-  }
-});
-
-// Protected route middleware
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (!token) {
-    return res.sendStatus(401);
-  }
-  
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
 }
-
-// Apply authentication to PMDaemon API routes
-app.use('/api/processes', authenticateToken);
-app.use('/api/system', authenticateToken);
 ```
 
 ### API Rate Limiting

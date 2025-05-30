@@ -12,13 +12,20 @@ This guide provides practical examples of using PMDaemon's REST and WebSocket AP
 const axios = require('axios');
 
 class PMDaemonClient {
-  constructor(baseURL = 'http://localhost:9615') {
+  constructor(baseURL = 'http://localhost:9615', apiKey = null) {
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    
+    // Add authentication header if API key provided
+    if (apiKey) {
+      headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+    
     this.api = axios.create({
       baseURL,
       timeout: 10000,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers
     });
   }
 
@@ -31,9 +38,9 @@ class PMDaemonClient {
     }
   }
 
-  async startProcess(config) {
+  async startProcess(nameOrId) {
     try {
-      const response = await this.api.post('/api/processes', config);
+      const response = await this.api.post(`/api/processes/${nameOrId}/start`);
       return response.data;
     } catch (error) {
       throw new Error(`Failed to start process: ${error.message}`);
@@ -90,19 +97,12 @@ class PMDaemonClient {
 
 // Usage example
 async function main() {
-  const client = new PMDaemonClient();
+  // Create client with API key authentication
+  const client = new PMDaemonClient('http://localhost:9615', 'your-api-key');
 
   try {
-    // Start a new process
-    const startResult = await client.startProcess({
-      name: 'test-api',
-      script: 'node',
-      args: ['server.js'],
-      port: '3000',
-      env: {
-        NODE_ENV: 'production'
-      }
-    });
+    // Start an existing process (processes must be created via CLI)
+    const startResult = await client.startProcess('test-api');
     console.log('Process started:', startResult);
 
     // Wait a moment for the process to start

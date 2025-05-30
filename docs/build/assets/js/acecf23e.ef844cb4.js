@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpmdaemon_docs=self.webpackChunkpmdaemon_docs||[]).push([[1903],{1912:e=>{e.exports=JSON.parse('{"blogBasePath":"/pmdaemon/changelog","blogTitle":"Changelog","authorsListPath":"/pmdaemon/changelog/authors"}')}}]);

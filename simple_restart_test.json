@@ -1,0 +1,7 @@
+{
+  "name": "restart-test",
+  "script": "/usr/bin/sleep",
+  "args": ["60"],
+  "autorestart": false,
+  "max_restarts": 5
+}

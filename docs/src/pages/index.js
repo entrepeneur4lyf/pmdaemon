@@ -27,10 +27,13 @@ function HomepageHeader() {
           </Link>
         </div>
         <div className={styles.badges}>
-          <img src="https://img.shields.io/badge/rust-1.70+-orange.svg" alt="Rust" />
-          <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License" />
-          <img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="Build" />
-          <img src="https://img.shields.io/badge/tests-267%20passing-brightgreen.svg" alt="Tests" />
+          <img src="https://img.shields.io/github/stars/entrepeneur4lyf/pmdaemon?style=flat-square" alt="GitHub Stars" />
+          <img src="https://img.shields.io/crates/v/pmdaemon?style=flat-square" alt="Crates.io Version" />
+          <img src="https://img.shields.io/crates/d/pmdaemon?style=flat-square" alt="Crates.io Downloads" />
+          <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" />
+          <img src="https://img.shields.io/github/actions/workflow/status/entrepeneur4lyf/pmdaemon/ci.yml?branch=main&style=flat-square" alt="Build Status" />
+          <img src="https://img.shields.io/badge/rust-1.70+-orange.svg?style=flat-square" alt="Rust" />
+          <img src="https://img.shields.io/badge/tests-272%20passing-brightgreen.svg?style=flat-square" alt="Tests" />
         </div>
       </div>
     </header>
@@ -105,7 +108,7 @@ pmdaemon monit`}</code></pre>
                 <div className="feature-card">
                   <h3>🔧 Production Ready</h3>
                   <p>
-                    Comprehensive test suite (267 tests), robust error handling,
+                    Comprehensive test suite (272 tests), robust error handling,
                     and production-grade web API with WebSocket support.
                   </p>
                 </div>

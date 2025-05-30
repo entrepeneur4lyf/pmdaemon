@@ -5,6 +5,47 @@ All notable changes to PMDaemon will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2025-05-29
+
+### 🚀 Added
+
+#### **Auto-Generated API Key Management**
+- **Persistent API keys**: Secure keys auto-generated on first web server start and saved to `~/.pmdaemon/api-key`
+- **Simple management commands**: `show-api-key` and `regenerate-api-key` for easy key management
+- **Cross-platform storage**: Reliable key storage across Windows, Linux, and macOS
+- **Environment variable support**: `PMDAEMON_API_KEY` still works for advanced use cases
+
+### 🔧 Enhanced
+
+#### **Documentation Accuracy Overhaul**
+- **Major corrections**: Fixed 15+ critical documentation inaccuracies that didn't match implementation
+- **Load balancing documentation**: Corrected to reflect actual clustering capabilities vs fictional enterprise features
+- **API format documentation**: Fixed error response format to match simple `{"success": false, "error": "message"}` structure
+- **CLI parameter documentation**: Removed non-existent health check parameters and other fictional options
+- **Environment variables**: Updated to show only `PMDAEMON_HOME` (the one that actually works)
+- **Library API methods**: Corrected method names to match actual implementation
+- **Installation documentation**: Updated for pre-1.0 status (manual installation only)
+
+### 🔒 Security
+
+#### **Enhanced Authentication & Endpoint Security**
+- **Removed dangerous endpoints**: Eliminated `POST /api/processes` that allowed arbitrary command execution
+- **Automatic authentication**: Web server now auto-generates and uses API keys by default
+- **WebSocket security**: Clarified read-only nature to prevent command injection attempts
+
+### 🐛 Fixed
+
+#### **Critical Uptime Monitoring Bug**
+- **Process uptime tracking**: Fixed critical bug where all processes showed 0s for uptime values
+- **Monitoring data application**: Properly applies collected CPU and memory metrics to process objects
+- **Real-time accuracy**: Process monitoring now shows accurate uptime, CPU, and memory usage
+
+### 📊 Technical Details
+- **Documentation review**: 35+ files systematically reviewed and corrected
+- **Security hardening**: Removed security vulnerabilities from API endpoints
+- **API key generation**: Secure 32-character alphanumeric keys with proper entropy
+- **Cross-platform compatibility**: API key system works reliably on all supported platforms
+
 ## [0.1.3]
 
 ### 🚀 Added
@@ -260,5 +301,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - System monitoring via sysinfo
 - Cross-platform support (Linux, macOS, Windows)
 
+[0.1.4]: https://github.com/entrepeneur4lyf/pmdaemon/compare/v0.1.3...v0.1.4
+[0.1.3]: https://github.com/entrepeneur4lyf/pmdaemon/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/entrepeneur4lyf/pmdaemon/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/entrepeneur4lyf/pmdaemon/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/entrepeneur4lyf/pmdaemon/releases/tag/v0.1.0

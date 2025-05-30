@@ -9,15 +9,7 @@ All API errors follow a consistent JSON format:
 ```json
 {
   "success": false,
-  "error": {
-    "code": "ERROR_CODE",
-    "message": "Human-readable error description",
-    "details": {
-      "field": "Additional context",
-      "suggestion": "Recommended action"
-    },
-    "timestamp": "2025-05-27T10:30:00Z"
-  }
+  "error": "Human-readable error description"
 }
 ```
 

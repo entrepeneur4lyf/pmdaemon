@@ -1,7 +1,7 @@
 {
   "id": "getting-started/installation",
   "title": "Installation",
-  "description": "PMDaemon can be installed through multiple methods. Choose the one that works best for your environment.",
+  "description": "PMDaemon is fully cross-platform and can be installed on Linux, Windows, and macOS through multiple methods. Choose the one that works best for your environment.",
   "source": "@site/docs/getting-started/installation.md",
   "sourceDirName": "getting-started",
   "slug": "/getting-started/installation",

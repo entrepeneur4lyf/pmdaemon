@@ -1,0 +1,24 @@
+{
+  "id": "architecture/overview",
+  "title": "Architecture Overview",
+  "description": "GitHub Stars",
+  "source": "@site/docs/architecture/overview.md",
+  "sourceDirName": "architecture",
+  "slug": "/architecture/overview",
+  "permalink": "/pmdaemon/docs/architecture/overview",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/architecture/overview.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "tutorialSidebar",
+  "previous": {
+    "title": "Migration from PM2",
+    "permalink": "/pmdaemon/docs/getting-started/migration-from-pm2"
+  },
+  "next": {
+    "title": "Process Management",
+    "permalink": "/pmdaemon/docs/features/process-management"
+  }
+}

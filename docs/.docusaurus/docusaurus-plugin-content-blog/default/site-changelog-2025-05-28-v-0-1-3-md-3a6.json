@@ -1,0 +1,68 @@
+{
+  "permalink": "/pmdaemon/changelog/v0.1.3-critical-bug-fixes-state-persistence",
+  "source": "@site/changelog/2025-05-28-v0.1.3.md",
+  "title": "PMDaemon v0.1.3 - Critical Bug Fixes & Enhanced State Persistence",
+  "description": "We're excited to announce PMDaemon v0.1.3, a critical stability release that resolves major issues with process monitoring, state persistence, and cleanup operations. This release transforms PMDaemon from having significant operational issues to being a rock-solid, production-ready process manager.",
+  "date": "2025-05-28T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "release",
+      "permalink": "/pmdaemon/changelog/tags/release"
+    },
+    {
+      "inline": true,
+      "label": "bugfix",
+      "permalink": "/pmdaemon/changelog/tags/bugfix"
+    },
+    {
+      "inline": true,
+      "label": "persistence",
+      "permalink": "/pmdaemon/changelog/tags/persistence"
+    },
+    {
+      "inline": true,
+      "label": "monitoring",
+      "permalink": "/pmdaemon/changelog/tags/monitoring"
+    },
+    {
+      "inline": true,
+      "label": "stability",
+      "permalink": "/pmdaemon/changelog/tags/stability"
+    }
+  ],
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "Shawn McAllister",
+      "title": "Lead Developer",
+      "url": "https://github.com/entrepeneur4lyf",
+      "imageURL": "https://github.com/entrepeneur4lyf.png",
+      "key": "shawn",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "slug": "v0.1.3-critical-bug-fixes-state-persistence",
+    "title": "PMDaemon v0.1.3 - Critical Bug Fixes & Enhanced State Persistence",
+    "authors": [
+      "shawn"
+    ],
+    "tags": [
+      "release",
+      "bugfix",
+      "persistence",
+      "monitoring",
+      "stability"
+    ]
+  },
+  "unlisted": false,
+  "prevItem": {
+    "title": "PMDaemon v0.1.4 - Documentation Accuracy & Stability",
+    "permalink": "/pmdaemon/changelog/2025/05/29/v0.1.4"
+  },
+  "nextItem": {
+    "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Cross-Platform Support",
+    "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform"
+  }
+}

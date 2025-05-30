@@ -34,11 +34,11 @@
   "hasTruncateMarker": true,
   "authors": [
     {
-      "name": "PMDaemon Team",
-      "title": "PMDaemon Maintainers",
-      "url": "https://github.com/entrepeneur4lyf/pmdaemon",
+      "name": "Shawn McAllister",
+      "title": "Lead Developer",
+      "url": "https://github.com/entrepeneur4lyf",
       "imageURL": "https://github.com/entrepeneur4lyf.png",
-      "key": "pmdaemon",
+      "key": "shawn",
       "page": null
     }
   ],
@@ -46,7 +46,7 @@
     "slug": "v0.1.1",
     "title": "PMDaemon v0.1.1 - Enhanced Delete Operations, Health Checks & Monitoring",
     "authors": [
-      "pmdaemon"
+      "shawn"
     ],
     "tags": [
       "release",
@@ -59,8 +59,8 @@
   },
   "unlisted": false,
   "prevItem": {
-    "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
-    "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-files"
+    "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Cross-Platform Support",
+    "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform"
   },
   "nextItem": {
     "title": "PMDaemon v0.1.0 - Initial Release",

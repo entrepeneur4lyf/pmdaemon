@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkpmdaemon_docs=self.webpackChunkpmdaemon_docs||[]).push([[6939],{8773:e=>{e.exports=JSON.parse('{"metadata":{"permalink":"/pmdaemon/changelog","page":1,"postsPerPage":5,"totalPages":1,"totalCount":5,"blogDescription":"PMDaemon release notes and changelog","blogTitle":"Changelog"}}')}}]);

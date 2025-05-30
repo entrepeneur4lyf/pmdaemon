@@ -1,0 +1,15 @@
+{
+  "id": "features/cross-platform",
+  "title": "Cross-Platform Support",
+  "description": "PMDaemon is designed from the ground up to be truly cross-platform, providing native performance and full feature parity across Linux, Windows, and macOS.",
+  "source": "@site/docs/features/cross-platform.md",
+  "sourceDirName": "features",
+  "slug": "/features/cross-platform",
+  "permalink": "/pmdaemon/docs/features/cross-platform",
+  "draft": false,
+  "unlisted": false,
+  "editUrl": "https://github.com/entrepeneur4lyf/pmdaemon/tree/main/docs/docs/features/cross-platform.md",
+  "tags": [],
+  "version": "current",
+  "frontMatter": {}
+}

@@ -175,6 +175,11 @@ impl ProcessManager {
         Ok(home_dir.join(crate::CONFIG_DIR))
     }
 
+    /// Get the API key file path
+    pub fn get_api_key_path() -> Result<PathBuf> {
+        Ok(Self::get_config_dir()?.join("api-key"))
+    }
+
     /// Get the PID directory path
     fn get_pid_dir(&self) -> PathBuf {
         self.config_dir.join(crate::PID_DIR)
@@ -1416,17 +1421,30 @@ impl ProcessManager {
 
     /// Start web monitoring server
     pub async fn start_web_server(&self, host: &str, port: u16) -> Result<()> {
+        self.start_web_server_with_api_key(host, port, None).await
+    }
+
+    /// Start web monitoring server with API key authentication
+    pub async fn start_web_server_with_api_key(
+        &self,
+        host: &str,
+        port: u16,
+        api_key: Option<String>,
+    ) -> Result<()> {
         use crate::web::WebServer;
         use std::sync::Arc;
         use tokio::sync::RwLock;
 
         info!("Starting web monitoring server on {}:{}", host, port);
+        if api_key.is_some() {
+            info!("API key authentication enabled");
+        }
 
         // Create a new process manager instance for the web server
         // This is a temporary solution - in a real implementation, we'd want to share the same instance
         let manager_arc = Arc::new(RwLock::new(ProcessManager::new().await?));
 
-        let web_server = WebServer::new(manager_arc).await?;
+        let web_server = WebServer::new_with_api_key(manager_arc, api_key).await?;
         web_server.start(host, port).await
     }
 
@@ -1573,6 +1591,21 @@ impl ProcessManager {
                 "Updated monitoring data for {} processes",
                 monitoring_data.len()
             );
+
+            // Drop the read lock before acquiring write lock
+            drop(processes);
+
+            // Apply monitoring data back to processes
+            let mut processes = self.processes.write().await;
+            for (pid, data) in monitoring_data {
+                // Find the process with this PID and update its monitoring data
+                for process in processes.values_mut() {
+                    if process.pid() == Some(pid) {
+                        process.update_monitoring(data.cpu_usage, data.memory_usage);
+                        break;
+                    }
+                }
+            }
         }
 
         Ok(())

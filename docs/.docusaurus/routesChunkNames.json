@@ -1,471 +1,593 @@
 {
-  "/pmdaemon/__docusaurus/debug-bf8": {
-    "__comp": "__comp---theme-debug-config-23-a-2ff",
+  "/pmdaemon/changelog-75c": {
+    "__comp": "a6aa9e1f",
     "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/__docusaurus/debug/config-a20": {
-    "__comp": "__comp---theme-debug-config-23-a-2ff",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/__docusaurus/debug/content-8d3": {
-    "__comp": "__comp---theme-debug-contentba-8-ce7",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
+      "plugin": "36994c47"
     },
-    "__props": "__props---pmdaemon-docusaurus-debug-content-241-424"
-  },
-  "/pmdaemon/__docusaurus/debug/globalData-1da": {
-    "__comp": "__comp---theme-debug-global-dataede-0fa",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/__docusaurus/debug/metadata-e60": {
-    "__comp": "__comp---theme-debug-site-metadata-68-e-3d4",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/__docusaurus/debug/registry-f73": {
-    "__comp": "__comp---theme-debug-registry-679-501",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/__docusaurus/debug/routes-f71": {
-    "__comp": "__comp---theme-debug-routes-946-699",
-    "__context": {
-      "plugin": "plugin---pmdaemon-docusaurus-debugb-38-40b"
-    }
-  },
-  "/pmdaemon/changelog-04e": {
-    "__comp": "__comp---theme-blog-list-pagea-6-a-7ba",
-    "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
-    },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-1-d-3-63d"
+        "content": "100957fb"
       },
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "a0905f66"
       },
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "1d395674"
+      },
+      {
+        "content": "903fa52d"
+      },
+      {
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-67-c-eaf"
+    "__props": "67c783ec"
+  },
+  "/pmdaemon/changelog/2025/05/29/v0.1.4-d79": {
+    "__comp": "ccc49370",
+    "__context": {
+      "data": {
+        "blogMetadata": "acecf23e"
+      },
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "content": "8c27ec2a"
   },
   "/pmdaemon/changelog/archive-8cd": {
-    "__comp": "__comp---theme-blog-archive-page-9-e-4-1d8",
+    "__comp": "9e4087bc",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "__props": "__props---pmdaemon-changelog-archive-9-d-9-592"
+    "__props": "9d91ad84"
   },
   "/pmdaemon/changelog/authors-e68": {
-    "__comp": "__comp---theme-blog-pages-blog-authors-list-page-621-70c",
+    "__comp": "621db11d",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
-    "__props": "__props---pmdaemon-changelog-authorsac-0-cef"
+    "sidebar": "814f3328",
+    "__props": "ac09c6b4"
   },
   "/pmdaemon/changelog/tags-f14": {
-    "__comp": "__comp---theme-blog-tags-list-page-01-a-d0b",
+    "__comp": "01a85c17",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
-    "__props": "__props---pmdaemon-changelog-tags-2-d-8-0d6"
+    "sidebar": "814f3328",
+    "__props": "2d85e127"
+  },
+  "/pmdaemon/changelog/tags/accuracy-78a": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "100957fb"
+      }
+    ],
+    "__props": "cb0bc2b7"
+  },
+  "/pmdaemon/changelog/tags/bugfix-c20": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "a0905f66"
+      }
+    ],
+    "__props": "0e20d965"
   },
   "/pmdaemon/changelog/tags/config-files-e14": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-1-d-3-63d"
+        "content": "1d395674"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-config-files-79-f-dc5"
+    "__props": "79f7e0a9"
+  },
+  "/pmdaemon/changelog/tags/cross-platform-6f7": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1d395674"
+      }
+    ],
+    "__props": "ae3931f0"
   },
   "/pmdaemon/changelog/tags/delete-operations-f2c": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "903fa52d"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-delete-operations-2-cb-135"
+    "__props": "2cb13436"
+  },
+  "/pmdaemon/changelog/tags/documentation-1cb": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "100957fb"
+      }
+    ],
+    "__props": "f4b4b0d5"
   },
   "/pmdaemon/changelog/tags/ecosystem-ced": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-1-d-3-63d"
+        "content": "1d395674"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-ecosystem-3-cc-bfa"
+    "__props": "3cc28959"
   },
   "/pmdaemon/changelog/tags/health-checks-36a": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "903fa52d"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-health-checks-777-234"
+    "__props": "7776d3c4"
   },
   "/pmdaemon/changelog/tags/initial-59f": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-initiald-00-aae"
+    "__props": "d00315a8"
   },
-  "/pmdaemon/changelog/tags/monitoring-b6c": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+  "/pmdaemon/changelog/tags/linux-054": {
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "1d395674"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-monitoring-434-d88"
+    "__props": "fcfd580c"
   },
-  "/pmdaemon/changelog/tags/multi-app-fbc": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+  "/pmdaemon/changelog/tags/macos-387": {
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-1-d-3-63d"
+        "content": "1d395674"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-multi-appce-3-691"
+    "__props": "01352b82"
+  },
+  "/pmdaemon/changelog/tags/monitoring-b5e": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "a0905f66"
+      },
+      {
+        "content": "903fa52d"
+      }
+    ],
+    "__props": "4342e6b2"
+  },
+  "/pmdaemon/changelog/tags/persistence-293": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "a0905f66"
+      }
+    ],
+    "__props": "9d169c6f"
   },
   "/pmdaemon/changelog/tags/pm-2-447": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-pm-24-fd-449"
+    "__props": "4fd08b4a"
   },
   "/pmdaemon/changelog/tags/process-manager-dd6": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-process-manager-35-c-15f"
+    "__props": "35c96383"
   },
-  "/pmdaemon/changelog/tags/release-dfb": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+  "/pmdaemon/changelog/tags/release-b1d": {
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-1-d-3-63d"
+        "content": "100957fb"
       },
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "a0905f66"
       },
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "1d395674"
+      },
+      {
+        "content": "903fa52d"
+      },
+      {
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-releasea-22-8bc"
+    "__props": "a226d97b"
   },
   "/pmdaemon/changelog/tags/rust-47e": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-3-c-4-e4d"
+        "content": "3c472cab"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-rust-974-219"
+    "__props": "97483023"
+  },
+  "/pmdaemon/changelog/tags/security-94d": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "100957fb"
+      }
+    ],
+    "__props": "8249ded9"
+  },
+  "/pmdaemon/changelog/tags/stability-756": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "100957fb"
+      },
+      {
+        "content": "a0905f66"
+      }
+    ],
+    "__props": "49fc78f5"
   },
   "/pmdaemon/changelog/tags/testing-28e": {
-    "__comp": "__comp---theme-blog-tags-posts-page-687-b6c",
+    "__comp": "6875c492",
     "__context": {
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
+    "sidebar": "814f3328",
     "items": [
       {
-        "content": "content---pmdaemon-changelog-903-bbb"
+        "content": "903fa52d"
       }
     ],
-    "__props": "__props---pmdaemon-changelog-tags-testingae-8-364"
+    "__props": "ae8584e3"
+  },
+  "/pmdaemon/changelog/tags/windows-7e5": {
+    "__comp": "6875c492",
+    "__context": {
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "items": [
+      {
+        "content": "1d395674"
+      }
+    ],
+    "__props": "cd02096f"
   },
   "/pmdaemon/changelog/v0.1.0-d92": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
-    "content": "content---pmdaemon-changelog-v-0-1-0704-8d6"
+    "sidebar": "814f3328",
+    "content": "7043fc60"
   },
   "/pmdaemon/changelog/v0.1.1-975": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
-    "content": "content---pmdaemon-changelog-v-0-1-10-ee-7d5"
+    "sidebar": "814f3328",
+    "content": "0eee017e"
   },
-  "/pmdaemon/changelog/v0.1.2-ecosystem-config-files-67b": {
-    "__comp": "__comp---theme-blog-post-pageccc-cab",
+  "/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform-6f6": {
+    "__comp": "ccc49370",
     "__context": {
       "data": {
-        "blogMetadata": "blogMetadata---pmdaemon-changelog-authorsace-28e"
+        "blogMetadata": "acecf23e"
       },
-      "plugin": "plugin---pmdaemon-changelog-369-d18"
+      "plugin": "36994c47"
     },
-    "sidebar": "sidebar---pmdaemon-changelog-814-72a",
-    "content": "content---pmdaemon-changelog-v-0-1-2-ecosystem-config-files-99-e-3c4"
+    "sidebar": "814f3328",
+    "content": "99e021aa"
+  },
+  "/pmdaemon/changelog/v0.1.3-critical-bug-fixes-state-persistence-002": {
+    "__comp": "ccc49370",
+    "__context": {
+      "data": {
+        "blogMetadata": "acecf23e"
+      },
+      "plugin": "36994c47"
+    },
+    "sidebar": "814f3328",
+    "content": "3a643a47"
   },
   "/pmdaemon/search-a96": {
-    "__comp": "__comp---theme-search-page-1-a-4-d6f",
+    "__comp": "1a4e3797",
     "__context": {
-      "plugin": "plugin---pmdaemon-searchc-14-73a"
+      "plugin": "c141421f"
     }
   },
-  "/pmdaemon/docs-b04": {
-    "__comp": "__comp---theme-docs-root-5-e-9-0b6",
+  "/pmdaemon/docs-574": {
+    "__comp": "5e95c892",
     "__context": {
-      "plugin": "plugin---pmdaemon-docsaba-9c5"
+      "plugin": "aba21aa0"
     }
   },
-  "/pmdaemon/docs-389": {
-    "__comp": "__comp---theme-doc-version-roota-7-b-5de",
-    "__props": "__props---pmdaemon-docsb-5-e-bc2"
+  "/pmdaemon/docs-12a": {
+    "__comp": "a7bd4aaa",
+    "__props": "b5e40d68"
   },
-  "/pmdaemon/docs-8b7": {
-    "__comp": "__comp---theme-doc-roota-94-67a"
+  "/pmdaemon/docs-8b8": {
+    "__comp": "a94703ab"
   },
   "/pmdaemon/docs/advanced/clustering-169": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-advanced-clustering-561-413"
+    "__comp": "17896441",
+    "content": "56131ca9"
   },
   "/pmdaemon/docs/advanced/logging-93e": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-advanced-logging-477-2c6"
+    "__comp": "17896441",
+    "content": "4772665e"
   },
   "/pmdaemon/docs/advanced/performance-tuning-389": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-advanced-performance-tuningd-93-df4"
+    "__comp": "17896441",
+    "content": "d9335100"
   },
   "/pmdaemon/docs/advanced/security-90d": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-advanced-security-39-a-454"
+    "__comp": "17896441",
+    "content": "39a14576"
   },
   "/pmdaemon/docs/advanced/troubleshooting-33b": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-advanced-troubleshooting-86-d-038"
+    "__comp": "17896441",
+    "content": "86d0835c"
   },
   "/pmdaemon/docs/api/api-examples-87a": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-api-examples-0-c-2-ce5"
+    "__comp": "17896441",
+    "content": "0c2cabae"
   },
   "/pmdaemon/docs/api/authentication-09a": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-authenticationbae-5d9"
+    "__comp": "17896441",
+    "content": "baeff1df"
   },
   "/pmdaemon/docs/api/error-handling-d2e": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-error-handling-308-841"
+    "__comp": "17896441",
+    "content": "308c43fd"
   },
   "/pmdaemon/docs/api/library-usage-a69": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-library-usage-9-f-6-329"
+    "__comp": "17896441",
+    "content": "9f6a17ee"
   },
   "/pmdaemon/docs/api/rest-api-1d9": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-rest-apic-47-c34"
+    "__comp": "17896441",
+    "content": "c4741e79"
   },
   "/pmdaemon/docs/api/websocket-api-9c6": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-api-websocket-apia-54-481"
+    "__comp": "17896441",
+    "content": "a54d35fe"
+  },
+  "/pmdaemon/docs/architecture/overview-e86": {
+    "__comp": "17896441",
+    "content": "0b1ac180"
   },
   "/pmdaemon/docs/cli/commands-361": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-cli-commandsaef-1be"
+    "__comp": "17896441",
+    "content": "aef2f35b"
   },
   "/pmdaemon/docs/cli/configuration-options-059": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-cli-configuration-options-60-c-4f3"
+    "__comp": "17896441",
+    "content": "60c62877"
   },
   "/pmdaemon/docs/cli/environment-variables-8da": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-cli-environment-variablesc-54-f1d"
+    "__comp": "17896441",
+    "content": "c54b27a5"
   },
   "/pmdaemon/docs/cli/exit-codes-8bf": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-cli-exit-codes-757-b8d"
+    "__comp": "17896441",
+    "content": "7576b58b"
   },
   "/pmdaemon/docs/comparison/pm2-vs-pmdaemon-af8": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-comparison-pm-2-vs-pmdaemonc-7-c-76b"
+    "__comp": "17896441",
+    "content": "c7cd6502"
   },
   "/pmdaemon/docs/configuration/advanced-configuration-52c": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-advanced-configurationadb-1db"
+    "__comp": "17896441",
+    "content": "adb710fb"
   },
   "/pmdaemon/docs/configuration/best-practices-7ae": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-best-practices-510-161"
+    "__comp": "17896441",
+    "content": "5101f35c"
   },
   "/pmdaemon/docs/configuration/ecosystem-files-a76": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-ecosystem-files-7-bb-71b"
+    "__comp": "17896441",
+    "content": "7bb04240"
   },
   "/pmdaemon/docs/configuration/environment-specific-fa3": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-environment-specific-491-c3c"
+    "__comp": "17896441",
+    "content": "491b1ffc"
   },
   "/pmdaemon/docs/configuration/process-configuration-626": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-process-configurationca-5-52f"
+    "__comp": "17896441",
+    "content": "ca5611f1"
   },
   "/pmdaemon/docs/configuration/schema-validation-708": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-configuration-schema-validationf-0-d-433"
+    "__comp": "17896441",
+    "content": "f0d9658e"
   },
   "/pmdaemon/docs/examples/clustering-b35": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-examples-clustering-887-af3"
+    "__comp": "17896441",
+    "content": "887a50b8"
   },
   "/pmdaemon/docs/examples/deployment-examples-881": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-examples-deployment-examples-3-d-9-5a3"
+    "__comp": "17896441",
+    "content": "3d9ddfd6"
   },
   "/pmdaemon/docs/examples/integration-examples-93f": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-examples-integration-examples-0-a-7-09f"
+    "__comp": "17896441",
+    "content": "0a7f6606"
   },
   "/pmdaemon/docs/examples/use-cases-8cf": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-examples-use-cases-9-b-7-7d8"
+    "__comp": "17896441",
+    "content": "9b7235bd"
   },
   "/pmdaemon/docs/features/configuration-a50": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-configuration-5-dc-752"
+    "__comp": "17896441",
+    "content": "5dc33db6"
+  },
+  "/pmdaemon/docs/features/cross-platform-09f": {
+    "__comp": "17896441",
+    "content": "aae8a6e8"
   },
   "/pmdaemon/docs/features/health-checks-45b": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-health-checks-30-e-ca2"
+    "__comp": "17896441",
+    "content": "30eed601"
   },
   "/pmdaemon/docs/features/load-balancing-2d2": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-load-balancinga-30-4b0"
+    "__comp": "17896441",
+    "content": "a30b6e47"
   },
   "/pmdaemon/docs/features/monitoring-58e": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-monitoringf-77-4ef"
+    "__comp": "17896441",
+    "content": "f77c9094"
   },
   "/pmdaemon/docs/features/port-management-c88": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-port-managemente-33-863"
+    "__comp": "17896441",
+    "content": "e33a96cc"
   },
   "/pmdaemon/docs/features/process-management-36c": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-process-management-947-7f4"
+    "__comp": "17896441",
+    "content": "94703b92"
   },
   "/pmdaemon/docs/features/web-api-eb6": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-features-web-apicc-7-933"
+    "__comp": "17896441",
+    "content": "cc78e139"
   },
   "/pmdaemon/docs/getting-started/installation-db6": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-getting-started-installation-54-f-f56"
+    "__comp": "17896441",
+    "content": "54f44165"
   },
   "/pmdaemon/docs/getting-started/introduction-a5b": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-getting-started-introduction-9-ff-f35"
+    "__comp": "17896441",
+    "content": "9ff4038f"
   },
   "/pmdaemon/docs/getting-started/migration-from-pm2-4d9": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-getting-started-migration-from-pm-2-aed-969"
+    "__comp": "17896441",
+    "content": "aed27535"
   },
   "/pmdaemon/docs/getting-started/quick-start-f76": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-getting-started-quick-start-588-1ca"
+    "__comp": "17896441",
+    "content": "588bd741"
   },
   "/pmdaemon/docs/monitoring/overview-088": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-monitoring-overviewded-9b1"
+    "__comp": "17896441",
+    "content": "ded9c051"
   },
   "/pmdaemon/docs/performance/optimization-8ce": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-performance-optimization-507-9e5"
+    "__comp": "17896441",
+    "content": "507b3379"
   },
   "/pmdaemon/docs/security/overview-d8b": {
-    "__comp": "__comp---theme-doc-item-178-a40",
-    "content": "content---pmdaemon-docs-security-overview-359-24f"
+    "__comp": "17896441",
+    "content": "3592d2f2"
   },
   "/pmdaemon/-abc": {
-    "__comp": "__comp---site-src-pages-index-jsc-4-f-f99",
+    "__comp": "c4f5d8e4",
     "__context": {
-      "plugin": "plugin---pmdaemon-a-74-3cb"
+      "plugin": "a7456010"
     },
-    "config": "config---pmdaemon-5-e-9-1da"
+    "config": "5e9f5e1a"
   }
 }

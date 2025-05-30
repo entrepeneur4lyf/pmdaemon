@@ -6,98 +6,20 @@ PMDaemon uses environment variables for system-level configuration and automatic
 
 These environment variables configure PMDaemon's behavior:
 
-### `PMDAEMON_CONFIG_DIR`
-**Description:** Directory for PMDaemon configuration files
+### `PMDAEMON_HOME`
+**Description:** Override the default configuration directory for PMDaemon
 **Default:** `~/.pmdaemon` (Linux/macOS), `%APPDATA%\pmdaemon` (Windows)
 **Example:**
 ```bash
-export PMDAEMON_CONFIG_DIR=/etc/pmdaemon
+export PMDAEMON_HOME=/etc/pmdaemon
 pmdaemon start "node server.js" --name web-api
 ```
 
-### `PMDAEMON_LOG_DIR`
-**Description:** Directory for PMDaemon log files
-**Default:** `~/.pmdaemon/logs`
-**Example:**
-```bash
-export PMDAEMON_LOG_DIR=/var/log/pmdaemon
-pmdaemon start "node server.js" --name web-api
-```
+This is the only environment variable that PMDaemon itself recognizes. All other configuration is done through CLI arguments or configuration files.
 
-### `PMDAEMON_PID_DIR`
-**Description:** Directory for process PID files
-**Default:** `~/.pmdaemon/pids`
-**Example:**
-```bash
-export PMDAEMON_PID_DIR=/var/run/pmdaemon
-pmdaemon start "node server.js" --name web-api
-```
+## Process Variables
 
-### `PMDAEMON_LOG_LEVEL`
-**Description:** Logging level for PMDaemon
-**Default:** `info`
-**Values:** `error`, `warn`, `info`, `debug`, `trace`
-**Example:**
-```bash
-export PMDAEMON_LOG_LEVEL=debug
-pmdaemon start "node server.js" --name web-api
-```
-
-### `PMDAEMON_WEB_PORT`
-**Description:** Default port for web monitoring server
-**Default:** `9615`
-**Example:**
-```bash
-export PMDAEMON_WEB_PORT=8080
-pmdaemon web  # Starts on port 8080
-```
-
-### `PMDAEMON_WEB_HOST`
-**Description:** Default host for web monitoring server
-**Default:** `127.0.0.1`
-**Example:**
-```bash
-export PMDAEMON_WEB_HOST=0.0.0.0
-pmdaemon web  # Binds to all interfaces
-```
-
-## Process Default Variables
-
-Set default values for process configuration:
-
-### `PMDAEMON_DEFAULT_INSTANCES`
-**Description:** Default number of instances for new processes
-**Default:** `1`
-**Example:**
-```bash
-export PMDAEMON_DEFAULT_INSTANCES=2
-pmdaemon start "node server.js" --name web-api  # Starts 2 instances
-```
-
-### `PMDAEMON_DEFAULT_MAX_MEMORY`
-**Description:** Default memory limit for new processes
-**Default:** None (unlimited)
-**Example:**
-```bash
-export PMDAEMON_DEFAULT_MAX_MEMORY=512M
-pmdaemon start "node server.js" --name web-api  # 512MB limit
-```
-
-### `PMDAEMON_DEFAULT_AUTORESTART`
-**Description:** Default auto-restart setting
-**Default:** `true`
-**Example:**
-```bash
-export PMDAEMON_DEFAULT_AUTORESTART=false
-pmdaemon start "python script.py" --name one-time  # No auto-restart
-```
-
-### `PMDAEMON_DEFAULT_MAX_RESTARTS`
-**Description:** Default maximum restart attempts
-**Default:** `16`
-**Example:**
-```bash
-export PMDAEMON_DEFAULT_MAX_RESTARTS=5
+PMDaemon automatically sets environment variables for managed processes:
 pmdaemon start "node server.js" --name web-api  # Max 5 restarts
 ```
 

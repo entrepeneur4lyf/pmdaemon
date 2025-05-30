@@ -7,6 +7,7 @@ use clap::{Parser, Subcommand};
 use comfy_table::{Attribute, Cell, Color, Table};
 use pmdaemon::config::format_memory;
 use pmdaemon::{EcosystemConfig, ProcessConfig, ProcessManager, Result};
+use rand::Rng;
 use std::path::PathBuf;
 use tracing::{error, info};
 
@@ -142,7 +143,17 @@ enum Commands {
         /// Host to bind to
         #[arg(long, default_value = "127.0.0.1")]
         host: String,
+
+        /// API key for authentication
+        #[arg(long)]
+        api_key: Option<String>,
     },
+
+    /// Regenerate the API key
+    RegenerateApiKey,
+
+    /// Show the current API key
+    ShowApiKey,
 }
 
 #[tokio::main]
@@ -399,7 +410,7 @@ async fn main() -> Result<()> {
                     Cell::new("Status").add_attribute(Attribute::Bold),
                     Cell::new("PID").add_attribute(Attribute::Bold),
                     Cell::new("Uptime").add_attribute(Attribute::Bold),
-                    Cell::new("↻").add_attribute(Attribute::Bold), // Restart symbol
+                    Cell::new("Restarts").add_attribute(Attribute::Bold),
                     Cell::new("CPU %").add_attribute(Attribute::Bold),
                     Cell::new("Memory").add_attribute(Attribute::Bold),
                     Cell::new("Port").add_attribute(Attribute::Bold),
@@ -480,10 +491,10 @@ async fn main() -> Result<()> {
 
                 // System header
                 println!(
-                    "┌─ PMDaemon Process Monitor ─ {} ─┐",
+                    "+-- PMDaemon Process Monitor -- {} --+",
                     Local::now().format("%Y-%m-%d %H:%M:%S")
                 );
-                println!("│ System CPU: {:>5.1}% │ Memory: {:>5.1}% ({:.1}GB/{:.1}GB) │ Load: {:.2} {:.2} {:.2} │",
+                println!("| System CPU: {:>5.1}% | Memory: {:>5.1}% ({:.1}GB/{:.1}GB) | Load: {:.2} {:.2} {:.2} |",
                     system_info.cpu_usage,
                     system_info.memory_percent,
                     system_info.memory_used as f64 / 1024.0 / 1024.0 / 1024.0,
@@ -492,10 +503,10 @@ async fn main() -> Result<()> {
                     system_info.load_average[1],
                     system_info.load_average[2]
                 );
-                println!("└{}┘", "─".repeat(80));
+                println!("+{}+", "-".repeat(80));
 
                 if processes.is_empty() {
-                    println!("\n📭 No processes running");
+                    println!("\nNo processes running");
                 } else {
                     // Create table
                     let mut table = Table::new();
@@ -505,7 +516,7 @@ async fn main() -> Result<()> {
                         Cell::new("Status").add_attribute(Attribute::Bold),
                         Cell::new("PID").add_attribute(Attribute::Bold),
                         Cell::new("Uptime").add_attribute(Attribute::Bold),
-                        Cell::new("↻").add_attribute(Attribute::Bold), // Restart symbol
+                        Cell::new("Restarts").add_attribute(Attribute::Bold),
                         Cell::new("CPU %").add_attribute(Attribute::Bold),
                         Cell::new("Memory").add_attribute(Attribute::Bold),
                         Cell::new("Port").add_attribute(Attribute::Bold),
@@ -564,7 +575,7 @@ async fn main() -> Result<()> {
                     println!("{}", table);
                 }
 
-                println!("\n💡 Press Ctrl+C to exit");
+                println!("\nPress Ctrl+C to exit");
 
                 ticker.tick().await;
             }
@@ -588,9 +599,82 @@ async fn main() -> Result<()> {
             println!("{:#?}", info);
         }
 
-        Commands::Web { port, host } => {
+        Commands::RegenerateApiKey => {
+            let api_key = generate_api_key()?;
+            let api_key_path = ProcessManager::get_api_key_path()?;
+
+            // Save to config directory
+            std::fs::write(&api_key_path, &api_key)?;
+
+            println!("New API key generated: {}", api_key);
+            println!("Saved to: {}", api_key_path.display());
+            println!("Web server will use this key automatically");
+        }
+
+        Commands::ShowApiKey => {
+            let api_key_path = ProcessManager::get_api_key_path()?;
+
+            if api_key_path.exists() {
+                match std::fs::read_to_string(&api_key_path) {
+                    Ok(key) => {
+                        println!("{}", key.trim());
+                    }
+                    Err(e) => {
+                        error!("Failed to read API key file: {}", e);
+                        std::process::exit(1);
+                    }
+                }
+            } else {
+                println!("No API key found. Generate one with: pmdaemon regenerate-api-key");
+                std::process::exit(1);
+            }
+        }
+
+        Commands::Web {
+            port,
+            host,
+            api_key,
+        } => {
             println!("Starting web server on {}:{}", host, port);
-            manager.start_web_server(&host, port).await?;
+
+            // Load or generate API key
+            let final_api_key = if let Some(key) = api_key {
+                Some(key)
+            } else if let Ok(key) = std::env::var("PMDAEMON_API_KEY") {
+                Some(key)
+            } else {
+                // Try to load saved API key, generate if none exists
+                let api_key_path = ProcessManager::get_api_key_path()?;
+                if api_key_path.exists() {
+                    match std::fs::read_to_string(&api_key_path) {
+                        Ok(key) => {
+                            println!("Using saved API key from {}", api_key_path.display());
+                            Some(key.trim().to_string())
+                        }
+                        Err(_) => None,
+                    }
+                } else {
+                    // Generate new API key on first run
+                    let new_key = generate_api_key()?;
+                    if let Some(parent) = api_key_path.parent() {
+                        std::fs::create_dir_all(parent)?;
+                    }
+                    std::fs::write(&api_key_path, &new_key)?;
+                    println!("Generated new API key: {}", new_key);
+                    println!("Saved to: {}", api_key_path.display());
+                    Some(new_key)
+                }
+            };
+
+            if final_api_key.is_some() {
+                println!("Starting web server with authentication enabled");
+            } else {
+                println!("Starting web server without authentication");
+            }
+
+            manager
+                .start_web_server_with_api_key(&host, port, final_api_key)
+                .await?;
         }
     }
 
@@ -619,6 +703,21 @@ fn truncate_string(s: &str, max_len: usize) -> String {
     } else {
         format!("{}...", &s[..max_len - 3])
     }
+}
+
+/// Generate a secure 32-character alphanumeric API key
+fn generate_api_key() -> Result<String> {
+    let mut rng = rand::thread_rng();
+    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const LENGTH: usize = 32;
+
+    let key: String = (0..LENGTH)
+        .map(|_| {
+            let idx = rng.gen_range(0..CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+    Ok(key)
 }
 
 #[cfg(test)]
@@ -934,9 +1033,15 @@ mod tests {
     fn test_cli_parsing_web_command() {
         let cli = Cli::try_parse_from(["pmdaemon", "web", "--port", "8080", "--host", "0.0.0.0"])
             .unwrap();
-        if let Commands::Web { port, host } = cli.command {
+        if let Commands::Web {
+            port,
+            host,
+            api_key,
+        } = cli.command
+        {
             assert_eq!(port, 8080);
             assert_eq!(host, "0.0.0.0");
+            assert_eq!(api_key, None);
         } else {
             panic!("Expected Web command");
         }
@@ -945,9 +1050,15 @@ mod tests {
     #[test]
     fn test_cli_parsing_web_command_defaults() {
         let cli = Cli::try_parse_from(["pmdaemon", "web"]).unwrap();
-        if let Commands::Web { port, host } = cli.command {
+        if let Commands::Web {
+            port,
+            host,
+            api_key,
+        } = cli.command
+        {
             assert_eq!(port, pmdaemon::DEFAULT_WEB_PORT);
             assert_eq!(host, "127.0.0.1");
+            assert_eq!(api_key, None);
         } else {
             panic!("Expected Web command");
         }
@@ -980,5 +1091,51 @@ mod tests {
     fn test_cli_parsing_version() {
         let result = Cli::try_parse_from(["pmdaemon", "--version"]);
         assert!(result.is_err()); // Version exits with error code but shows version
+    }
+
+    #[test]
+    fn test_uptime_calculation_integration() {
+        use chrono::{Duration, Utc};
+
+        // Test that uptime calculation works as expected
+        let now = Utc::now();
+        let started_30s_ago = now - Duration::seconds(30);
+        let uptime = now - started_30s_ago;
+
+        let formatted = format_duration(uptime);
+        assert!(
+            formatted.ends_with('s'),
+            "30 second uptime should end with 's': {}",
+            formatted
+        );
+
+        // Test 2 minutes
+        let started_2m_ago = now - Duration::seconds(120);
+        let uptime_2m = now - started_2m_ago;
+        let formatted_2m = format_duration(uptime_2m);
+        assert!(
+            formatted_2m.ends_with('m'),
+            "2 minute uptime should end with 'm': {}",
+            formatted_2m
+        );
+
+        // Test 1 hour
+        let started_1h_ago = now - Duration::seconds(3600);
+        let uptime_1h = now - started_1h_ago;
+        let formatted_1h = format_duration(uptime_1h);
+        assert!(
+            formatted_1h.ends_with('h'),
+            "1 hour uptime should end with 'h': {}",
+            formatted_1h
+        );
+
+        // Test edge case: zero duration
+        let zero_duration = Duration::seconds(0);
+        let formatted_zero = format_duration(zero_duration);
+        assert_eq!(
+            formatted_zero, "0s",
+            "Zero duration should be '0s': {}",
+            formatted_zero
+        );
     }
 }

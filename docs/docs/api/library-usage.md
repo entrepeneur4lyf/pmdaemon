@@ -43,12 +43,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     
     // Start the process
-    let process_id = manager.start_process(config).await?;
+    let process_id = manager.start(config).await?;
     println!("Started process with ID: {}", process_id);
-    
-    // Wait for the process to be ready
-    manager.wait_for_ready("web-server", std::time::Duration::from_secs(30)).await?;
-    println!("Process is ready!");
     
     Ok(())
 }
@@ -153,20 +149,16 @@ impl CustomProcessManager {
         // Stop existing service if it exists
         if let Ok(_) = self.manager.get_process_info(name).await {
             println!("🛑 Stopping existing service: {}", name);
-            self.manager.stop_process(name).await?;
+            self.manager.stop(name).await?;
             self.wait_for_stop(name).await?;
         }
         
         // Start new service
-        let process_id = self.manager.start_process(config.clone()).await?;
+        let process_id = self.manager.start(config.clone()).await?;
         println!("✅ Started service {} with ID: {}", name, process_id);
         
-        // Wait for health checks if configured
-        if config.health_check.is_some() {
-            println!("⏳ Waiting for health checks...");
-            self.manager.wait_for_healthy(name, Duration::from_secs(60)).await?;
-            println!("✅ Service {} is healthy", name);
-        }
+        // Health checks are configured in the ProcessConfig
+        // The process manager handles health monitoring internally
         
         // Update our process tracking
         let info = self.manager.get_process_info(name).await?;
@@ -589,7 +581,7 @@ async fn robust_process_management() -> Result<(), Box<dyn std::error::Error>> {
         }
         Err(PMDaemonError::ProcessAlreadyExists(name)) => {
             println!("Process {} already exists, restarting...", name);
-            manager.restart_process(&name).await?;
+            manager.restart(&name).await?;
         }
         Err(PMDaemonError::PortConflict(port)) => {
             println!("Port {} is in use, trying auto-assignment...", port);

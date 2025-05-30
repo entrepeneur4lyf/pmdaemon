@@ -1,6 +1,6 @@
 //! Web server for monitoring API and WebSocket support
 
-use crate::config::{PortConfig, ProcessConfig};
+use crate::config::PortConfig;
 use crate::error::{Error, Result};
 use crate::manager::ProcessManager;
 use crate::monitoring::{Monitor, SystemMetrics};
@@ -12,6 +12,7 @@ use axum::{
         Path, Query, State, WebSocketUpgrade,
     },
     http::{header, HeaderValue, StatusCode},
+    middleware::{self, Next},
     response::{Json, Response},
     routing::{get, post},
     Router,
@@ -45,13 +46,6 @@ pub struct LogsQuery {
     pub lines: Option<usize>,
     /// Follow logs (streaming)
     pub follow: Option<bool>,
-}
-
-/// Request body for starting a process
-#[derive(Debug, Serialize, Deserialize)]
-pub struct StartProcessRequest {
-    /// Process configuration
-    pub config: ProcessConfig,
 }
 
 /// Request body for process actions
@@ -98,6 +92,8 @@ pub struct AppState {
     pub monitor: Arc<RwLock<Monitor>>,
     /// WebSocket broadcast channel
     pub broadcast_tx: broadcast::Sender<WebSocketMessage>,
+    /// API key for authentication (optional)
+    pub api_key: Option<String>,
 }
 
 /// Web server for monitoring API
@@ -109,6 +105,14 @@ pub struct WebServer {
 impl WebServer {
     /// Create a new web server with process manager
     pub async fn new(manager: Arc<RwLock<ProcessManager>>) -> Result<Self> {
+        Self::new_with_api_key(manager, None).await
+    }
+
+    /// Create a new web server with process manager and API key
+    pub async fn new_with_api_key(
+        manager: Arc<RwLock<ProcessManager>>,
+        api_key: Option<String>,
+    ) -> Result<Self> {
         let monitor = Arc::new(RwLock::new(Monitor::new()));
         let (broadcast_tx, _) = broadcast::channel(1000);
 
@@ -116,9 +120,48 @@ impl WebServer {
             manager,
             monitor,
             broadcast_tx,
+            api_key,
         };
 
         Ok(Self { state })
+    }
+
+    /// API key authentication middleware
+    async fn auth_middleware(
+        State(state): State<AppState>,
+        req: axum::http::Request<axum::body::Body>,
+        next: Next,
+    ) -> std::result::Result<Response, StatusCode> {
+        // Skip auth for root endpoint and WebSocket upgrade
+        let path = req.uri().path();
+        if path == "/" || path.starts_with("/ws") {
+            return Ok(next.run(req).await);
+        }
+
+        // Check if API key is required
+        if let Some(required_key) = &state.api_key {
+            // Get Authorization header
+            let auth_header = req
+                .headers()
+                .get(header::AUTHORIZATION)
+                .and_then(|h| h.to_str().ok());
+
+            // Check for Bearer token or API key header
+            let provided_key = if let Some(auth) = auth_header {
+                auth.strip_prefix("Bearer ")
+                    .or_else(|| auth.strip_prefix("ApiKey "))
+            } else {
+                // Also check X-API-Key header
+                req.headers().get("X-API-Key").and_then(|h| h.to_str().ok())
+            };
+
+            // Verify API key
+            if provided_key != Some(required_key) {
+                return Err(StatusCode::UNAUTHORIZED);
+            }
+        }
+
+        Ok(next.run(req).await)
     }
 
     /// Start the web server
@@ -183,7 +226,7 @@ impl WebServer {
             // Root endpoint
             .route("/", get(root_handler))
             // Process management endpoints
-            .route("/api/processes", get(list_processes).post(create_process))
+            .route("/api/processes", get(list_processes))
             .route(
                 "/api/processes/:id",
                 get(get_process).delete(delete_process),
@@ -199,6 +242,10 @@ impl WebServer {
             // WebSocket endpoint
             .route("/ws", get(websocket_handler))
             // Add middleware layers
+            .layer(middleware::from_fn_with_state(
+                self.state.clone(),
+                Self::auth_middleware,
+            ))
             .layer(
                 CorsLayer::new()
                     .allow_origin("*".parse::<HeaderValue>().unwrap())
@@ -288,64 +335,6 @@ async fn list_processes(
                 Json(json!({
                     "success": false,
                     "error": "Failed to list processes",
-                    "message": e.to_string()
-                })),
-            )
-                .into_response()
-        }
-    }
-}
-
-/// Create a new process
-async fn create_process(
-    State(state): State<AppState>,
-    Json(request): Json<StartProcessRequest>,
-) -> impl IntoResponse {
-    match state
-        .manager
-        .write()
-        .await
-        .start(request.config.clone())
-        .await
-    {
-        Ok(process_id) => {
-            info!(
-                "Created process {} with ID {}",
-                request.config.name, process_id
-            );
-
-            // Get the created process status
-            match state
-                .manager
-                .read()
-                .await
-                .get_process_info(&process_id.to_string())
-                .await
-            {
-                Ok(status) => Json(json!({
-                    "success": true,
-                    "data": process_status_to_pm2_format(&status),
-                    "message": format!("Process '{}' started successfully", request.config.name)
-                }))
-                .into_response(),
-                Err(_) => Json(json!({
-                    "success": true,
-                    "data": {
-                        "id": process_id.to_string(),
-                        "name": request.config.name
-                    },
-                    "message": "Process started successfully"
-                }))
-                .into_response(),
-            }
-        }
-        Err(e) => {
-            error!("Failed to create process {}: {}", request.config.name, e);
-            (
-                StatusCode::BAD_REQUEST,
-                Json(json!({
-                    "success": false,
-                    "error": "Failed to create process",
                     "message": e.to_string()
                 })),
             )
@@ -766,7 +755,7 @@ fn process_status_to_pm2_format(status: &ProcessStatus) -> Value {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::config::ProcessConfig;
+
     use crate::process::ProcessState;
     use chrono::Utc;
     use pretty_assertions::assert_eq;
@@ -787,6 +776,7 @@ mod tests {
             manager,
             monitor,
             broadcast_tx,
+            api_key: None,
         };
 
         (state, temp_dir)
@@ -824,24 +814,6 @@ mod tests {
         let query: LogsQuery = serde_json::from_str(json).unwrap();
         assert_eq!(query.lines, Some(100));
         assert_eq!(query.follow, Some(false));
-    }
-
-    #[test]
-    fn test_start_process_request_deserialize() {
-        let config = ProcessConfig::builder()
-            .name("test-app")
-            .script("node")
-            .build()
-            .unwrap();
-
-        let request = StartProcessRequest {
-            config: config.clone(),
-        };
-        let json = serde_json::to_string(&request).unwrap();
-        let deserialized: StartProcessRequest = serde_json::from_str(&json).unwrap();
-
-        assert_eq!(deserialized.config.name, config.name);
-        assert_eq!(deserialized.config.script, config.script);
     }
 
     #[test]
@@ -1022,6 +994,201 @@ mod tests {
         let json = serde_json::to_string(&msg).unwrap();
         assert!(json.contains("ProcessList"));
         assert!(json.contains("test-process"));
+    }
+
+    #[tokio::test]
+    async fn test_api_key_authentication() {
+        use axum::body::Body;
+        use axum::http::{Method, Request, StatusCode};
+        use tower::ServiceExt;
+
+        // Create test state with API key
+        let _temp_dir = TempDir::new().unwrap();
+        let manager = Arc::new(RwLock::new(ProcessManager::new().await.unwrap()));
+        let monitor = Arc::new(RwLock::new(Monitor::new()));
+        let (broadcast_tx, _) = broadcast::channel(100);
+
+        let test_api_key = "test-secret-api-key-12345".to_string();
+        let state = AppState {
+            manager,
+            monitor,
+            broadcast_tx,
+            api_key: Some(test_api_key.clone()),
+        };
+
+        // Create web server with API key
+        let server = WebServer { state };
+        let app = server.create_router().await;
+
+        // Test 1: Root endpoint should be accessible without authentication
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        // Test 2: WebSocket endpoint should be accessible without authentication
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/ws")
+            .header("upgrade", "websocket")
+            .header("connection", "upgrade")
+            .header("sec-websocket-key", "dGhlIHNhbXBsZSBub25jZQ==")
+            .header("sec-websocket-version", "13")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        // Should get 426 Upgrade Required for WebSocket without proper setup, not 401
+        assert_ne!(response.status(), StatusCode::UNAUTHORIZED);
+
+        // Test 3: API endpoint without authentication should return 401
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+
+        // Test 4: API endpoint with correct Bearer token should succeed
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .header("Authorization", format!("Bearer {}", test_api_key))
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        // Test 5: API endpoint with correct ApiKey header should succeed
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .header("Authorization", format!("ApiKey {}", test_api_key))
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        // Test 6: API endpoint with correct X-API-Key header should succeed
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .header("X-API-Key", &test_api_key)
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        // Test 7: API endpoint with incorrect API key should return 401
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .header("Authorization", "Bearer wrong-api-key")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+
+        // Test 8: API endpoint with malformed Authorization header should return 401
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .header("Authorization", "InvalidFormat")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::UNAUTHORIZED);
+
+        // Test 9: Different API endpoints should all require authentication
+        let protected_endpoints = vec!["/api/system", "/api/status", "/api/processes/test-id"];
+
+        for endpoint in protected_endpoints {
+            // Without auth - should fail
+            let request = Request::builder()
+                .method(Method::GET)
+                .uri(endpoint)
+                .body(Body::empty())
+                .unwrap();
+
+            let response = app.clone().oneshot(request).await.unwrap();
+            assert_eq!(
+                response.status(),
+                StatusCode::UNAUTHORIZED,
+                "Endpoint {} should require auth",
+                endpoint
+            );
+
+            // With auth - should succeed (or at least not return 401)
+            let request = Request::builder()
+                .method(Method::GET)
+                .uri(endpoint)
+                .header("Authorization", format!("Bearer {}", test_api_key))
+                .body(Body::empty())
+                .unwrap();
+
+            let response = app.clone().oneshot(request).await.unwrap();
+            assert_ne!(
+                response.status(),
+                StatusCode::UNAUTHORIZED,
+                "Endpoint {} should accept valid auth",
+                endpoint
+            );
+        }
+    }
+
+    #[tokio::test]
+    async fn test_no_api_key_authentication() {
+        use axum::body::Body;
+        use axum::http::{Method, Request, StatusCode};
+        use tower::ServiceExt;
+
+        // Create test state without API key
+        let _temp_dir = TempDir::new().unwrap();
+        let manager = Arc::new(RwLock::new(ProcessManager::new().await.unwrap()));
+        let monitor = Arc::new(RwLock::new(Monitor::new()));
+        let (broadcast_tx, _) = broadcast::channel(100);
+
+        let state = AppState {
+            manager,
+            monitor,
+            broadcast_tx,
+            api_key: None, // No API key required
+        };
+
+        // Create web server without API key
+        let server = WebServer { state };
+        let app = server.create_router().await;
+
+        // Test: API endpoints should be accessible without authentication when no API key is set
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/processes")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        // Test: System endpoint should also be accessible
+        let request = Request::builder()
+            .method(Method::GET)
+            .uri("/api/system")
+            .body(Body::empty())
+            .unwrap();
+
+        let response = app.oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
     }
 
     #[test]

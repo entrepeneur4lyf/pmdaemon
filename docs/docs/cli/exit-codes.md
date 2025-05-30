@@ -1,53 +1,37 @@
 # Exit Codes
 
-PMDaemon uses standardized exit codes to indicate the success or failure of operations. Understanding these codes is essential for automation, scripting, and troubleshooting.
+PMDaemon uses standard Unix exit codes for all operations.
 
-## Standard Exit Codes
+## Exit Codes
 
-### Success Codes
+### `0` - Success
+Command completed successfully.
 
-#### `0` - Success
-**Description:** Command completed successfully  
-**When returned:** All operations completed without errors  
-**Example:**
 ```bash
 pmdaemon start "node server.js" --name web-api
 echo $?  # Output: 0
 
-pmdaemon stop web-api
+pmdaemon stop web-api  
 echo $?  # Output: 0
 ```
 
-### General Error Codes
-
-#### `1` - General Error
-**Description:** Generic error or unspecified failure  
-**When returned:** Unexpected errors, general failures  
-**Common causes:**
+### `1` - Error  
+Any error occurred during command execution, including:
 - Invalid command syntax
-- Unexpected runtime errors
-- Configuration parsing errors
+- Missing required arguments
+- Process management failures  
+- Configuration errors
+- Runtime errors
 
-**Example:**
 ```bash
 pmdaemon invalid-command
 echo $?  # Output: 1
 
-pmdaemon start
-echo $?  # Output: 1 (missing required arguments)
-```
+pmdaemon start  # Missing script
+echo $?  # Output: 1
 
-#### `2` - Invalid Arguments
-**Description:** Invalid command line arguments or options  
-**When returned:** Incorrect CLI usage, invalid parameters  
-**Common causes:**
-- Missing required arguments
-- Invalid option values
-- Conflicting options
-
-**Example:**
-```bash
-pmdaemon start --name web-api  # Missing script
+pmdaemon stop nonexistent-process
+echo $?  # Output: 1
 echo $?  # Output: 2
 
 pmdaemon start "node server.js" --instances -1  # Invalid instance count

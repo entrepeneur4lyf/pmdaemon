@@ -42,10 +42,12 @@ PMDaemon isn't just a PM2 clone—it's PM2 **evolved** with features that the or
 
 ## Architecture Overview
 
+PMDaemon follows a modern, layered architecture designed for performance, security, and maintainability:
+
 ```mermaid
 graph TD
     A[CLI Interface] --> B[Process Manager Core]
-    C[Web API] --> B
+    C[Web API + Auth] --> B
     D[WebSocket] --> B
     B --> E[Process Orchestrator]
     E --> F[Process Execution]
@@ -55,8 +57,17 @@ graph TD
     F --> J[System Processes]
     G --> F
     H --> F
-    I --> K[JSON Config Files]
+    I --> K[Config Files<br>JSON/YAML/TOML]
 ```
+
+**Key architectural features:**
+- **🔒 Security-first design** with API key authentication
+- **⚡ High-performance async architecture** built on Tokio
+- **🏗️ Layered design** with clear separation of concerns
+- **🔄 Real-time monitoring** with WebSocket support
+- **🌐 Cross-platform compatibility** (Linux, Windows, macOS)
+
+> 📖 **For detailed architecture information**, see [Architecture Overview](../architecture/overview.md)
 
 ## Use Cases
 

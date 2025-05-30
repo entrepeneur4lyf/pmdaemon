@@ -1,6 +1,6 @@
 [package]
 name = "pmdaemon"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 description = "PMDaemon - A high-performance, cross-platform process manager built in Rust with advanced port management and monitoring capabilities"
 license = "MIT"
@@ -78,6 +78,9 @@ uuid = { version = "1.0", features = ["serde", "v4"] }
 comfy-table = "7.1.4"
 regex = "1.11.1"
 
+# Cryptography for API key generation
+rand = "0.8"
+
 [dev-dependencies]
 # Testing framework
 tempfile = "3.0"
@@ -93,6 +96,7 @@ criterion = { version = "0.5", features = ["html_reports"] }
 # Test utilities
 pretty_assertions = "1.4"
 rstest = "0.18"
+tower = { version = "0.4", features = ["util"] }
 
 # Platform-specific dependencies
 [target.'cfg(unix)'.dependencies]

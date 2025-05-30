@@ -1,465 +1,135 @@
-# Load Balancing
+# Clustering & Process Distribution
 
-PMDaemon provides built-in load balancing capabilities for distributing traffic across multiple application instances, ensuring high availability and optimal resource utilization.
+PMDaemon provides **clustering capabilities** that allow you to run multiple instances of your application for improved performance and reliability. While PMDaemon handles process management and port distribution, external load balancing is handled by reverse proxies or load balancers.
 
-## Load Balancing Strategies
+## Overview
 
-### 1. Round Robin (Default)
+PMDaemon's clustering features include:
 
-Distributes requests evenly across all healthy instances in order.
+- **🚀 Multiple Process Instances** - Run N copies of your application
+- **🔌 Automatic Port Distribution** - Each instance gets its own port
+- **📊 Process Management** - Start, stop, restart all instances together
+- **💾 Shared Configuration** - Single config manages all instances
+- **🔄 Individual Instance Control** - Manage instances independently
 
-```json
-{
-  "apps": [
-    {
-      "name": "web-app",
-      "script": "server.js",
-      "instances": 4,
-      "exec_mode": "cluster",
-      "load_balancer": {
-        "strategy": "round_robin",
-        "health_check": true
-      }
-    }
-  ]
-}
-```
+> **Note:** PMDaemon focuses on **process management** rather than traffic load balancing. For HTTP/TCP load balancing, use a reverse proxy like Nginx, HAProxy, or a cloud load balancer.
 
-### 2. Least Connections
+## Clustering Configuration
 
-Routes requests to the instance with the fewest active connections.
+### Basic Clustering
 
-```json
-{
-  "apps": [
-    {
-      "name": "api-server",
-      "script": "api.js",
-      "instances": 3,
-      "exec_mode": "cluster",
-      "load_balancer": {
-        "strategy": "least_connections",
-        "connection_tracking": true
-      }
-    }
-  ]
-}
-```
-
-### 3. Weighted Round Robin
-
-Assigns different weights to instances based on their capacity.
-
-```json
-{
-  "apps": [
-    {
-      "name": "high-capacity-server",
-      "script": "server.js",
-      "instances": 2,
-      "exec_mode": "cluster",
-      "weight": 3,
-      "load_balancer": {
-        "strategy": "weighted_round_robin"
-      }
-    },
-    {
-      "name": "standard-server",
-      "script": "server.js",
-      "instances": 4,
-      "exec_mode": "cluster",
-      "weight": 1,
-      "load_balancer": {
-        "strategy": "weighted_round_robin"
-      }
-    }
-  ]
-}
-```
-
-### 4. IP Hash
-
-Routes requests based on client IP to ensure session affinity.
-
-```json
-{
-  "apps": [
-    {
-      "name": "session-aware-app",
-      "script": "app.js",
-      "instances": 3,
-      "exec_mode": "cluster",
-      "load_balancer": {
-        "strategy": "ip_hash",
-        "hash_key": "client_ip",
-        "session_affinity": true
-      }
-    }
-  ]
-}
-```
-
-## Advanced Load Balancing
-
-### 1. Geographic Load Balancing
-
-Route traffic based on client location for optimal latency.
-
-```json
-{
-  "apps": [
-    {
-      "name": "us-east-servers",
-      "script": "server.js",
-      "instances": 3,
-      "exec_mode": "cluster",
-      "region": "us-east-1",
-      "load_balancer": {
-        "strategy": "geographic",
-        "primary_region": true,
-        "fallback_regions": ["us-west-1", "eu-west-1"]
-      }
-    },
-    {
-      "name": "us-west-servers",
-      "script": "server.js",
-      "instances": 2,
-      "exec_mode": "cluster",
-      "region": "us-west-1",
-      "load_balancer": {
-        "strategy": "geographic",
-        "primary_region": false
-      }
-    }
-  ]
-}
-```
-
-### 2. Health-Aware Load Balancing
-
-Automatically exclude unhealthy instances from load balancing.
-
-```json
-{
-  "apps": [
-    {
-      "name": "resilient-app",
-      "script": "server.js",
-      "instances": 4,
-      "exec_mode": "cluster",
-      "health_check": {
-        "enabled": true,
-        "url": "http://localhost:{{PORT}}/health",
-        "interval": 30,
-        "timeout": 10,
-        "retries": 3,
-        "failure_threshold": 3
-      },
-      "load_balancer": {
-        "strategy": "health_aware_round_robin",
-        "exclude_unhealthy": true,
-        "quarantine_duration": 300
-      }
-    }
-  ]
-}
-```
-
-### 3. Performance-Based Load Balancing
-
-Route traffic based on instance performance metrics.
-
-```json
-{
-  "apps": [
-    {
-      "name": "adaptive-app",
-      "script": "server.js",
-      "instances": 5,
-      "exec_mode": "cluster",
-      "load_balancer": {
-        "strategy": "performance_based",
-        "metrics": {
-          "response_time": 0.4,
-          "cpu_usage": 0.3,
-          "memory_usage": 0.2,
-          "error_rate": 0.1
-        },
-        "update_interval": 60
-      },
-      "monitoring": {
-        "enabled": true,
-        "metrics_collection": true
-      }
-    }
-  ]
-}
-```
-
-## HTTP Load Balancing
-
-### 1. Built-in HTTP Load Balancer
-
-PMDaemon includes a built-in HTTP load balancer for web applications.
-
-```json
-{
-  "apps": [
-    {
-      "name": "web-servers",
-      "script": "server.js",
-      "instances": 4,
-      "exec_mode": "cluster",
-      "increment_var": "PORT",
-      "env": {
-        "PORT": 3000
-      }
-    }
-  ],
-  "load_balancer": {
-    "enabled": true,
-    "port": 8080,
-    "strategy": "round_robin",
-    "backend_ports": [3000, 3001, 3002, 3003],
-    "health_check": {
-      "enabled": true,
-      "path": "/health",
-      "interval": 30
-    }
-  }
-}
-```
-
-### 2. Sticky Sessions
-
-Maintain session affinity for stateful applications.
-
-```json
-{
-  "load_balancer": {
-    "enabled": true,
-    "port": 8080,
-    "strategy": "sticky_sessions",
-    "session": {
-      "cookie_name": "PMDAEMON_SESSION",
-      "header_name": "X-Session-ID",
-      "timeout": 3600
-    },
-    "backend_ports": [3000, 3001, 3002, 3003]
-  }
-}
-```
-
-### 3. SSL Termination
-
-Handle SSL termination at the load balancer level.
-
-```json
-{
-  "load_balancer": {
-    "enabled": true,
-    "port": 443,
-    "ssl": {
-      "enabled": true,
-      "cert_file": "/etc/ssl/certs/server.crt",
-      "key_file": "/etc/ssl/private/server.key",
-      "protocols": ["TLSv1.2", "TLSv1.3"]
-    },
-    "backend_ports": [3000, 3001, 3002, 3003],
-    "backend_protocol": "http"
-  }
-}
-```
-
-## TCP Load Balancing
-
-### 1. TCP Stream Load Balancing
-
-For non-HTTP protocols like databases or custom TCP services.
-
-```json
-{
-  "apps": [
-    {
-      "name": "tcp-servers",
-      "script": "tcp-server.js",
-      "instances": 3,
-      "exec_mode": "cluster",
-      "increment_var": "PORT",
-      "env": {
-        "PORT": 5000,
-        "PROTOCOL": "tcp"
-      }
-    }
-  ],
-  "load_balancer": {
-    "enabled": true,
-    "type": "tcp",
-    "port": 4000,
-    "strategy": "least_connections",
-    "backend_ports": [5000, 5001, 5002]
-  }
-}
-```
-
-### 2. Connection Pooling
-
-Manage persistent connections efficiently.
-
-```json
-{
-  "load_balancer": {
-    "type": "tcp",
-    "port": 4000,
-    "connection_pool": {
-      "enabled": true,
-      "max_connections": 1000,
-      "idle_timeout": 300,
-      "keep_alive": true
-    },
-    "backend_ports": [5000, 5001, 5002]
-  }
-}
-```
-
-## Load Balancer Configuration
-
-### 1. Timeouts and Retries
-
-```json
-{
-  "load_balancer": {
-    "enabled": true,
-    "port": 8080,
-    "timeouts": {
-      "connect": 5000,
-      "read": 30000,
-      "write": 30000,
-      "idle": 60000
-    },
-    "retries": {
-      "max_attempts": 3,
-      "retry_delay": 1000,
-      "backoff_factor": 2
-    }
-  }
-}
-```
-
-### 2. Rate Limiting
-
-Protect backend services from overload.
-
-```json
-{
-  "load_balancer": {
-    "enabled": true,
-    "port": 8080,
-    "rate_limiting": {
-      "enabled": true,
-      "requests_per_second": 100,
-      "burst_size": 20,
-      "per_ip_limit": 10
-    }
-  }
-}
-```
-
-### 3. Circuit Breaker
-
-Automatically handle failing backend services.
-
-```json
-{
-  "load_balancer": {
-    "enabled": true,
-    "port": 8080,
-    "circuit_breaker": {
-      "enabled": true,
-      "failure_threshold": 5,
-      "recovery_timeout": 30000,
-      "half_open_requests": 3
-    }
-  }
-}
-```
-
-## Monitoring Load Balancing
-
-### 1. Load Balancer Metrics
+Run multiple instances of the same application:
 
 ```bash
-# View load balancer status
-pmdaemon lb status
+# CLI - Start 4 instances
+pmdaemon start "node server.js" --name web-app --instances 4
 
-# Check backend health
-pmdaemon lb health
-
-# View traffic distribution
-pmdaemon lb stats
-
-# Monitor real-time metrics
-pmdaemon lb monitor
+# Each instance will be named: web-app-0, web-app-1, web-app-2, web-app-3
 ```
-
-### 2. Performance Metrics
 
 ```json
 {
-  "load_balancer": {
-    "monitoring": {
-      "enabled": true,
-      "metrics": {
-        "requests_per_second": true,
-        "response_times": true,
-        "error_rates": true,
-        "backend_health": true,
-        "connection_counts": true
-      },
-      "export": {
-        "prometheus": true,
-        "statsd": true
-      }
-    }
-  }
+  "name": "web-app",
+  "script": "node",
+  "args": ["server.js"],
+  "instances": 4,
+  "exec_mode": "cluster"
 }
 ```
 
-### 3. Alerting
+### Port Distribution
+
+PMDaemon automatically assigns ports to cluster instances:
 
 ```json
 {
-  "load_balancer": {
-    "alerts": {
-      "enabled": true,
-      "rules": [
-        {
-          "name": "high_error_rate",
-          "condition": "error_rate > 5%",
-          "duration": "5m",
-          "action": "webhook",
-          "url": "https://alerts.example.com/webhook"
-        },
-        {
-          "name": "backend_down",
-          "condition": "healthy_backends < 2",
-          "duration": "1m",
-          "action": "email",
-          "recipients": ["admin@example.com"]
-        }
-      ]
-    }
-  }
+  "name": "api-cluster",
+  "script": "node",
+  "args": ["api.js"],
+  "instances": 3,
+  "port": "3000-3002"
 }
 ```
 
-## External Load Balancer Integration
+**Result:**
+- `api-cluster-0` → Port 3000
+- `api-cluster-1` → Port 3001  
+- `api-cluster-2` → Port 3002
 
-### 1. NGINX Integration
+### Auto Port Assignment
+
+Let PMDaemon find available ports automatically:
+
+```json
+{
+  "name": "worker-cluster",
+  "script": "python",
+  "args": ["worker.py"],
+  "instances": 5,
+  "port": "auto:8000-8100"
+}
+```
+
+PMDaemon will assign the first 5 available ports in the range 8000-8100.
+
+## Environment Variables
+
+Each cluster instance receives automatic environment variables:
+
+- **`PORT`** - The assigned port number
+- **`PM2_INSTANCE_ID`** - Instance number (0, 1, 2, ...)
+- **`NODE_APP_INSTANCE`** - Node.js compatible instance ID
+
+```javascript
+// In your application
+const port = process.env.PORT || 3000;
+const instanceId = process.env.PM2_INSTANCE_ID || 0;
+
+console.log(`Instance ${instanceId} starting on port ${port}`);
+```
+
+## Cluster Management
+
+### Start All Instances
+
+```bash
+pmdaemon start ecosystem.json  # Starts all configured instances
+```
+
+### Individual Instance Control
+
+```bash
+# Stop specific instance
+pmdaemon stop web-app-1
+
+# Restart specific instance  
+pmdaemon restart web-app-2
+
+# View all instances
+pmdaemon list
+```
+
+### Cluster-wide Operations
+
+```bash
+# Stop all instances of an app
+pmdaemon stop web-app
+
+# Restart entire cluster
+pmdaemon restart web-app
+
+# Delete cluster
+pmdaemon delete web-app
+```
+
+## Load Balancing with External Tools
+
+Since PMDaemon handles **process management**, use these tools for **traffic load balancing**:
+
+### Nginx Configuration
 
 ```nginx
-upstream pmdaemon_backend {
-    # PMDaemon managed instances
+upstream app_backend {
     server 127.0.0.1:3000;
     server 127.0.0.1:3001;
     server 127.0.0.1:3002;
@@ -469,155 +139,244 @@ upstream pmdaemon_backend {
 server {
     listen 80;
     server_name example.com;
-
+    
     location / {
-        proxy_pass http://pmdaemon_backend;
+        proxy_pass http://app_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-
-    # Health check endpoint
-    location /lb-health {
-        access_log off;
-        return 200 "healthy\n";
-        add_header Content-Type text/plain;
     }
 }
 ```
 
-### 2. HAProxy Integration
+### HAProxy Configuration
 
 ```
-# /etc/haproxy/haproxy.cfg
-global
-    daemon
-    maxconn 256
-
-defaults
-    mode http
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
-
-frontend web_frontend
-    bind *:80
-    default_backend pmdaemon_servers
-
-backend pmdaemon_servers
+backend app_servers
     balance roundrobin
-    option httpchk GET /health
-    server web1 127.0.0.1:3000 check
-    server web2 127.0.0.1:3001 check
-    server web3 127.0.0.1:3002 check
-    server web4 127.0.0.1:3003 check
+    server app1 127.0.0.1:3000 check
+    server app2 127.0.0.1:3001 check
+    server app3 127.0.0.1:3002 check
+    server app4 127.0.0.1:3003 check
+
+frontend app_frontend
+    bind *:80
+    default_backend app_servers
 ```
 
-### 3. Cloud Load Balancer Integration
+### Node.js Cluster Integration
 
-**AWS Application Load Balancer:**
-```json
-{
-  "apps": [
-    {
-      "name": "aws-web-app",
-      "script": "server.js",
-      "instances": 4,
-      "exec_mode": "cluster",
-      "env": {
-        "PORT": 3000,
-        "AWS_REGION": "us-east-1"
-      },
-      "aws": {
-        "alb": {
-          "target_group_arn": "arn:aws:elasticloadbalancing:us-east-1:123456789012:targetgroup/my-targets/73e2d6bc24d8a067",
-          "health_check_path": "/health",
-          "deregistration_delay": 30
-        }
-      }
+For Node.js applications, you can combine PMDaemon clustering with Node's built-in cluster module:
+
+```javascript
+// server.js
+const cluster = require('cluster');
+const numCPUs = require('os').cpus().length;
+
+if (cluster.isMaster && process.env.PM2_INSTANCE_ID === '0') {
+    // Only fork from the first PMDaemon instance
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
     }
-  ]
+} else {
+    // Worker process or other PMDaemon instances
+    require('./app.js');
 }
 ```
 
-## Load Balancing Best Practices
+## Monitoring Clusters
 
-### 1. Health Check Strategy
-- Implement comprehensive health checks
-- Use different endpoints for different types of checks
-- Set appropriate timeouts and retry logic
-- Monitor health check performance
-
-### 2. Session Management
-- Use sticky sessions sparingly
-- Prefer stateless application design
-- Implement session storage for stateful apps
-- Handle session failover gracefully
-
-### 3. Performance Optimization
-- Monitor response times across instances
-- Adjust weights based on instance capacity
-- Use connection pooling for efficiency
-- Implement proper caching strategies
-
-### 4. Failure Handling
-- Configure circuit breakers for resilience
-- Implement graceful degradation
-- Use multiple availability zones
-- Plan for disaster recovery
-
-### 5. Security Considerations
-- Implement rate limiting
-- Use SSL termination appropriately
-- Protect against DDoS attacks
-- Monitor for suspicious traffic patterns
-
-## Troubleshooting Load Balancing
-
-### Common Issues
-
-1. **Uneven Traffic Distribution**
-   - Check instance health status
-   - Verify load balancing strategy
-   - Monitor instance performance
-
-2. **Session Affinity Problems**
-   - Validate sticky session configuration
-   - Check session storage backend
-   - Monitor session timeouts
-
-3. **Health Check Failures**
-   - Verify health check endpoints
-   - Check network connectivity
-   - Review timeout settings
-
-4. **Performance Degradation**
-   - Monitor backend response times
-   - Check resource utilization
-   - Verify load balancer capacity
-
-### Debugging Commands
+### Process List View
 
 ```bash
-# Check load balancer configuration
-pmdaemon lb config
-
-# View backend instance status
-pmdaemon lb backends
-
-# Monitor traffic distribution
-pmdaemon lb traffic
-
-# Test health checks
-pmdaemon lb health-check --test
-
-# View detailed metrics
-pmdaemon lb metrics --detailed
+pmdaemon list
 ```
 
-## Related Documentation
+```
+│ ID │ Name        │ Status │ PID   │ Port │ CPU (%) │ Memory   │ Uptime  │ Restarts │
+├────┼─────────────┼────────┼───────┼──────┼─────────┼──────────┼─────────┼──────────┤
+│ 1  │ web-app-0   │ online │ 1234  │ 3000 │ 15.2    │ 125.4MB  │ 2h 15m  │ 0        │
+│ 2  │ web-app-1   │ online │ 1235  │ 3001 │ 12.8    │ 118.7MB  │ 2h 15m  │ 0        │
+│ 3  │ web-app-2   │ online │ 1236  │ 3002 │ 18.5    │ 132.1MB  │ 2h 15m  │ 0        │
+│ 4  │ web-app-3   │ online │ 1237  │ 3003 │ 14.1    │ 127.9MB  │ 2h 15m  │ 0        │
+```
 
-- **[Clustering Examples](../examples/clustering.md)** - Clustering configuration examples
-- **[Port Management](./port-management.md)** - Advanced port management
-- **[Monitoring](../monitoring/overview.md)** - Monitoring and alerting
-- **[Performance Optimization](../performance/optimization.md)** - Performance tuning
+### Real-time Monitoring
+
+```bash
+pmdaemon monit --interval 2
+```
+
+Monitor all cluster instances with real-time CPU, memory, and status updates.
+
+### API Access
+
+```bash
+# List all instances via API
+curl http://localhost:9615/api/processes
+
+# Get specific instance
+curl http://localhost:9615/api/processes/web-app-1
+```
+
+## Best Practices
+
+### 1. Instance Count
+
+```bash
+# Match CPU cores for CPU-bound apps
+pmdaemon start "node cpu-heavy.js" --instances $(nproc)
+
+# Use fewer instances for I/O-bound apps
+pmdaemon start "node io-app.js" --instances 2
+```
+
+### 2. Resource Limits
+
+```json
+{
+  "name": "memory-limited-cluster",
+  "script": "node",
+  "args": ["app.js"],
+  "instances": 4,
+  "max_memory_restart": "512M",
+  "port": "auto:4000-4100"
+}
+```
+
+### 3. Health Checks
+
+```json
+{
+  "name": "health-checked-cluster",
+  "script": "node",
+  "args": ["server.js"],
+  "instances": 3,
+  "port": "5000-5002",
+  "health_check": {
+    "check_type": "http",
+    "url": "http://localhost:{PORT}/health",
+    "timeout": 5,
+    "interval": 30,
+    "retries": 3,
+    "enabled": true
+  }
+}
+```
+
+### 4. Graceful Shutdowns
+
+```json
+{
+  "name": "graceful-cluster",
+  "script": "node",
+  "args": ["app.js"],
+  "instances": 4,
+  "kill_timeout": 5000,
+  "restart_delay": 1000
+}
+```
+
+## Troubleshooting
+
+### Port Conflicts
+
+```bash
+# Check port allocation
+pmdaemon list
+
+# Use auto-assignment to avoid conflicts
+# Change from: "port": "3000-3003"
+# To: "port": "auto:3000-3100"
+```
+
+### Instance Failures
+
+```bash
+# Check logs for failed instances
+pmdaemon logs web-app-1 --lines 50
+
+# Restart individual instances
+pmdaemon restart web-app-1
+```
+
+### Memory Issues
+
+```bash
+# Monitor memory usage
+pmdaemon monit
+
+# Set memory limits
+pmdaemon start "node app.js" --max-memory 256M --instances 4
+```
+
+## Integration Examples
+
+### Docker Compose
+
+```yaml
+version: '3.8'
+services:
+  app:
+    build: .
+    command: pmdaemon start ecosystem.json
+    ports:
+      - "3000-3003:3000-3003"
+    environment:
+      - NODE_ENV=production
+  
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - app
+```
+
+### Kubernetes
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pmdaemon-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: pmdaemon-app
+  template:
+    metadata:
+      labels:
+        app: pmdaemon-app
+    spec:
+      containers:
+      - name: app
+        image: my-app:latest
+        command: ["pmdaemon", "start", "ecosystem.json"]
+        ports:
+        - containerPort: 3000
+        - containerPort: 3001
+        - containerPort: 3002
+        - containerPort: 3003
+```
+
+## Future Roadmap
+
+PMDaemon focuses on **process management excellence**. For advanced load balancing features, we recommend:
+
+- **Traffic Load Balancing**: Nginx, HAProxy, Envoy, or cloud load balancers
+- **Service Discovery**: Consul, etcd, or Kubernetes services  
+- **Circuit Breakers**: Application-level libraries or service mesh
+- **SSL Termination**: Reverse proxy or CDN solutions
+
+This separation of concerns allows PMDaemon to excel at process management while leveraging mature, battle-tested tools for traffic distribution.
+
+---
+
+**Next Steps:**
+- **[Port Management](./port-management.md)** - Advanced port allocation strategies
+- **[Health Checks](./health-checks.md)** - Application health monitoring
+- **[Monitoring](./monitoring.md)** - Process and system monitoring
+- **[Configuration](./configuration.md)** - Ecosystem file configuration

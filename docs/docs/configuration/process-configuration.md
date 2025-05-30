@@ -339,23 +339,17 @@ pmdaemon start "node server.js" --name web-cluster --instances 4
 | `retries` | `3` | Retries before failure |
 | `enabled` | `true` | Enable/disable health checks |
 
-## Watch Mode (Future Feature)
+## Watch Mode (Not Yet Implemented)
 
-### File Watching
+File watching is planned for a future release but not currently available:
 
 ```json
 {
-  "name": "dev-server",
+  "name": "dev-server", 
   "script": "node",
   "args": ["server.js"],
-  "watch": true,
-  "watch_delay": 1000,
-  "ignore_watch": [
-    "node_modules",
-    "logs",
-    "*.log",
-    "*.pid"
-  ]
+  "watch": false,  // Always false - not implemented
+  "ignore_watch": []  // Not used
 }
 ```
 

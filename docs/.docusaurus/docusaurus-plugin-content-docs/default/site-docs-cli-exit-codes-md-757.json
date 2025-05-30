@@ -1,7 +1,7 @@
 {
   "id": "cli/exit-codes",
   "title": "Exit Codes",
-  "description": "PMDaemon uses standardized exit codes to indicate the success or failure of operations. Understanding these codes is essential for automation, scripting, and troubleshooting.",
+  "description": "PMDaemon uses standard Unix exit codes for all operations.",
   "source": "@site/docs/cli/exit-codes.md",
   "sourceDirName": "cli",
   "slug": "/cli/exit-codes",

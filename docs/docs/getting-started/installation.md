@@ -117,23 +117,9 @@ sudo mv pmdaemon-macos-aarch64 /usr/local/bin/pmdaemon
 
 ## Method 4: Package Managers
 
-### Homebrew (macOS/Linux)
-```bash
-# Coming soon
-brew install pmdaemon
-```
+### Package Managers (Not Yet Available)
 
-### Chocolatey (Windows)
-```bash
-# Coming soon
-choco install pmdaemon
-```
-
-### APT (Ubuntu/Debian)
-```bash
-# Coming soon
-sudo apt install pmdaemon
-```
+PMDaemon is currently pre-1.0 and not yet available through package managers. Use the binary downloads or build from source above.
 
 ## Configuration Setup
 

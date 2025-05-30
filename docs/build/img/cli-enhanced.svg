@@ -1,0 +1,54 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="cliGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#343a40;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#495057;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="200" height="200" fill="#f8f9fa" rx="20"/>
+  
+  <!-- Terminal window -->
+  <rect x="30" y="40" width="140" height="100" fill="url(#cliGradient)" rx="8"/>
+  
+  <!-- Terminal header -->
+  <rect x="30" y="40" width="140" height="20" fill="#6c757d" rx="8 8 0 0"/>
+  
+  <!-- Terminal buttons -->
+  <circle cx="45" cy="50" r="3" fill="#dc3545"/>
+  <circle cx="55" cy="50" r="3" fill="#ffc107"/>
+  <circle cx="65" cy="50" r="3" fill="#28a745"/>
+  
+  <!-- Terminal content -->
+  <text x="40" y="75" fill="#28a745" font-size="10" font-family="monospace">$ pmdaemon list</text>
+  
+  <!-- Table representation -->
+  <rect x="40" y="80" width="120" height="8" fill="#28a745" opacity="0.3"/>
+  <rect x="40" y="90" width="120" height="8" fill="#007bff" opacity="0.3"/>
+  <rect x="40" y="100" width="120" height="8" fill="#28a745" opacity="0.3"/>
+  <rect x="40" y="110" width="120" height="8" fill="#ffc107" opacity="0.3"/>
+  
+  <!-- Status indicators -->
+  <circle cx="45" cy="84" r="2" fill="#28a745"/>
+  <circle cx="45" cy="94" r="2" fill="#007bff"/>
+  <circle cx="45" cy="104" r="2" fill="#28a745"/>
+  <circle cx="45" cy="114" r="2" fill="#ffc107"/>
+  
+  <!-- Enhanced features -->
+  <rect x="50" y="150" width="100" height="30" fill="#e9ecef" rx="5"/>
+  <text x="100" y="167" text-anchor="middle" fill="#495057" font-size="12" font-weight="bold">Enhanced CLI</text>
+  
+  <!-- Feature bullets -->
+  <circle cx="60" cy="175" r="2" fill="#28a745"/>
+  <text x="68" y="178" fill="#495057" font-size="8">Color coding</text>
+  
+  <circle cx="120" cy="175" r="2" fill="#007bff"/>
+  <text x="128" y="178" fill="#495057" font-size="8">Real-time</text>
+  
+  <!-- Title -->
+  <text x="100" y="25" text-anchor="middle" fill="#343a40" font-size="16" font-weight="bold">Enhanced CLI</text>
+  
+  <!-- Command prompt -->
+  <text x="40" y="130" fill="#6c757d" font-size="8" font-family="monospace">$ pmdaemon monit --interval 1</text>
+</svg>

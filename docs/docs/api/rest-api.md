@@ -12,6 +12,9 @@ pmdaemon web
 
 # Custom host and port
 pmdaemon web --host 0.0.0.0 --port 8080
+
+# With API key authentication (recommended for production)
+pmdaemon web --api-key "your-secret-api-key"
 ```
 
 ### Base URL
@@ -22,10 +25,42 @@ http://localhost:9615
 
 ### Authentication
 
-Currently, PMDaemon API doesn't require authentication. For production use, consider:
-- Running behind a reverse proxy with authentication
-- Using firewall rules to restrict access
-- Binding to localhost only (`--host 127.0.0.1`)
+PMDaemon API supports optional API key authentication for security:
+
+```bash
+# Start with API key authentication
+pmdaemon web --api-key "your-secret-api-key"
+```
+
+#### Using API Authentication
+
+When an API key is configured, all API endpoints (except root `/` and WebSocket `/ws`) require authentication.
+
+**Authorization Header (Bearer Token):**
+```bash
+curl -H "Authorization: Bearer your-secret-api-key" \
+     http://localhost:9615/api/processes
+```
+
+**X-API-Key Header:**
+```bash
+curl -H "X-API-Key: your-secret-api-key" \
+     http://localhost:9615/api/processes
+```
+
+**ApiKey Header:**
+```bash
+curl -H "Authorization: ApiKey your-secret-api-key" \
+     http://localhost:9615/api/processes
+```
+
+#### Security Recommendations
+
+For production deployments:
+- **Always use API key authentication** (`--api-key`)
+- Run behind a reverse proxy with HTTPS
+- Use firewall rules to restrict access
+- Bind to localhost only (`--host 127.0.0.1`) if not using a reverse proxy
 
 ## API Endpoints
 
@@ -149,50 +184,16 @@ Get detailed information about a specific process.
 }
 ```
 
-### Start Process
+### Process Management
 
-**POST** `/api/processes`
+**Note:** PMDaemon API only allows management of existing processes for security reasons. New processes must be created via the CLI:
 
-Start a new process.
+```bash
+# Create processes via CLI
+pmdaemon start "node server.js" --name "my-app"
 
-#### Request Body
-
-```json
-{
-  "name": "new-app",
-  "script": "node",
-  "args": ["server.js"],
-  "instances": 1,
-  "port": "3000",
-  "max_memory_restart": "512M",
-  "cwd": "/path/to/app",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "health_check": {
-    "check_type": "http",
-    "url": "http://localhost:3000/health",
-    "timeout": 5,
-    "interval": 30,
-    "retries": 3,
-    "enabled": true
-  }
-}
-```
-
-#### Response
-
-```json
-{
-  "success": true,
-  "message": "Process started successfully",
-  "process": {
-    "id": 2,
-    "name": "new-app",
-    "status": "starting",
-    "pid": null
-  }
-}
+# Then manage via API
+curl -H "X-API-Key: your-key" http://localhost:9615/api/processes
 ```
 
 ### Stop Process
@@ -454,20 +455,15 @@ curl http://localhost:9615/api/system
 ### Using JavaScript (fetch)
 
 ```javascript
-// List processes
-const processes = await fetch('http://localhost:9615/api/processes')
-  .then(res => res.json());
+// List processes (with authentication)
+const processes = await fetch('http://localhost:9615/api/processes', {
+  headers: { 'X-API-Key': 'your-secret-api-key' }
+}).then(res => res.json());
 
-// Start a process
-const result = await fetch('http://localhost:9615/api/processes', {
+// Stop a process
+const result = await fetch('http://localhost:9615/api/processes/my-app/stop', {
   method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    name: 'web-app',
-    script: 'node',
-    args: ['server.js'],
-    port: '3000'
-  })
+  headers: { 'X-API-Key': 'your-secret-api-key' }
 }).then(res => res.json());
 
 // Get system metrics
@@ -480,20 +476,15 @@ const system = await fetch('http://localhost:9615/api/system')
 ```python
 import requests
 
-# List processes
-response = requests.get('http://localhost:9615/api/processes')
+# List processes (with authentication)
+headers = {'X-API-Key': 'your-secret-api-key'}
+response = requests.get('http://localhost:9615/api/processes', headers=headers)
 processes = response.json()
 
-# Start a process
-process_config = {
-    'name': 'python-app',
-    'script': 'python',
-    'args': ['app.py'],
-    'port': '8000'
-}
+# Restart a process
 response = requests.post(
-    'http://localhost:9615/api/processes',
-    json=process_config
+    'http://localhost:9615/api/processes/python-app/restart',
+    headers=headers
 )
 result = response.json()
 ```

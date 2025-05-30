@@ -1,0 +1,6 @@
+{
+  "name": "uptime-test",
+  "script": "/bin/bash",
+  "args": ["-c", "while true; do echo 'Test running...'; sleep 2; done"],
+  "autorestart": false
+}

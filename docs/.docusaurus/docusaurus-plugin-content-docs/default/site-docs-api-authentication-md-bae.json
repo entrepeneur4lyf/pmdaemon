@@ -1,7 +1,7 @@
 {
   "id": "api/authentication",
   "title": "API Authentication",
-  "description": "PMDaemon provides robust authentication mechanisms to secure API access. This guide covers all available authentication methods and their configuration.",
+  "description": "PMDaemon provides API key authentication to secure your process management API from unauthorized access.",
   "source": "@site/docs/api/authentication.md",
   "sourceDirName": "api",
   "slug": "/api/authentication",

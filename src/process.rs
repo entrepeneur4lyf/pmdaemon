@@ -939,4 +939,71 @@ mod tests {
         assert_eq!(status.state, deserialized.state);
         assert_eq!(status.restarts, deserialized.restarts);
     }
+
+    #[test]
+    fn test_restart_counter_increments() {
+        let config = create_test_config();
+        let mut process = Process::new(config);
+
+        // Initial restart count should be 0
+        assert_eq!(process.restarts, 0);
+        assert_eq!(process.status().restarts, 0);
+
+        // Manually increment restart counter (simulating restart logic)
+        process.restarts += 1;
+        assert_eq!(process.restarts, 1);
+        assert_eq!(process.status().restarts, 1);
+
+        // Increment again
+        process.restarts += 1;
+        assert_eq!(process.restarts, 2);
+        assert_eq!(process.status().restarts, 2);
+
+        // Increment multiple times
+        process.restarts += 3;
+        assert_eq!(process.restarts, 5);
+        assert_eq!(process.status().restarts, 5);
+    }
+
+    #[test]
+    fn test_restart_counter_in_status_display() {
+        let config = create_test_config();
+        let mut process = Process::new(config);
+
+        // Test that restart counter is properly included in status
+        for expected_count in 0..=10 {
+            process.restarts = expected_count;
+            let status = process.status();
+            assert_eq!(
+                status.restarts, expected_count,
+                "Restart count mismatch at iteration {}",
+                expected_count
+            );
+        }
+    }
+
+    #[test]
+    fn test_restart_counter_persistence() {
+        let config = create_test_config();
+        let mut process = Process::new(config);
+
+        // Set restart count
+        process.restarts = 7;
+
+        // Change state multiple times - restart count should persist
+        process.set_state(ProcessState::Starting);
+        assert_eq!(process.restarts, 7);
+
+        process.set_state(ProcessState::Online);
+        assert_eq!(process.restarts, 7);
+
+        process.set_state(ProcessState::Stopping);
+        assert_eq!(process.restarts, 7);
+
+        process.set_state(ProcessState::Stopped);
+        assert_eq!(process.restarts, 7);
+
+        // Status should always reflect the current restart count
+        assert_eq!(process.status().restarts, 7);
+    }
 }

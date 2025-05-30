@@ -3,43 +3,13 @@ import ComponentCreator from '@docusaurus/ComponentCreator';
 
 export default [
   {
-    path: '/pmdaemon/__docusaurus/debug',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug', 'bf8'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/config',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/config', 'a20'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/content',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/content', '8d3'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/globalData',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/globalData', '1da'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/metadata',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/metadata', 'e60'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/registry',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/registry', 'f73'),
-    exact: true
-  },
-  {
-    path: '/pmdaemon/__docusaurus/debug/routes',
-    component: ComponentCreator('/pmdaemon/__docusaurus/debug/routes', 'f71'),
-    exact: true
-  },
-  {
     path: '/pmdaemon/changelog',
-    component: ComponentCreator('/pmdaemon/changelog', '04e'),
+    component: ComponentCreator('/pmdaemon/changelog', '75c'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/2025/05/29/v0.1.4',
+    component: ComponentCreator('/pmdaemon/changelog/2025/05/29/v0.1.4', 'd79'),
     exact: true
   },
   {
@@ -58,13 +28,33 @@ export default [
     exact: true
   },
   {
+    path: '/pmdaemon/changelog/tags/accuracy',
+    component: ComponentCreator('/pmdaemon/changelog/tags/accuracy', '78a'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/bugfix',
+    component: ComponentCreator('/pmdaemon/changelog/tags/bugfix', 'c20'),
+    exact: true
+  },
+  {
     path: '/pmdaemon/changelog/tags/config-files',
     component: ComponentCreator('/pmdaemon/changelog/tags/config-files', 'e14'),
     exact: true
   },
   {
+    path: '/pmdaemon/changelog/tags/cross-platform',
+    component: ComponentCreator('/pmdaemon/changelog/tags/cross-platform', '6f7'),
+    exact: true
+  },
+  {
     path: '/pmdaemon/changelog/tags/delete-operations',
     component: ComponentCreator('/pmdaemon/changelog/tags/delete-operations', 'f2c'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/documentation',
+    component: ComponentCreator('/pmdaemon/changelog/tags/documentation', '1cb'),
     exact: true
   },
   {
@@ -83,13 +73,23 @@ export default [
     exact: true
   },
   {
-    path: '/pmdaemon/changelog/tags/monitoring',
-    component: ComponentCreator('/pmdaemon/changelog/tags/monitoring', 'b6c'),
+    path: '/pmdaemon/changelog/tags/linux',
+    component: ComponentCreator('/pmdaemon/changelog/tags/linux', '054'),
     exact: true
   },
   {
-    path: '/pmdaemon/changelog/tags/multi-app',
-    component: ComponentCreator('/pmdaemon/changelog/tags/multi-app', 'fbc'),
+    path: '/pmdaemon/changelog/tags/macos',
+    component: ComponentCreator('/pmdaemon/changelog/tags/macos', '387'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/monitoring',
+    component: ComponentCreator('/pmdaemon/changelog/tags/monitoring', 'b5e'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/persistence',
+    component: ComponentCreator('/pmdaemon/changelog/tags/persistence', '293'),
     exact: true
   },
   {
@@ -104,7 +104,7 @@ export default [
   },
   {
     path: '/pmdaemon/changelog/tags/release',
-    component: ComponentCreator('/pmdaemon/changelog/tags/release', 'dfb'),
+    component: ComponentCreator('/pmdaemon/changelog/tags/release', 'b1d'),
     exact: true
   },
   {
@@ -113,8 +113,23 @@ export default [
     exact: true
   },
   {
+    path: '/pmdaemon/changelog/tags/security',
+    component: ComponentCreator('/pmdaemon/changelog/tags/security', '94d'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/stability',
+    component: ComponentCreator('/pmdaemon/changelog/tags/stability', '756'),
+    exact: true
+  },
+  {
     path: '/pmdaemon/changelog/tags/testing',
     component: ComponentCreator('/pmdaemon/changelog/tags/testing', '28e'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/tags/windows',
+    component: ComponentCreator('/pmdaemon/changelog/tags/windows', '7e5'),
     exact: true
   },
   {
@@ -128,8 +143,13 @@ export default [
     exact: true
   },
   {
-    path: '/pmdaemon/changelog/v0.1.2-ecosystem-config-files',
-    component: ComponentCreator('/pmdaemon/changelog/v0.1.2-ecosystem-config-files', '67b'),
+    path: '/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform',
+    component: ComponentCreator('/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform', '6f6'),
+    exact: true
+  },
+  {
+    path: '/pmdaemon/changelog/v0.1.3-critical-bug-fixes-state-persistence',
+    component: ComponentCreator('/pmdaemon/changelog/v0.1.3-critical-bug-fixes-state-persistence', '002'),
     exact: true
   },
   {
@@ -139,15 +159,15 @@ export default [
   },
   {
     path: '/pmdaemon/docs',
-    component: ComponentCreator('/pmdaemon/docs', 'b04'),
+    component: ComponentCreator('/pmdaemon/docs', '574'),
     routes: [
       {
         path: '/pmdaemon/docs',
-        component: ComponentCreator('/pmdaemon/docs', '389'),
+        component: ComponentCreator('/pmdaemon/docs', '12a'),
         routes: [
           {
             path: '/pmdaemon/docs',
-            component: ComponentCreator('/pmdaemon/docs', '8b7'),
+            component: ComponentCreator('/pmdaemon/docs', '8b8'),
             routes: [
               {
                 path: '/pmdaemon/docs/advanced/clustering',
@@ -210,6 +230,12 @@ export default [
               {
                 path: '/pmdaemon/docs/api/websocket-api',
                 component: ComponentCreator('/pmdaemon/docs/api/websocket-api', '9c6'),
+                exact: true,
+                sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/architecture/overview',
+                component: ComponentCreator('/pmdaemon/docs/architecture/overview', 'e86'),
                 exact: true,
                 sidebar: "tutorialSidebar"
               },
@@ -305,6 +331,11 @@ export default [
                 component: ComponentCreator('/pmdaemon/docs/features/configuration', 'a50'),
                 exact: true,
                 sidebar: "tutorialSidebar"
+              },
+              {
+                path: '/pmdaemon/docs/features/cross-platform',
+                component: ComponentCreator('/pmdaemon/docs/features/cross-platform', '09f'),
+                exact: true
               },
               {
                 path: '/pmdaemon/docs/features/health-checks',

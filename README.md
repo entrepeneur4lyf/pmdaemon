@@ -4,10 +4,13 @@
   <p style="margin: 5px 0 0; color: #cccccc;">A high-performance, cross-platform process manager built in Rust</p>
 </div>
 
-[![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg)](https://www.rust-lang.org)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Test Coverage](https://img.shields.io/badge/tests-267%20passing-brightgreen.svg)]()
+[![GitHub Stars](https://img.shields.io/github/stars/entrepeneur4lyf/pmdaemon?style=flat-square)](https://github.com/entrepeneur4lyf/pmdaemon/stargazers)
+[![Crates.io Version](https://img.shields.io/crates/v/pmdaemon?style=flat-square)](https://crates.io/crates/pmdaemon)
+[![Crates.io Downloads](https://img.shields.io/crates/d/pmdaemon?style=flat-square)](https://crates.io/crates/pmdaemon)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE-MIT)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/entrepeneur4lyf/pmdaemon/ci.yml?branch=main&style=flat-square)](https://github.com/entrepeneur4lyf/pmdaemon/actions/workflows/ci.yml?query=branch%3Amain)
+[![Rust](https://img.shields.io/badge/rust-1.70+-orange.svg?style=flat-square)](https://www.rust-lang.org)
+[![Test Coverage](https://img.shields.io/badge/tests-272%20passing-brightgreen.svg?style=flat-square)](https://github.com/entrepeneur4lyf/pmdaemon)
 
 A high-performance, **cross-platform** process manager built in Rust, inspired by PM2 with innovative features that exceed the original. PMDaemon runs natively on **Linux, Windows, and macOS** and is designed for modern application deployment with advanced port management, real-time monitoring, and production-ready web APIs.
 
@@ -193,8 +196,11 @@ pmdaemon start api.js --health-check-url http://localhost:9615/status --wait-tim
 
 ### Web API Server
 ```bash
-# Start web API server for remote monitoring
+# Start web API server for remote monitoring (no authentication)
 pmdaemon web --port 9615 --host 127.0.0.1
+
+# Start with API key authentication (recommended for production)
+pmdaemon web --api-key "your-secret-api-key"
 ```
 
 ## 📋 Command Reference
@@ -321,28 +327,37 @@ pmdaemon start app.js \
 
 ## 🌐 Web API
 
-PMDaemon provides a comprehensive REST API compatible with PM2:
+PMDaemon provides a comprehensive REST API with optional authentication:
+
+### Security Features
+- **API Key Authentication** - Secure your API with keys
+- **Process Management Only** - Cannot create new processes for security
+- **Production Ready** - Built with security best practices
 
 ### Endpoints
 
-| Method   | Endpoint                    | Description                  |
-|----------|----------------------------|------------------------------|
-| `GET`    | `/api/processes`           | List all processes           |
-| `POST`   | `/api/processes`           | Start a new process          |
-| `DELETE` | `/api/processes/:id`       | Stop/delete a process        |
-| `GET`    | `/api/system`              | System metrics               |
-| `GET`    | `/api/logs/:id`            | Process logs                 |
-| `WS`     | `/ws`                      | Real-time updates            |
+| Method   | Endpoint                    | Description                  | Auth Required |
+|----------|----------------------------|------------------------------|---------------|
+| `GET`    | `/api/processes`           | List all processes           | ✅            |
+| `POST`   | `/api/processes/:id/start` | Start existing process       | ✅            |
+| `DELETE` | `/api/processes/:id`       | Stop/delete a process        | ✅            |
+| `GET`    | `/api/system`              | System metrics               | ✅            |
+| `GET`    | `/api/logs/:id`            | Process logs                 | ✅            |
+| `WS`     | `/ws`                      | Real-time updates            | ❌            |
 
 ### Example API Usage
 ```bash
-# List processes
-curl http://localhost:9615/api/processes
+# Start with authentication
+pmdaemon web --api-key "your-secret-key"
 
-# Start a process
-curl -X POST http://localhost:9615/api/processes \
-  -H "Content-Type: application/json" \
-  -d '{"name": "api-server", "script": "node", "args": ["server.js"]}'
+# List processes (with API key)
+curl -H "Authorization: Bearer your-secret-key" \
+     http://localhost:9615/api/processes
+
+# Start an existing process (processes created via CLI only)
+curl -X POST \
+     -H "Authorization: Bearer your-secret-key" \
+     http://localhost:9615/api/processes/my-app/start
 
 # WebSocket for real-time updates
 wscat -c ws://localhost:9615/ws
@@ -406,33 +421,70 @@ PMDaemon provides comprehensive monitoring capabilities:
 ```mermaid
 graph TD
 
-    17017["User<br>External Actor"]
-    subgraph 17008["PMDaemon Application<br>Rust"]
-        17009["CLI Entry Point<br>Rust"]
-        17010["Web API &amp; UI<br>Rust / HTTP"]
-        17011["Core Process Orchestrator<br>Rust"]
-        17012["Process Execution &amp; State<br>Rust"]
-        17013["Configuration Service<br>Rust"]
-        17014["Process Health Monitor<br>Rust"]
-        17015["Metrics &amp; Monitoring<br>Rust"]
-        17016["OS Signal Handler<br>Rust"]
-        %% Edges at this level (grouped by source)
-        17009["CLI Entry Point<br>Rust"] -->|Executes commands via| 17011["Core Process Orchestrator<br>Rust"]
-        17010["Web API &amp; UI<br>Rust / HTTP"] -->|Manages processes via| 17011["Core Process Orchestrator<br>Rust"]
-        17010["Web API &amp; UI<br>Rust / HTTP"] -->|Gets status from| 17015["Metrics &amp; Monitoring<br>Rust"]
-        17016["OS Signal Handler<br>Rust"] -->|Notifies of OS signals| 17011["Core Process Orchestrator<br>Rust"]
-        17011["Core Process Orchestrator<br>Rust"] -->|Controls & Monitors| 17012["Process Execution &amp; State<br>Rust"]
-        17011["Core Process Orchestrator<br>Rust"] -->|Loads/Saves config| 17013["Configuration Service<br>Rust"]
-        17011["Core Process Orchestrator<br>Rust"] -->|Manages| 17014["Process Health Monitor<br>Rust"]
-        17011["Core Process Orchestrator<br>Rust"] -->|Updates/Gets metrics from| 17015["Metrics &amp; Monitoring<br>Rust"]
-        17011["Core Process Orchestrator<br>Rust"] -->|Initializes| 17016["OS Signal Handler<br>Rust"]
-        17014["Process Health Monitor<br>Rust"] -->|Checks status of| 17012["Process Execution &amp; State<br>Rust"]
-        17015["Metrics &amp; Monitoring<br>Rust"] -->|Collects metrics from| 17012["Process Execution &amp; State<br>Rust"]
-        17012["Process Execution &amp; State<br>Rust"] -->|Uses config from| 17013["Configuration Service<br>Rust"]
+    User["User<br>External Actor"]
+    subgraph PMDaemon["PMDaemon Application<br>Rust"]
+        CLI["CLI Entry Point<br>Rust"]
+
+        subgraph WebLayer["Web Layer"]
+            WebAPI["Web API Server<br>Axum / HTTP"]
+            Auth["API Key Authentication<br>Middleware"]
+            WebSocket["WebSocket Handler<br>Real-time Updates"]
+        end
+
+        subgraph CoreLayer["Core Management Layer"]
+            ProcessManager["Process Manager<br>Core Orchestrator"]
+            PortManager["Port Manager<br>Allocation & Conflicts"]
+            ConfigService["Configuration Service<br>JSON/YAML/TOML"]
+        end
+
+        subgraph MonitoringLayer["Monitoring & Health Layer"]
+            HealthMonitor["Health Monitor<br>HTTP & Script Checks"]
+            SystemMonitor["System Monitor<br>CPU/Memory/Load"]
+            ProcessMonitor["Process Monitor<br>Individual Process Metrics"]
+        end
+
+        subgraph ProcessLayer["Process Execution Layer"]
+            ProcessExecution["Process Execution<br>Spawn & Control"]
+            SignalHandler["Signal Handler<br>OS Signal Management"]
+            LogManager["Log Manager<br>stdout/stderr Capture"]
+        end
+
+        %% Web Layer Connections
+        WebAPI -->|Authenticates via| Auth
+        Auth -->|Authorized requests to| ProcessManager
+        WebAPI -->|Real-time updates via| WebSocket
+        WebSocket -->|Broadcasts from| SystemMonitor
+
+        %% CLI Connections
+        CLI -->|Direct commands to| ProcessManager
+
+        %% Core Layer Connections
+        ProcessManager -->|Manages ports via| PortManager
+        ProcessManager -->|Loads/saves config via| ConfigService
+        ProcessManager -->|Controls processes via| ProcessExecution
+        ProcessManager -->|Coordinates monitoring via| HealthMonitor
+        ProcessManager -->|Gets metrics from| SystemMonitor
+
+        %% Monitoring Connections
+        HealthMonitor -->|Checks health of| ProcessExecution
+        ProcessMonitor -->|Monitors individual| ProcessExecution
+        SystemMonitor -->|Aggregates data from| ProcessMonitor
+
+        %% Process Layer Connections
+        ProcessExecution -->|Handles signals via| SignalHandler
+        ProcessExecution -->|Captures logs via| LogManager
+        ProcessExecution -->|Uses config from| ConfigService
+        ProcessExecution -->|Reports to| ProcessMonitor
     end
-    %% Edges at this level (grouped by source)
-    17017["User<br>External Actor"] -->|Uses CLI| 17009["CLI Entry Point<br>Rust"]
-    17017["User<br>External Actor"] -->|Accesses Web UI/API| 17010["Web API &amp; UI<br>Rust / HTTP"]
+
+    %% External Connections
+    User -->|CLI Commands| CLI
+    User -->|HTTP/WebSocket| WebAPI
+
+    %% External Systems
+    ProcessExecution -->|Spawns & Controls| SystemProcesses["System Processes<br>Managed Applications"]
+    ConfigService -->|Persists to| ConfigFiles["Config Files<br>JSON/YAML/TOML"]
+    LogManager -->|Writes to| LogFiles["Log Files<br>stdout/stderr"]
 ```
 
 ## 🔧 Library Usage
@@ -484,9 +536,9 @@ cargo test --test e2e_tests
 ```
 
 ### Test Coverage
-- **267 Total Tests**
-  - 146 Unit tests (library)
-  - 32 Unit tests (binary CLI)
+- **272 Total Tests**
+  - 150 Unit tests (library)
+  - 33 Unit tests (binary CLI)
   - 13 Integration tests (including config file functionality tests)
   - 8 End-to-end tests
   - 8 Configuration format tests

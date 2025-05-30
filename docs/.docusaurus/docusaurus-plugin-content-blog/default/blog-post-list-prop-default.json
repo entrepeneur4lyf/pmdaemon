@@ -2,8 +2,20 @@
   "title": "Recent releases",
   "items": [
     {
-      "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Multi-App Management",
-      "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-files",
+      "title": "PMDaemon v0.1.4 - Documentation Accuracy & Stability",
+      "permalink": "/pmdaemon/changelog/2025/05/29/v0.1.4",
+      "unlisted": false,
+      "date": "2025-05-29T00:00:00.000Z"
+    },
+    {
+      "title": "PMDaemon v0.1.3 - Critical Bug Fixes & Enhanced State Persistence",
+      "permalink": "/pmdaemon/changelog/v0.1.3-critical-bug-fixes-state-persistence",
+      "unlisted": false,
+      "date": "2025-05-28T00:00:00.000Z"
+    },
+    {
+      "title": "PMDaemon v0.1.2 - Ecosystem Configuration Files & Cross-Platform Support",
+      "permalink": "/pmdaemon/changelog/v0.1.2-ecosystem-config-cross-platform",
       "unlisted": false,
       "date": "2025-05-27T00:00:00.000Z"
     },
